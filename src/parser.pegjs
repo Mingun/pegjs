@@ -162,7 +162,7 @@ suffixed
             };
           } else
           if (r.min === 1) {
-            return expression
+            return expression;
           }
         }
       }
@@ -186,11 +186,11 @@ primary
 
 range
   = range_open r:range2 delimiter:(comma primary)? range_close {
-    r.delimiter = delimiter !== "" ? delimiter[1] : undefined;
+    r.delimiter = delimiter !== null ? delimiter[1] : undefined;
     return r;
   }
 range2
-  = min:int? dots max:int? {return {min:min!==""?min:0, max:max!==""?max:undefined};}
+  = min:int? dots max:int? {return {min:min!==null?min:0, max:max!==null?max:undefined};}
   / val:int {return {min:val, max:val};}
 int = n:digit+ __ {return parseInt(n.join(''),10);}
 
