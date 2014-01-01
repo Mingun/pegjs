@@ -310,6 +310,48 @@ describe("PEG.js grammar parser", function() {
       type:       "one_or_more",
       expression: literalAbcd
     }));
+    expect('start = "abcd"| ..3|').toParseAs(oneRuleGrammar({
+      type:       "range",
+      min:        0,
+      max:        3,
+      expression: literalAbcd,
+      delimiter:  undefined
+    }));
+    expect('start = "abcd"|2.. |').toParseAs(oneRuleGrammar({
+      type:       "range",
+      min:        2,
+      max:        undefined,
+      expression: literalAbcd,
+      delimiter:  undefined
+    }));
+    expect('start = "abcd"|2..3|').toParseAs(oneRuleGrammar({
+      type:       "range",
+      min:        2,
+      max:        3,
+      expression: literalAbcd,
+      delimiter:  undefined
+    }));
+    expect('start = "abcd"| ..3, "efgh"|').toParseAs(oneRuleGrammar({
+      type:       "range",
+      min:        0,
+      max:        3,
+      expression: literalAbcd,
+      delimiter:  literalEfgh
+    }));
+    expect('start = "abcd"|2.. , "efgh"|').toParseAs(oneRuleGrammar({
+      type:       "range",
+      min:        2,
+      max:        undefined,
+      expression: literalAbcd,
+      delimiter:  literalEfgh
+    }));
+    expect('start = "abcd"|2..3, "efgh"|').toParseAs(oneRuleGrammar({
+      type:       "range",
+      min:        2,
+      max:        3,
+      expression: literalAbcd,
+      delimiter:  literalEfgh
+    }));
     expect('start = "abcd"' ).toParseAs(literalGrammar("abcd"));
   });
 
