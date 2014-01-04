@@ -6,6 +6,7 @@ grammar
   = __ initializer:initializer? rules:rule+ {
       return {
         type:        "grammar",
+        region:      region(),
         initializer: initializer,
         rules:       rules
       };
@@ -14,8 +15,9 @@ grammar
 initializer
   = code:action semicolon? {
       return {
-        type: "initializer",
-        code: code
+        type:   "initializer",
+        region: region(),
+        code:   code
       };
     }
 
@@ -23,10 +25,12 @@ rule
   = name:identifier displayName:string? equals expression:expression semicolon? {
       return {
         type:        "rule",
+        region:      region(),
         name:        name,
         expression:  displayName !== null
           ? {
               type:       "named",
+              region:     region(),
               name:       displayName,
               expression: expression
             }
@@ -46,6 +50,7 @@ choice
         ));
         return {
           type:         "choice",
+          region:       region(),
           alternatives: alternatives
         };
       } else {
@@ -58,11 +63,13 @@ sequence
       var expression = elements.length !== 1
         ? {
             type:     "sequence",
+            region:   region(),
             elements: elements
           }
         : elements[0];
       return {
         type:       "action",
+        region:     region(),
         expression: expression,
         code:       code
       };
@@ -71,6 +78,7 @@ sequence
       return elements.length !== 1
         ? {
             type:     "sequence",
+            region:   region(),
             elements: elements
           }
         : elements[0];
@@ -80,6 +88,7 @@ labeled
   = label:identifier colon expression:prefixed {
       return {
         type:       "labeled",
+        region:     region(),
         label:      label,
         expression: expression
       };
@@ -90,30 +99,35 @@ prefixed
   = dollar expression:suffixed {
       return {
         type:       "text",
+        region:     region(),
         expression: expression
       };
     }
   / and code:action {
       return {
-        type: "semantic_and",
-        code: code
+        type:   "semantic_and",
+        region: region(),
+        code:   code
       };
     }
   / and expression:suffixed {
       return {
         type:       "simple_and",
+        region:     region(),
         expression: expression
       };
     }
   / not code:action {
       return {
-        type: "semantic_not",
-        code: code
+        type:   "semantic_not",
+        region: region(),
+        code:   code
       };
     }
   / not expression:suffixed {
       return {
         type:       "simple_not",
+        region:     region(),
         expression: expression
       };
     }
@@ -123,18 +137,21 @@ suffixed
   = expression:primary question {
       return {
         type:       "optional",
+        region:     region(),
         expression: expression
       };
     }
   / expression:primary star {
       return {
         type:       "zero_or_more",
+        region:     region(),
         expression: expression
       };
     }
   / expression:primary plus {
       return {
         type:       "one_or_more",
+        region:     region(),
         expression: expression
       };
     }
@@ -143,13 +160,14 @@ suffixed
 primary
   = name:identifier !(string? equals) {
       return {
-        type: "rule_ref",
-        name: name
+        type:   "rule_ref",
+        region: region(),
+        name:   name
       };
     }
   / literal
   / class
-  / dot { return { type: "any" }; }
+  / dot { return { type: "any", region: region() }; }
   / lparen expression:expression rparen { return expression; }
 
 /* "Lexical" elements */
@@ -209,6 +227,7 @@ literal "literal"
   = value:(doubleQuotedString / singleQuotedString) flags:"i"? __ {
       return {
         type:       "literal",
+        region:     region(),
         value:      value,
         ignoreCase: flags === "i"
       };
@@ -256,6 +275,7 @@ class "character class"
 
       return {
         type:       "class",
+        region:     region(),
         parts:      partsConverted,
         // FIXME: Get the raw text from the input directly.
         rawText:    rawText,
