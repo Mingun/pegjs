@@ -13,7 +13,7 @@ really is carried. Planned features to implement in the 2018:
 
 * [x] [Ranges](https://github.com/pegjs/pegjs/issues/30)
 * [ ] [Import grammars](https://github.com/pegjs/pegjs/issues/38)
-* [ ] [Annotations](https://github.com/pegjs/pegjs/issues/256)
+* [x] [Attributes](https://github.com/pegjs/pegjs/issues/256)
 * [ ] [Stream/incremental parser](https://github.com/pegjs/pegjs/issues/507)
 * [ ] Drop useless features (bytecode)
 * [ ] Raise coverage up to 90%
@@ -36,6 +36,7 @@ Table of Contents
   * [Parsing Expression Types](#parsing-expression-types)
   * [Action Execution Environment](#action-execution-environment)
   * [Balanced Braces](#balanced-braces)
+  * [Attributes](#attributes)
 - [Error Messages](#error-messages)
 - [Compatibility](#compatibility)
 - [Development](#development)
@@ -218,7 +219,9 @@ parseInt(digits.join(""), 10); }`) that defines a pattern to match against the
 input text and possibly contains some JavaScript code that determines what
 happens when the pattern matches successfully. A rule can also contain
 *human-readable name* that is used in error messages (in our example, only the
-`integer` rule has a human-readable name). The parsing starts at the first rule,
+`integer` rule has a human-readable name) and any count of *attributes*.
+Attribute — any metadata which can be attached to the rule and be used by
+a codegen or other passes. The parsing starts at the first rule,
 which is also called the *start rule*.
 
 A rule name must be a JavaScript identifier. It is followed by an equality sign
@@ -565,6 +568,19 @@ brace = [{}] {
   return text() === "{" ? 1 : -1;  // } for balance
 }
 ```
+
+### Attributes
+Syntax for defining attributes is similar to syntax of the Rust:
+
+```pegjs
+#[cached]
+#[export]
+rule = "a" / "b"
+```
+
+Attributes can have any name. Their sense completely is defined by a code of plug-ins
+which will process them. In an example above the attributes is used to mark the rule
+exported and caching parse result. There are no built-in attributes.
 
 Error Messages
 --------------

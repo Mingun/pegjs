@@ -112,7 +112,8 @@ Initializer
     }
 
 Rule
-  = name:IdentifierName __
+  = attributes:(@Attribute __)*
+    name:IdentifierName __
     displayName:(@StringLiteral __)?
     "=" __
     expression:Expression EOS
@@ -120,6 +121,7 @@ Rule
       return {
         type: "rule",
         name: name,
+        attributes: attributes,
         expression: displayName !== null
           ? {
               type: "named",
@@ -134,6 +136,22 @@ Rule
 
 Expression
   = ChoiceExpression
+
+Attribute 'attribute'
+  = "#[" name:IdentifierName __ value:AttributeValue? "]" {
+    return {
+      type: "attribute",
+      name: name,
+      value: value,
+      location: location()
+    };
+  }
+
+AttributeValue
+  = "(" @BalancedParenthesis? ")"
+
+BalancedParenthesis
+  = $((![()] .)+ / "(" BalancedParenthesis ")")+
 
 ChoiceExpression
   = head:ActionExpression tail:(__ "/" __ @ActionExpression)* {

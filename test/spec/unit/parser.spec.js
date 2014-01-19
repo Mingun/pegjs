@@ -63,10 +63,10 @@ describe("PEG.js grammar parser", function() {
     alternatives: [actionAbcd, actionEfgh, actionIjkl, actionMnop]
   };
   let named             = { type: "named",       name: "start rule", expression: literalAbcd };
-  let ruleA             = { type: "rule",        name: "a",          expression: literalAbcd };
-  let ruleB             = { type: "rule",        name: "b",          expression: literalEfgh };
-  let ruleC             = { type: "rule",        name: "c",          expression: literalIjkl };
-  let ruleStart         = { type: "rule",        name: "start",      expression: literalAbcd };
+  let ruleA             = { type: "rule",        name: "a",          expression: literalAbcd, attributes: [] };
+  let ruleB             = { type: "rule",        name: "b",          expression: literalEfgh, attributes: [] };
+  let ruleC             = { type: "rule",        name: "c",          expression: literalIjkl, attributes: [] };
+  let ruleStart         = { type: "rule",        name: "start",      expression: literalAbcd, attributes: [] };
   let initializer       = { type: "initializer", code: " code " };
 
   function oneRuleGrammar(expression) {
@@ -74,7 +74,7 @@ describe("PEG.js grammar parser", function() {
       type: "grammar",
       initializer: null,
       comments: {},
-      rules: [{ type: "rule", name: "start", expression: expression }]
+      rules: [{ type: "rule", name: "start", expression: expression, attributes: [] }]
     };
   }
 
@@ -149,17 +149,21 @@ describe("PEG.js grammar parser", function() {
 
     function stripLeaf(node) {
       delete node.location;
+
+      if (node.attributes) {
+        node.attributes.forEach(strip);
+      }
     }
 
     function stripExpression(node) {
-      delete node.location;
+      stripLeaf(node);
 
       strip(node.expression);
     }
 
     function stripChildren(property) {
       return function(node) {
-        delete node.location;
+        stripLeaf(node);
 
         node[property].forEach(strip);
       };
@@ -178,6 +182,7 @@ describe("PEG.js grammar parser", function() {
         node.rules.forEach(strip);
       },
 
+      attribute: stripLeaf,
       initializer: stripLeaf,
       rule: stripExpression,
       named: stripExpression,
