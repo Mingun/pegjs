@@ -69,12 +69,20 @@ describe("PEG.js grammar parser", function() {
   let ruleStart         = { type: "rule",        name: "start",      expression: literalAbcd, attributes: [] };
   let initializer       = { type: "initializer", code: " code " };
 
-  function oneRuleGrammar(expression) {
+  function attributed(expression, names) {
+    expression.attributes = names ? names.map(function(name) {
+      return { type: "attribute", name: name, value: null };
+    }) : [];
+
+    return expression;
+  }
+
+  function oneRuleGrammar(expression, ruleAttributes) {
     return {
       type: "grammar",
       initializer: null,
       comments: {},
-      rules: [{ type: "rule", name: "start", expression: expression, attributes: [] }]
+      rules: [attributed({ type: "rule", name: "start", expression: expression }, ruleAttributes)]
     };
   }
 
@@ -910,6 +918,27 @@ describe("PEG.js grammar parser", function() {
 
     expect("start = 'abcd' {{}").to.failToParse();
     expect("start = 'abcd' {}}").to.failToParse();
+  });
+
+  // Attributes
+  it("parses Attributes", function() {
+    let grammar = oneRuleGrammar(literalAbcd, ["Attribute"]);
+    expect("#[Attribute] start = 'abcd'").to.parseAs(grammar);
+    expect("#[Attribute]\nstart = 'abcd'").to.parseAs(grammar);
+    expect("#[Attribute()]start = 'abcd'").to.parseAs(grammar);
+
+    grammar = oneRuleGrammar(literalAbcd, ["Attribute", "Attribute2"]);
+    expect("#[Attribute] #[Attribute2] start = 'abcd'").to.parseAs(grammar);
+    expect("#[Attribute]\n#[Attribute2] start = 'abcd'").to.parseAs(grammar);
+    expect("#[Attribute()]#[Attribute2] start = 'abcd'").to.parseAs(grammar);
+
+    grammar.rules[0].attributes = [{ type: "attribute", name: "Attribute", value: "a" }];
+    expect("#[Attribute(a)] start = 'abcd'").to.parseAs(grammar);
+
+    grammar.rules[0].attributes = [{ type: "attribute", name: "Attribute", value: "a,(b)" }];
+    expect("#[Attribute(a,(b))]start = 'abcd'").to.parseAs(grammar);
+    expect("#[Attribute(()]start = 'abcd'").to.failToParse();
+    expect("#[Attribute())]start = 'abcd'").to.failToParse();
   });
 
   // Unicode character category rules and token rules are not tested.
