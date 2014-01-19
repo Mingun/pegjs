@@ -623,4 +623,15 @@ describe("PEG.js grammar parser", function() {
     expect('start =\u205F"abcd"').toParseAs(trivialGrammar);
     expect('start =\u3000"abcd"').toParseAs(trivialGrammar);
   });
+
+  /* Annotations */
+  it("parses annotations", function() {
+    var grammar = oneRuleGrammar(literalAbcd);
+    grammar.rules[0].annotations.push({ name: 'Annotation', params: null });
+    expect('@Annotation start = "abcd"').toParseAs(grammar);
+    expect('@Annotation\nstart = "abcd"').toParseAs(grammar);
+    grammar.rules[0].annotations.push({ name: 'Annotation2', params: null });
+    expect('@Annotation @Annotation2 start = "abcd"').toParseAs(grammar);
+    expect('@Annotation\n@Annotation2 start = "abcd"').toParseAs(grammar);
+  });
 });
