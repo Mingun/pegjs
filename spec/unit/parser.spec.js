@@ -52,17 +52,24 @@ describe("PEG.js grammar parser", function() {
         alternatives: [actionAbcd, actionEfgh, actionIjkl, actionMnop]
       },
       named             = { type: "named",       name: "start rule", expression: literalAbcd },
-      ruleA             = { type: "rule",        name: "a",          expression: literalAbcd },
-      ruleB             = { type: "rule",        name: "b",          expression: literalEfgh },
-      ruleC             = { type: "rule",        name: "c",          expression: literalIjkl },
-      ruleStart         = { type: "rule",        name: "start",      expression: literalAbcd },
+      ruleA             = { type: "rule",        annotations: [], name: "a",     expression: literalAbcd },
+      ruleB             = { type: "rule",        annotations: [], name: "b",     expression: literalEfgh },
+      ruleC             = { type: "rule",        annotations: [], name: "c",     expression: literalIjkl },
+      ruleStart         = { type: "rule",        annotations: [], name: "start", expression: literalAbcd },
       initializer       = { type: "initializer", code: " code " };
 
-  function oneRuleGrammar(expression) {
+  function annotated(expression, names) {
+    expression.annotations = names ? names.map(function(name) {
+      return { type: 'annotation', name: name, params: [] }
+    }) : [];
+    return expression;
+  }
+
+  function oneRuleGrammar(expression, ruleAnnotations) {
     return {
       type:        "grammar",
       initializer: null,
-      rules:       [{ type: "rule", name: "start", annotations: [], expression: expression }]
+      rules:       [annotated({ type: "rule", name: "start", expression: expression }, ruleAnnotations)]
     };
   }
 
@@ -679,6 +686,26 @@ describe("PEG.js grammar parser", function() {
 
     expect('start = "abcd" {{}').toFailToParse();
     expect('start = "abcd" {}}').toFailToParse();
+  });
+
+  /* Annotations */
+  it("parses Annotations", function() {
+    var grammar = grammar = oneRuleGrammar(literalAbcd, ['Annotation']);
+    expect('@Annotation start = "abcd"').toParseAs(grammar);
+    expect('@Annotation\nstart = "abcd"').toParseAs(grammar);
+    expect('@Annotation()start = "abcd"').toParseAs(grammar);
+
+    grammar = oneRuleGrammar(literalAbcd, ['Annotation', 'Annotation2']);
+    expect('@Annotation @Annotation2 start = "abcd"').toParseAs(grammar);
+    expect('@Annotation\n@Annotation2 start = "abcd"').toParseAs(grammar);
+    expect('@Annotation()@Annotation2 start = "abcd"').toParseAs(grammar);
+
+    grammar.rules[0].annotations = [{ type: 'annotation', name: 'Annotation', params: ['a'] }];
+    expect('@Annotation(a) start = "abcd"').toParseAs(grammar);
+
+    grammar.rules[0].annotations = [{ type: 'annotation', name: 'Annotation', params: ['a', 'b'] }];
+    expect('@Annotation(a,b)start = "abcd"').toParseAs(grammar);
+    expect('@Annotation(a,b,)start = "abcd"').toFailToParse();
   });
 
   /* Unicode character category rules and token rules are not tested. */
