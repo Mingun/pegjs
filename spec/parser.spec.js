@@ -32,6 +32,7 @@ describe("PEG.js grammar parser", function() {
         {
           type:       "rule",
           name:       "start",
+          annotations:[],
           expression: expression
         }
       ]
@@ -47,7 +48,7 @@ describe("PEG.js grammar parser", function() {
   }
 
   function ruleRefGrammar(name) {
-    return oneRuleGrammar({ type: "rule_ref", name: name });
+    return oneRuleGrammar({ type: "rule_ref", name: name, args: null });
   }
 
   function literalGrammar(value) {
@@ -164,9 +165,9 @@ describe("PEG.js grammar parser", function() {
 
   /* Canonical grammar is "a = \"abcd\"; b = \"efgh\"; c = \"ijkl\";". */
   it("parses grammar", function() {
-    var ruleA = { type: "rule", name: "a", expression: literalAbcd },
-        ruleB = { type: "rule", name: "b", expression: literalEfgh },
-        ruleC = { type: "rule", name: "c", expression: literalIjkl };
+    var ruleA = { type: "rule", name: "a", annotations: [], expression: literalAbcd },
+        ruleB = { type: "rule", name: "b", annotations: [], expression: literalEfgh },
+        ruleC = { type: "rule", name: "c", annotations: [], expression: literalIjkl };
 
     expect('a = "abcd"').toParseAs({
       type:        "grammar",
