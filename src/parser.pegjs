@@ -20,10 +20,11 @@ initializer
     }
 
 rule
-  = name:identifier displayName:string? equals expression:expression semicolon? {
+  = annotations:annotation* name:identifier displayName:string? equals expression:expression semicolon? {
       return {
         type:        "rule",
         name:        name,
+        annotations: annotations,
         expression:  displayName !== null
           ? {
               type:       "named",
@@ -33,6 +34,19 @@ rule
           : expression
       };
     }
+
+annotation
+  = at name:identifier params:params? {
+    return {
+      name: name,
+      params: params
+    };
+  };
+params
+  = lparen head:(i:param comma {return i;})* tail:param? rparen {
+    if (tail) head.push(tail); return head;
+  };
+param = identifier;
 
 expression
   = choice
@@ -179,6 +193,8 @@ plus      = "+" __ { return "+"; }
 lparen    = "(" __ { return "("; }
 rparen    = ")" __ { return ")"; }
 dot       = "." __ { return "."; }
+comma     = "," __ { return ","; }
+at        = "@" __ { return "@"; }
 
 /*
  * Modeled after ECMA-262, 5th ed., 7.6, but much simplified:
