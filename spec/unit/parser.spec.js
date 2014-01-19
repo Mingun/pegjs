@@ -62,7 +62,7 @@ describe("PEG.js grammar parser", function() {
     return {
       type:        "grammar",
       initializer: null,
-      rules:       [{ type: "rule", name: "start", expression: expression }]
+      rules:       [{ type: "rule", name: "start", annotations: [], expression: expression }]
     };
   }
 
@@ -114,11 +114,19 @@ describe("PEG.js grammar parser", function() {
     }
 
     function stripLeaf(node) {
+      var i;
+
       delete node.location;
+
+      if (node.annotations) {
+        for (i = 0; i < node.annotations.length; i++) {
+          strip(node.annotations[i]);
+        }
+      }
     }
 
     function stripExpression(node) {
-      delete node.location;
+      stripLeaf(node);
 
       strip(node.expression);
     }
@@ -127,7 +135,7 @@ describe("PEG.js grammar parser", function() {
       return function(node) {
         var i;
 
-        delete node.location;
+        stripLeaf(node);
 
         for (i = 0; i < node[property].length; i++) {
           strip(node[property][i]);
@@ -150,6 +158,7 @@ describe("PEG.js grammar parser", function() {
         }
       },
 
+      annotation:   stripLeaf,
       initializer:  stripLeaf,
       rule:         stripExpression,
       named:        stripExpression,
@@ -460,7 +469,7 @@ describe("PEG.js grammar parser", function() {
   /* Canonical Identifier is "a". */
   it("parses Identifier", function() {
     expect('start = a:"abcd"').toParseAs(oneRuleGrammar(labeledAbcd));
-  });
+    });
 
   /* Canonical IdentifierName is "a". */
   it("parses IdentifierName", function() {

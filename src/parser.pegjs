@@ -90,7 +90,8 @@ Initializer
     }
 
 Rule
-  = name:IdentifierName __
+  = annotations:(Annotation __)*
+    name:IdentifierName __
     displayName:(StringLiteral __)?
     "=" __
     expression:Expression EOS
@@ -98,6 +99,7 @@ Rule
       return {
         type:        "rule",
         name:        name,
+        annotations: extractList(annotations, 0),
         expression:  displayName !== null
           ? {
               type:       "named",
@@ -112,6 +114,26 @@ Rule
 
 Expression
   = ChoiceExpression
+
+Annotation 'annotation'
+  = "@" name:Identifier __ params:AnnotationParams? {
+    return {
+      type:     "annotation",
+      name:     name,
+      params:   params === null ? [] : params,
+      location: location()
+    };
+  }
+
+AnnotationParams
+  = "(" __ params:IdentifierList? __ ")" {
+    return params === null ? [] : params;
+  }
+
+IdentifierList
+  = head:Identifier tail:(__ "," __ Identifier)* {
+    return buildList(head, tail, 3);
+  }
 
 ChoiceExpression
   = head:ActionExpression tail:(__ "/" __ ActionExpression)* {
