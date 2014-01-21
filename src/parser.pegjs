@@ -39,7 +39,7 @@ annotation
   = at name:identifier params:params? {
     return {
       name: name,
-      params: params
+      params: params===null?[]:params
     };
   };
 params

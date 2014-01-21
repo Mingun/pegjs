@@ -48,7 +48,7 @@ describe("PEG.js grammar parser", function() {
   }
 
   function ruleRefGrammar(name) {
-    return oneRuleGrammar({ type: "rule_ref", name: name, args: null });
+    return oneRuleGrammar({ type: "rule_ref", name: name });
   }
 
   function literalGrammar(value) {
@@ -627,11 +627,21 @@ describe("PEG.js grammar parser", function() {
   /* Annotations */
   it("parses annotations", function() {
     var grammar = oneRuleGrammar(literalAbcd);
-    grammar.rules[0].annotations.push({ name: 'Annotation', params: null });
+    grammar.rules[0].annotations.push({ name: 'Annotation', params: [] });
     expect('@Annotation start = "abcd"').toParseAs(grammar);
     expect('@Annotation\nstart = "abcd"').toParseAs(grammar);
-    grammar.rules[0].annotations.push({ name: 'Annotation2', params: null });
+    expect('@Annotation()start = "abcd"').toParseAs(grammar);
+
+    grammar.rules[0].annotations.push({ name: 'Annotation2', params: [] });
     expect('@Annotation @Annotation2 start = "abcd"').toParseAs(grammar);
     expect('@Annotation\n@Annotation2 start = "abcd"').toParseAs(grammar);
+    expect('@Annotation()@Annotation2 start = "abcd"').toParseAs(grammar);
+
+    grammar.rules[0].annotations = [{ name: 'Annotation', params: ['a'] }];
+    expect('@Annotation(a) start = "abcd"').toParseAs(grammar);
+
+    grammar.rules[0].annotations = [{ name: 'Annotation', params: ['a', 'b'] }];
+    expect('@Annotation(a,b)start = "abcd"').toParseAs(grammar);
+    expect('@Annotation(a,b,)start = "abcd"').toParseAs(grammar);
   });
 });
