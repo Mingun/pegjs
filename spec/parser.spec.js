@@ -32,6 +32,7 @@ describe("PEG.js grammar parser", function() {
         {
           type:       "rule",
           name:       "start",
+          annotations:[],
           expression: expression
         }
       ]
@@ -220,9 +221,9 @@ describe("PEG.js grammar parser", function() {
 
   /* Canonical grammar is "a = \"abcd\"; b = \"efgh\"; c = \"ijkl\";". */
   it("parses grammar", function() {
-    var ruleA = { type: "rule", name: "a", expression: literalAbcd },
-        ruleB = { type: "rule", name: "b", expression: literalEfgh },
-        ruleC = { type: "rule", name: "c", expression: literalIjkl };
+    var ruleA = { type: "rule", name: "a", annotations: [], expression: literalAbcd },
+        ruleB = { type: "rule", name: "b", annotations: [], expression: literalEfgh },
+        ruleC = { type: "rule", name: "c", annotations: [], expression: literalIjkl };
 
     expect('a = "abcd"').toParseAs({
       type:        "grammar",
@@ -719,5 +720,26 @@ describe("PEG.js grammar parser", function() {
     expect('start =\u202F"abcd"').toParseAs(trivialGrammar);
     expect('start =\u205F"abcd"').toParseAs(trivialGrammar);
     expect('start =\u3000"abcd"').toParseAs(trivialGrammar);
+  });
+
+  /* Annotations */
+  it("parses annotations", function() {
+    var grammar = oneRuleGrammar(literalAbcd);
+    grammar.rules[0].annotations.push({ name: 'Annotation', params: [] });
+    expect('@Annotation start = "abcd"').toParseAs(grammar);
+    expect('@Annotation\nstart = "abcd"').toParseAs(grammar);
+    expect('@Annotation()start = "abcd"').toParseAs(grammar);
+
+    grammar.rules[0].annotations.push({ name: 'Annotation2', params: [] });
+    expect('@Annotation @Annotation2 start = "abcd"').toParseAs(grammar);
+    expect('@Annotation\n@Annotation2 start = "abcd"').toParseAs(grammar);
+    expect('@Annotation()@Annotation2 start = "abcd"').toParseAs(grammar);
+
+    grammar.rules[0].annotations = [{ name: 'Annotation', params: ['a'] }];
+    expect('@Annotation(a) start = "abcd"').toParseAs(grammar);
+
+    grammar.rules[0].annotations = [{ name: 'Annotation', params: ['a', 'b'] }];
+    expect('@Annotation(a,b)start = "abcd"').toParseAs(grammar);
+    expect('@Annotation(a,b,)start = "abcd"').toParseAs(grammar);
   });
 });
