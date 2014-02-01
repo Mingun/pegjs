@@ -90,11 +90,11 @@ describe("compiler pass |reportMissingRules|", function() {
 
   describe("reports missing rule referenced from a range", function() {
     it("expression", function() {
-      expect(pass).toReportMissingRuleIn('start = missing|2..3|');
+      expect(pass).toReportMissingRuleIn('start = missing|2..3|', 1, 9);
     });
 
     it("delimiter", function() {
-      expect(pass).toReportMissingRuleIn('start = "a"|2..3, missing|');
+      expect(pass).toReportMissingRuleIn('start = "a"|2..3, missing|', 1, 19);
     });
   });
 });
