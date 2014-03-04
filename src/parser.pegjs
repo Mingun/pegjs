@@ -22,7 +22,7 @@ initializer
     }
 
 rule
-  = annotations:annotation* name:identifier displayName:string? equals expression:expression semicolon? {
+  = annotations:annotations name:identifier displayName:string? equals expression:expression semicolon? {
       return {
         type:        "rule",
         region:      region(),
@@ -38,6 +38,9 @@ rule
           : expression
       };
     }
+
+annotations
+  = annotation*
 
 annotation
   = at name:identifier params:params? {
@@ -275,7 +278,7 @@ at        = "@" __ { return "@"; }
  *
  * * only [0-9] is considered a "Unicode digit"
  *
- * The simplifications were made just to make the implementation little bit
+ * The simplifications were made just to make the implementation a little bit
  * easier, there is no "philosophical" reason behind them.
  *
  * Contrary to ECMA 262, the "$" character is not valid because it serves other
