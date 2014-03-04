@@ -22,7 +22,7 @@ initializer
     }
 
 rule
-  = annotations:annotation* name:identifier displayName:string? equals expression:expression semicolon? {
+  = annotations:annotations name:identifier displayName:string? equals expression:expression semicolon? {
       return {
         type:        "rule",
         region:      region(),
@@ -39,17 +39,22 @@ rule
       };
     }
 
+annotations
+  = annotation*
+
 annotation
   = at name:identifier params:params? {
-    return {
-      name: name,
-      params: params===null?[]:params
+      return {
+        name: name,
+        params: params===null?[]:params
+      };
     };
-  };
+
 params
   = lparen head:(i:param comma {return i;})* tail:param? rparen {
-    if (tail) head.push(tail); return head;
-  };
+      if (tail) head.push(tail); return head;
+    };
+  
 param = identifier;
 
 expression
@@ -171,7 +176,7 @@ suffixed
     }
   / expression:primary r:range {
       if (!(r.delimiter !== undefined)) {
-        if (!(r.max !== undefined)) {// unbounded
+        if (!(r.max !== undefined)) { // unbounded
           if (r.min === 0) {
             return {
               type:       "zero_or_more",
@@ -222,13 +227,23 @@ primary
 
 range
   = range_open r:range2 delimiter:(comma primary)? range_close {
-    r.delimiter = delimiter !== null ? delimiter[1] : undefined;
-    return r;
-  }
+      r.delimiter = delimiter !== null ? delimiter[1] : undefined;
+      return r;
+    }
+
 range2
-  = min:int? dots max:int? {return {min:min!==null?min:0, max:max!==null?max:undefined};}
-  / val:int {return {min:val, max:val};}
-int = n:digit+ __ {return parseInt(n.join(''),10);}
+  = min:int? dots max:int? {
+      return {
+        min: min !== null ? min : 0, 
+        max: max !== null ? max : undefined
+      };
+    }
+  / val:int {
+      return {
+        min: val, 
+        max: val
+      };
+    }
 
 /* "Lexical" elements */
 
@@ -263,6 +278,9 @@ range_open= "|" __ { return "|"; }
 range_close="|" __ { return "|"; }
 at        = "@" __ { return "@"; }
 
+int "integer" 
+  = n:digit+ __ {return parseInt(n.join(''),10);}
+
 /*
  * Modeled after ECMA-262, 5th ed., 7.6, but much simplified:
  *
@@ -275,7 +293,7 @@ at        = "@" __ { return "@"; }
  *
  * * only [0-9] is considered a "Unicode digit"
  *
- * The simplifications were made just to make the implementation little bit
+ * The simplifications were made just to make the implementation a little bit
  * easier, there is no "philosophical" reason behind them.
  *
  * Contrary to ECMA 262, the "$" character is not valid because it serves other
