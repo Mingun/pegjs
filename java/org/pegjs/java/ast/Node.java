@@ -45,10 +45,7 @@ abstract class ExpressionNode extends Node {
     @Override
     public void toSource(Appendable a) throws IOException {
         if (expression != null) {
-            final boolean isComplex = !(
-                expression instanceof ExpressionNode
-             || expression instanceof LeafNode
-            );
+            final boolean isComplex = !(expression instanceof LeafNode);
             // В случае сложных выражений берем вложенное выражение в скобки.
             // Если же выражение простое, скобки не нужны.
             if (isComplex) a.append('(');

@@ -21,6 +21,12 @@ public final class RangeNode extends ExpressionNode {
     public final Number max;
     public final Node delimiter;
 
+    public RangeNode(Node expression, int min, int max) {
+        this(min, max, null, expression);
+    }
+    public RangeNode(Node expression, int exact) {
+        this(exact, exact, null, expression);
+    }
     public RangeNode(Number min, Number max, Node delimiter, Node expression) {
         super(expression);
         this.min = min;

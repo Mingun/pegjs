@@ -7,6 +7,7 @@
 package org.pegjs.java.ast;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -17,6 +18,7 @@ import java.util.List;
 public final class SequenceNode extends Node {
     public final List<Node> elements;
 
+    public SequenceNode(Node... elements) { this(Arrays.asList(elements)); }
     public SequenceNode(List<Node> elements) { this.elements = elements; }
     public SequenceNode(Object elements) { this((List<Node>)elements); }
 

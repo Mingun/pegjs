@@ -7,6 +7,8 @@
 package org.pegjs.java.ast;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -26,6 +28,11 @@ public final class ClassNode extends LeafNode {
         public final char end;
         public final CharSequence rawText;
 
+        public CharacterClass(char begin, char end) {
+            this.begin = begin;
+            this.end = end;
+            this.rawText = quoteForRegexpClass(begin) + '-' + quoteForRegexpClass(end);
+        }
         public CharacterClass(CharacterClass begin, CharacterClass end) {
             if (begin.begin > end.begin) {
                 throw new IllegalArgumentException(//TODO: SyntaxError
@@ -80,6 +87,35 @@ public final class ClassNode extends LeafNode {
         }
     }
 
+    public ClassNode(CharSequence pattern) {
+        rawText = pattern.toString();
+        inverted = pattern.charAt(2) == '^';
+        ignoreCase = pattern.charAt(pattern.length()-1) == 'i';
+        parts = null;
+        //throw new UnsupportedOperationException("Not yet implemented.");
+    }
+    public ClassNode(boolean inverted, boolean ignoreCase, char... parts) {
+        this(createParts(parts), inverted, ignoreCase);
+    }
+    public ClassNode(char begin, char end, boolean inverted, boolean ignoreCase) {
+        this(Arrays.asList(new CharacterClass(begin, end)), inverted, ignoreCase);
+    }
+    public ClassNode(List<CharacterClass> parts, boolean inverted, boolean ignoreCase) {
+        this.parts = parts;
+        final StringBuilder sb = new StringBuilder();
+        sb.append('[').append(inverted);
+        for (CharacterClass cc : this.parts) {
+            sb.append(cc.rawText);
+        }
+        sb.append(']');
+        if (ignoreCase) {
+            sb.append('i');
+        }
+        this.rawText = sb.toString();
+        
+        this.inverted = inverted;
+        this.ignoreCase = ignoreCase;
+    }
     public ClassNode(Object parts, Object inverted, Object flags) {
         this.parts = (List<CharacterClass>)parts;
         final StringBuilder sb = new StringBuilder();
@@ -110,5 +146,15 @@ public final class ClassNode extends LeafNode {
         if (ignoreCase) {
             a.append('i');
         }
+    }
+    private static List<CharacterClass> createParts(char... parts) {
+        if (parts.length % 2 != 0) {
+            throw new IllegalArgumentException("Expected the even number of chars");
+        }
+        final List<CharacterClass> result = new ArrayList<CharacterClass>(parts.length/2);
+        for (int i = 0; i < parts.length; i += 2) {
+            result.add(new CharacterClass(parts[i], parts[i+1]));
+        }
+        return result;
     }
 }

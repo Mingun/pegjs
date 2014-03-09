@@ -8,6 +8,7 @@ package org.pegjs.java.ast;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import java.util.List;
 public final class ChoiceNode extends Node {
     public final List<Node> alternatives;
 
+    public ChoiceNode(Node... alternatives) { this(Arrays.asList(alternatives)); }
     public ChoiceNode(List<Node> alternatives) { this.alternatives = alternatives; }
     public ChoiceNode(Object head, List<List<Node>> tail) {
         alternatives = new ArrayList<Node>(tail.size() + 1);

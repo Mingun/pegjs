@@ -17,6 +17,7 @@ import java.util.Set;
 public final class Code {
     public final CharSequence content;
     public Set<String> params;
+    public final boolean isMethodName;
     /**
      * Тип результата, который возвращается данным куском кода. Если {@code null} --
      * то {@link Object}.
@@ -26,10 +27,14 @@ public final class Code {
     public String resultTypeClass;
 
     public Code(CharSequence content) {
+        this(content, false);
+    }
+    public Code(CharSequence content, boolean isMethodName) {
         if (content == null) {
             throw new IllegalArgumentException("'content' must not be null");
         }
         this.content = content;
+        this.isMethodName = isMethodName;
     }
     public CharSequence arguments() {
         final StringBuilder sb = new StringBuilder();
