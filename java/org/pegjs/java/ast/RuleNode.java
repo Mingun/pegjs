@@ -6,6 +6,8 @@
 
 package org.pegjs.java.ast;
 
+import java.io.IOException;
+
 /**
  * Узел, представляющий одно правило разбора. Каждое правило имеет имя, тип возвращаемого
  * значения и признак кешируемости результатов разбора. Видимое в ошибках название правила
@@ -50,6 +52,20 @@ public final class RuleNode extends ExpressionNode {
     }
     @Override
     public <R, Context> R visit(Visitor<R, Context> v, Context context) { return v.visit(this, context); }
+
+    @Override
+    public void toSource(Appendable a) throws IOException {
+        a.append(name);
+        // Иерархия узлов в случае названия правила не отражает синтаксис грамматики,
+        // поэтому необходимо вручную исправить этот недочет.
+        if (expression instanceof NamedNode) {
+            a.append(' ');
+        } else {
+            a.append("\n  = ");
+        }
+        super.toSource(a);
+        a.append("\n  ;");
+    }
 
     public String returnType() {
         return resultTypeClass == null ? "Object" : resultTypeClass;

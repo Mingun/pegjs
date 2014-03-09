@@ -6,6 +6,8 @@
 
 package org.pegjs.java.ast;
 
+import java.io.IOException;
+
 /**
  *
  * @author Mingun
@@ -13,4 +15,9 @@ package org.pegjs.java.ast;
 public final class AnyNode extends LeafNode {
     @Override
     public <R, Context> R visit(Visitor<R, Context> v, Context context) { return v.visit(this, context); }
+
+    @Override
+    public void toSource(Appendable a) throws IOException {
+        a.append('.');
+    }
 }

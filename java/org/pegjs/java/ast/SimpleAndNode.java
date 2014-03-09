@@ -6,6 +6,8 @@
 
 package org.pegjs.java.ast;
 
+import java.io.IOException;
+
 /**
  *
  * @author Mingun
@@ -15,4 +17,9 @@ public final class SimpleAndNode extends ExpressionNode {
     public SimpleAndNode(Object expression) { this((Node)expression); }
     @Override
     public <R, Context> R visit(Visitor<R, Context> v, Context context) { return v.visit(this, context); }
+    @Override
+    public void toSource(Appendable a) throws IOException {
+        a.append('&');
+        super.toSource(a);
+    }
 }

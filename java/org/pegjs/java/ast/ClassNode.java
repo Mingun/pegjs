@@ -6,6 +6,7 @@
 
 package org.pegjs.java.ast;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -70,6 +71,13 @@ public final class ClassNode extends LeafNode {
                 default: return ""+ch;
             }
         }
+
+        public void toSource(Appendable a) throws IOException {
+            a.append(begin);
+            if (isRange()) {
+                a.append('-').append(end);
+            }
+        }
     }
 
     public ClassNode(Object parts, Object inverted, Object flags) {
@@ -87,4 +95,20 @@ public final class ClassNode extends LeafNode {
     }
     @Override
     public <R, Context> R visit(Visitor<R, Context> v, Context context) { return v.visit(this, context); }
+    @Override
+    public void toSource(Appendable a) throws IOException {
+        a.append('[');
+        if (inverted) {
+            a.append('^');
+        }
+        if (parts != null) {
+            for (CharacterClass cc : parts) {
+                cc.toSource(a);
+            }
+        }
+        a.append(']');
+        if (ignoreCase) {
+            a.append('i');
+        }
+    }
 }

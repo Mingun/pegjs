@@ -6,6 +6,8 @@
 
 package org.pegjs.java.ast;
 
+import java.io.IOException;
+
 /**
  *
  * @author Mingun
@@ -17,4 +19,8 @@ public final class RuleRefNode extends LeafNode {
     public RuleRefNode(Object name) { this((String)name); }
     @Override
     public <R, Context> R visit(Visitor<R, Context> v, Context context) { return v.visit(this, context); }
+    @Override
+    public void toSource(Appendable a) throws IOException {
+        a.append(name);
+    }
 }

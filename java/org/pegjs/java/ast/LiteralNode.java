@@ -6,6 +6,8 @@
 
 package org.pegjs.java.ast;
 
+import java.io.IOException;
+
 /**
  *
  * @author Mingun
@@ -20,4 +22,17 @@ public final class LiteralNode extends LeafNode {
     }
     @Override
     public <R, Context> R visit(Visitor<R, Context> v, Context context) { return v.visit(this, context); }
+
+    @Override
+    public void toSource(Appendable a) throws IOException {
+        a.append('\'');
+        if (value != null) {
+            // Экранируем обратный слеш и кавычку.
+            a.append(value.replace("\\", "\\\\").replace("'", "\\'"));
+        }
+        a.append('\'');
+        if (ignoreCase) {
+            a.append('i');
+        }
+    }
 }

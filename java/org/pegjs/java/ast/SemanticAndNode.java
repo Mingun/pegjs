@@ -6,6 +6,8 @@
 
 package org.pegjs.java.ast;
 
+import java.io.IOException;
+
 /**
  *
  * @author Mingun
@@ -17,4 +19,13 @@ public final class SemanticAndNode extends LeafNode {
     public SemanticAndNode(Object code) { this((Code)code); }
     @Override
     public <R, Context> R visit(Visitor<R, Context> v, Context context) { return v.visit(this, context); }
+
+    @Override
+    public void toSource(Appendable a) throws IOException {
+        a.append("&{");
+        if (code != null) {
+            code.toSource(a);
+        }
+        a.append('}');
+    }
 }

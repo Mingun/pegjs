@@ -6,9 +6,11 @@
 
 package org.pegjs.java.ast;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  *
@@ -35,4 +37,24 @@ public final class RangeNode extends ExpressionNode {
     }
     @Override
     public <R, Context> R visit(Visitor<R, Context> v, Context context) { return v.visit(this, context); }
+
+    @Override
+    public void toSource(Appendable a) throws IOException {
+        super.toSource(a);
+        a.append('|');
+        if (min != null) {
+            a.append(min.toString());
+        }
+        if (!Objects.equals(min, max)) {
+            a.append("..");
+            if (max != null) {
+                a.append(max.toString());
+            }
+        }
+        if (delimiter != null) {
+            a.append(',');
+            delimiter.toSource(a);
+        }
+        a.append('|');
+    }
 }

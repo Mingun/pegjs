@@ -6,6 +6,7 @@
 
 package org.pegjs.java.ast;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,4 +32,17 @@ public final class ChoiceNode extends Node {
     public List<Node> childs() { return Collections.unmodifiableList(alternatives); }
     @Override
     public <R, Context> R visit(Visitor<R, Context> v, Context context) { return v.visit(this, context); }
+    @Override
+    public void toSource(Appendable a) throws IOException {
+        if (alternatives == null) return;
+        a.append('(');
+        for (Node n : alternatives) {
+            if (!first) {
+                a.append(" / ");
+            }
+            n.toSource(a);
+            first = false;
+        }
+        a.append(')');
+    }
 }

@@ -6,6 +6,7 @@
 
 package org.pegjs.java.ast;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -23,4 +24,17 @@ public final class SequenceNode extends Node {
     public List<Node> childs() { return Collections.unmodifiableList(elements); }
     @Override
     public <R, Context> R visit(Visitor<R, Context> v, Context context) { return v.visit(this, context); }
+
+    @Override
+    public void toSource(Appendable a) throws IOException {
+        if (elements == null) return;
+        boolean first = true;
+        for (Node n : elements) {
+            if (!first) {
+                a.append(' ');
+            }
+            n.toSource(a);
+            first = false;
+        }
+    }
 }

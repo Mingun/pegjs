@@ -6,6 +6,8 @@
 
 package org.pegjs.java.ast;
 
+import java.io.IOException;
+
 /**
  *
  * @author Mingun
@@ -22,4 +24,14 @@ public final class NamedNode extends ExpressionNode {
     }
     @Override
     public <R, Context> R visit(Visitor<R, Context> v, Context context) { return v.visit(this, context); }
+    @Override
+    public void toSource(Appendable a) throws IOException {
+        a.append('\'');
+        if (name != null) {
+            // Экранируем обратный слеш и кавычку.
+            a.append(name.replace("\\", "\\\\").replace("'", "\\'"));
+        }
+        a.append("'\n  = ");
+        super.toSource(a);
+    }
 }

@@ -6,6 +6,7 @@
 
 package org.pegjs.java.ast;
 
+import java.io.IOException;
 import java.util.Objects;
 import java.util.Set;
 
@@ -71,5 +72,11 @@ public final class Code {
             return false;
         }
         return true;
+    }
+
+    public void toSource(Appendable a) throws IOException {
+        if (content != null) {
+            a.append(content);
+        }
     }
 }

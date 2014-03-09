@@ -6,6 +6,7 @@
 
 package org.pegjs.java.ast;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -82,5 +83,18 @@ public final class GrammarNode extends Node {
     /** Обходит все правила в грамматике и генерирует для них байткод. */
     public void compile() {
         visit(new GenerateVisitor(), null);
+    }
+    @Override
+    public void toSource(Appendable a) throws IOException {
+        if (initializer != null) {
+            a.append('{');
+            initializer.toSource(a);
+            a.append('}');
+        }
+        if (rules == null) return;
+        for (RuleNode r : rules) {
+            a.append('\n');
+            r.toSource(a);
+        }
     }
 }

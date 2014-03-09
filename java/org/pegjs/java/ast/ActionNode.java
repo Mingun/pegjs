@@ -6,6 +6,8 @@
 
 package org.pegjs.java.ast;
 
+import java.io.IOException;
+
 /**
  *
  * @author Mingun
@@ -22,4 +24,16 @@ public final class ActionNode extends ExpressionNode {
     }
     @Override
     public <R, Context> R visit(Visitor<R, Context> v, Context context) { return v.visit(this, context); }
+    @Override
+    public void toSource(Appendable a) throws IOException {
+        a.append('(');
+        if (expression != null) {
+            expression.toSource(a);
+        }
+        a.append(" {");
+        if (code != null) {
+            code.toSource(a);
+        }
+        a.append("})");
+    }
 }
