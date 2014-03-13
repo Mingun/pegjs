@@ -267,9 +267,9 @@ final class GenerateVisitor implements Visitor<byte[], GenerateVisitor.Context> 
     }
     @Override
     public byte[] visit(LiteralNode node, Context context) {
-        if (!node.value.isEmpty()) {
+        if (node.value.length() != 0) {
             final int stringIndex = ast.addConst(node.ignoreCase
-                ? quote(node.value.toLowerCase())
+                ? quote(node.value.toString().toLowerCase())
                 : quote(node.value)
             );
             final int expectedIndex = ast.addConstError(
@@ -509,7 +509,7 @@ final class GenerateVisitor implements Visitor<byte[], GenerateVisitor.Context> 
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Прочие вспомогательные функции">
-    private static String quote(String s) {
+    private static String quote(CharSequence s) {
         /*
          * ECMA-262, 5th ed., 7.8.4: All characters may appear literally in a string
          * literal except for the closing quote character, backslash, carriage
@@ -520,7 +520,7 @@ final class GenerateVisitor implements Visitor<byte[], GenerateVisitor.Context> 
          * Note that "\0" and "\v" escape sequences are not used because JSHint does
          * not like the first and IE the second.
          */
-        s = s
+        s = s.toString()
             .replace("\\", "\\\\")// backslash
             .replace("\"", "\\\"")// closing quote character
             .replace("\b", "\\b") // backspace
@@ -529,18 +529,19 @@ final class GenerateVisitor implements Visitor<byte[], GenerateVisitor.Context> 
             .replace("\f", "\\f") // form feed
             .replace("\r", "\\r");// carriage return
         final Matcher m = pat.matcher(s);
+        final StringBuffer sb = new StringBuffer();
+        sb.append('"');
         boolean result = m.find();
         if (result) {
-            final StringBuffer sb = new StringBuffer();
-            sb.append('"');
             do {
                 m.appendReplacement(sb, escape(m.group()));
                 result = m.find();
             } while (result);
             m.appendTail(sb);
-            return sb.append('"').toString();
+        } else {
+            sb.append(s);
         }
-        return '"' + s + '"';
+        return sb.append('"').toString();
     }
 
     /**

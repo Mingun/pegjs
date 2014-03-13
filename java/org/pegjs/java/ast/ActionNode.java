@@ -26,7 +26,6 @@ public final class ActionNode extends ExpressionNode {
     public <R, Context> R visit(Visitor<R, Context> v, Context context) { return v.visit(this, context); }
     @Override
     public void toSource(Appendable a) throws IOException {
-        a.append('(');
         if (expression != null) {
             expression.toSource(a);
         }
@@ -34,6 +33,6 @@ public final class ActionNode extends ExpressionNode {
         if (code != null) {
             code.toSource(a);
         }
-        a.append("})");
+        a.append('}');
     }
 }

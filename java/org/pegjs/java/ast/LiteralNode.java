@@ -13,10 +13,10 @@ import java.io.IOException;
  * @author Mingun
  */
 public final class LiteralNode extends LeafNode {
-    public final String value;
+    public final CharSequence value;
     public final boolean ignoreCase;
 
-    public LiteralNode(String value, boolean ignoreCase) {
+    public LiteralNode(CharSequence value, boolean ignoreCase) {
         this.value = value;
         this.ignoreCase = ignoreCase;
     }
@@ -28,7 +28,7 @@ public final class LiteralNode extends LeafNode {
         a.append('\'');
         if (value != null) {
             // Экранируем обратный слеш и кавычку.
-            a.append(value.replace("\\", "\\\\").replace("'", "\\'"));
+            a.append(value.toString().replace("\\", "\\\\").replace("'", "\\'"));
         }
         a.append('\'');
         if (ignoreCase) {

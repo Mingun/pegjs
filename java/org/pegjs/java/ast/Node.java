@@ -33,6 +33,9 @@ public abstract class Node {
             throw (InternalError)new InternalError("Must be unreachable").initCause(ex);
         }
     }
+
+    @Override
+    public String toString() { return toSource(); }
 }
 abstract class ExpressionNode extends Node {
     public final Node expression;

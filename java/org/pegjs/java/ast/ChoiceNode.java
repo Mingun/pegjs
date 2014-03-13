@@ -37,6 +37,7 @@ public final class ChoiceNode extends Node {
     @Override
     public void toSource(Appendable a) throws IOException {
         if (alternatives == null) return;
+        boolean first = true;
         a.append('(');
         for (Node n : alternatives) {
             if (!first) {
