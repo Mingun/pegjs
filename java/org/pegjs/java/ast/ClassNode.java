@@ -92,8 +92,11 @@ public final class ClassNode extends LeafNode {
         rawText = pattern.toString();
         inverted = pattern.charAt(2) == '^';
         ignoreCase = pattern.charAt(pattern.length()-1) == 'i';
-        parts = null;
+        parts = null;//TODO: implement
         //throw new UnsupportedOperationException("Not yet implemented.");
+    }
+    public ClassNode(char... parts) {
+        this(false, false, parts);
     }
     public ClassNode(boolean inverted, boolean ignoreCase, char... parts) {
         this(createParts(parts), inverted, ignoreCase);
@@ -104,7 +107,10 @@ public final class ClassNode extends LeafNode {
     public ClassNode(List<CharacterClass> parts, boolean inverted, boolean ignoreCase) {
         this.parts = parts;
         final StringBuilder sb = new StringBuilder();
-        sb.append('[').append(inverted);
+        sb.append('[');
+        if (inverted) {
+            sb.append('^');
+        }
         for (CharacterClass cc : this.parts) {
             sb.append(cc.rawText);
         }

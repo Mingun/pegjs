@@ -17,4 +17,9 @@ public class Error implements Comparable<Error> {
     public int compareTo(Error other) {
         return description.compareTo(other.description);
     }
+
+    @Override
+    public String toString() {
+        return "Error(type="+type+",value="+value+",description="+description+")";
+    }
 }

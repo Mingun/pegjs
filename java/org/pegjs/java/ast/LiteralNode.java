@@ -16,6 +16,9 @@ public final class LiteralNode extends LeafNode {
     public final CharSequence value;
     public final boolean ignoreCase;
 
+    public LiteralNode(CharSequence value) {
+        this(value, false);
+    }
     public LiteralNode(CharSequence value, boolean ignoreCase) {
         this.value = value;
         this.ignoreCase = ignoreCase;
