@@ -6,17 +6,20 @@
 
 package org.pegjs.java.generator;
 
-import java.util.ArrayDeque;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import org.pegjs.java.AbstractParser;
 import org.pegjs.java.ast.Code;
 import org.pegjs.java.ast.GrammarNode;
 import org.pegjs.java.ast.NamedNode;
 import org.pegjs.java.ast.RuleNode;
+import org.pegjs.java.exceptions.GenerateParserError;
 import org.pegjs.java.exceptions.PEGException;
 
 /**
@@ -129,7 +132,9 @@ final class SourceCodeGenerator {
     }
     
     //<editor-fold defaultstate="collapsed" desc="Функции компиляции">
-    public List<CharSequence> generate(GrammarNode ast, String fullClassName) {
+    public List<CharSequence> generate(GrammarNode ast, String fullClassName, Class base) {
+        // Проверяем допустимость базового класса для парсера.
+        checkBase(base);
         this.ast = ast;
         stack.clear();
         final List<CharSequence> result = new ArrayList<CharSequence>();
@@ -156,7 +161,7 @@ final class SourceCodeGenerator {
             result.add("");
         }
         result.add('@'+__("Grammar"));
-        result.add("public class " + className + " extends " + __("AbstractParser") + " {");
+        result.add("public class " + className + " extends " + (base != null ? base.getName().replace('$', '.') : __("AbstractParser")) + " {");
         generateTables(result, ast);
         result.add("    public " + className + "() {");
         result.add("        super(");
@@ -750,5 +755,35 @@ final class SourceCodeGenerator {
       return "Object";
     }
     //</editor-fold>
+    private static void checkBase(Class base) {
+        if (base == null)
+            return;
+        if (base.isPrimitive()) {
+            throw new GenerateParserError("Base class for parser cann't be primitive class: "+base.getName());
+        }
+        if (base.isArray()) {
+            throw new GenerateParserError("Base class for parser cann't be array: "+base.getName());
+        }
+        if ((base.getModifiers() & Modifier.FINAL) != 0) {
+            throw new GenerateParserError("Base class for parser cann't be final: "+base.getName());
+        }
+        if (!AbstractParser.class.isAssignableFrom(base)) {
+            throw new GenerateParserError("Temporary restriction: base class must extend "+AbstractParser.class.getName()+" class: "+base.getName());
+        }
+        if (base.isInterface()) {
+            throw new GenerateParserError("Temporary restriction: base class must be a class, not interface: "+base.getName());
+        }
+        try {
+            final Constructor c = base.getDeclaredConstructor(String[].class);
+            if ((c.getModifiers() & Modifier.PRIVATE) != 0) {
+                throw new GenerateParserError("Temporary restriction: base class must be have public or protected constructor "+base.getSimpleName()+"(String...): "+base.getName());
+            }
+            if (!c.isVarArgs()) {
+                throw new GenerateParserError("Temporary restriction: base class must be have public or protected constructor "+base.getSimpleName()+"(String...): "+base.getName());
+            }
+        } catch (NoSuchMethodException ex) {
+            throw new GenerateParserError("Temporary restriction: base class must be have public or protected constructor "+base.getSimpleName()+"(String...): "+base.getName(), ex);
+        }
+    }
     //</editor-fold>
 }

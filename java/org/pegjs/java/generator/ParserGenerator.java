@@ -234,37 +234,7 @@ public final class ParserGenerator extends ClassLoader {
      * @see #generate(java.lang.CharSequence, java.lang.String)
      */
     public static byte[] generate(GrammarNode ast, String className) {
-        // Генерируем байт-код правил.
-        ast.compile();
-        // Преобразуем байткод правил в байт-код Java.
-        // Для этого генерируем исходник класса и компилируем его. Лучше было бы,
-        // конечно, генерировать класс сразу в байткоде, но действия нам все равно
-        // придется компилировать, т.к. в них содержится Java-код.
-        final StringBuilder sb = new StringBuilder();
-        final SourceCodeGenerator c = new SourceCodeGenerator();
-
-        for (CharSequence line : c.generate(ast, className)) {
-            sb.append(line).append('\n');
-        }
-        try {
-            new FileOutputStream("source.java").write(sb.toString().getBytes("UTF-8"));
-        } catch (IOException ex){}
-        final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-
-        final JavaFileObject src = new MemorySource(className, sb);
-        final MemoryFileManager fm = new MemoryFileManager(compiler);
-        final StringWriter errors = new StringWriter();
-        final JavaCompiler.CompilationTask task = compiler.getTask(
-            errors, fm,
-            null,
-            Arrays.asList("-Xlint:unchecked"),// Опции компиляции.
-            null,// Список классов-обработчиков аннотаций.
-            Arrays.asList(src)// Список исходных файлов.
-        );
-        if (!task.call()) {
-            throw new GenerateParserError("Cann't compile generated class:\n"+errors);
-        }
-        return fm.classData(className);
+        return generate(ast, className, null);
     }
     /**
      * Разбирает указанную грамматику и генерирует байткод парсера для ее разбора
@@ -296,7 +266,37 @@ public final class ParserGenerator extends ClassLoader {
      * @return Класс парсера, загруженный {@linkplain ParserGenerator}-ом.
      */
     public static byte[] generate(GrammarNode ast, String className, Class<?> base) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        // Генерируем байт-код правил.
+        ast.compile();
+        // Преобразуем байткод правил в байт-код Java.
+        // Для этого генерируем исходник класса и компилируем его. Лучше было бы,
+        // конечно, генерировать класс сразу в байткоде, но действия нам все равно
+        // придется компилировать, т.к. в них содержится Java-код.
+        final StringBuilder sb = new StringBuilder();
+        final SourceCodeGenerator c = new SourceCodeGenerator();
+
+        for (CharSequence line : c.generate(ast, className, base)) {
+            sb.append(line).append('\n');
+        }
+        try {
+            new FileOutputStream("source.java").write(sb.toString().getBytes("UTF-8"));
+        } catch (IOException ex){}
+        final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+
+        final JavaFileObject src = new MemorySource(className, sb);
+        final MemoryFileManager fm = new MemoryFileManager(compiler);
+        final StringWriter errors = new StringWriter();
+        final JavaCompiler.CompilationTask task = compiler.getTask(
+            errors, fm,
+            null,
+            Arrays.asList("-Xlint:unchecked"),// Опции компиляции.
+            null,// Список классов-обработчиков аннотаций.
+            Arrays.asList(src)// Список исходных файлов.
+        );
+        if (!task.call()) {
+            throw new GenerateParserError("Cann't compile generated class:\n"+errors);
+        }
+        return fm.classData(className);
     }
     //</editor-fold>
     //</editor-fold>
