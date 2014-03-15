@@ -4,6 +4,9 @@
  */
 package org.pegjs.java;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,13 +27,8 @@ import org.pegjs.java.generator.OP;
 public abstract class AbstractParser<R> implements IParser<R> {
     //<editor-fold defaultstate="collapsed" desc="Поля и константы">
     /** Специальный singleton-объект, сигнализирующий о неуспешности разбора правила. */
-    protected static final Object peg$FAILED = new Object() {
-        @Override
-        public String toString() {
-            return "<FAILED>";
-        }
-    };
-    protected static final Object NULL = peg$FAILED;
+    @Deprecated//TODO: Использовать NULL
+    protected static final Object peg$FAILED = NULL;
     protected CharSequence input;
 
     /** Текущая позиция в строке. Активно используется генерируемыми методами разбора. */
@@ -50,6 +48,7 @@ public abstract class AbstractParser<R> implements IParser<R> {
 
     //<editor-fold defaultstate="collapsed" desc="Внутренние классы и интерфейсы">
     /** Информация о текущей позиции в разбираемой строке. */
+    @Deprecated//TODO: Заменить на State
     private final static class Pos {
         private static final char LINE_SEPARATOR = '\u2028';
         private static final char PARAGRAPH_SEPARATOR = '\u2029';
@@ -117,20 +116,44 @@ public abstract class AbstractParser<R> implements IParser<R> {
         return parse(input, null);
     }
     @Override
+    public final R parse(Reader input) throws IOException {
+        return parse(input, null);
+    }
+    @Override
+    public final R parse(Reader input, String startRule) throws IOException {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+    @Override
+    public final R parse(Readable input) throws IOException {
+        return parse(input, null);
+    }
+    @Override
+    public final R parse(Readable input, String startRule) throws IOException {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+    @Override
+    public final R parse(InputStream input) throws IOException {
+        return parse(input, null);
+    }
+    @Override
+    public final R parse(InputStream input, String startRule) throws IOException {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+    @Override
     public final R parse(ByteBuffer input) {
-        return parse(new ByteBufferAsCharSequence(input));
+        return parse(Utils.asCharSequence(input));
     }
     @Override
     public final R parse(ByteBuffer input, String startRule) {
-        return parse(new ByteBufferAsCharSequence(input), startRule);
+        return parse(Utils.asCharSequence(input), startRule);
     }
     @Override
     public final R parse(byte[] input) {
-        return parse(new ByteArrayAsCharSequence(input));
+        return parse(Utils.asCharSequence(input));
     }
     @Override
     public final R parse(byte[] input, String startRule) {
-        return parse(new ByteArrayAsCharSequence(input), startRule);
+        return parse(Utils.asCharSequence(input), startRule);
     }
     protected final R parse(CharSequence input, String startRule, String defaultRule) {
         // Сбрасываем состояние парсера.
@@ -335,59 +358,5 @@ public abstract class AbstractParser<R> implements IParser<R> {
             }
         }
         return sb.toString();
-    }
-}
-/**
- * Представляет массив байт как последовательность символов. Каждый байт массива
- * рассматривается как один символ.
- */
-final class ByteArrayAsCharSequence implements CharSequence, Cloneable {
-    private final byte[] content;
-    private final int offset;
-    private final int length;
-
-    public ByteArrayAsCharSequence(byte[] content) {this(content, 0, content.length);}
-    public ByteArrayAsCharSequence(byte[] content, int offset, int length) {
-        if (length < 0) {
-            throw new IllegalArgumentException("'length' must be > 0: "+length);
-        }
-        if (offset < 0 || offset > content.length - length) {
-            throw new IndexOutOfBoundsException(""+offset);
-        }
-        this.content = content;
-        this.offset = offset;
-        this.length = length;
-    }
-    @Override
-    public int length() { return length; }
-    @Override
-    public char charAt(int index) { return (char)content[offset + index]; }
-    @Override
-    public CharSequence subSequence(int start, int end) {
-        return new ByteArrayAsCharSequence(content, offset + start, end - start);
-    }
-    @Override
-    public ByteArrayAsCharSequence clone() {
-        return new ByteArrayAsCharSequence(Arrays.copyOfRange(content, offset, offset + length));
-    }
-}
-/**
- * Представляет буфер байт как последовательность символов. Каждый байт буфера
- * рассматривается как один символ.
- */
-final class ByteBufferAsCharSequence implements CharSequence {
-    private final ByteBuffer content;
-
-    public ByteBufferAsCharSequence(ByteBuffer content) {
-        this.content = content.duplicate();
-    }
-    @Override
-    public int length() { return content.remaining(); }
-    @Override
-    public char charAt(int index) { return (char)content.get(index); }
-    @Override
-    public CharSequence subSequence(int start, int end) {
-        content.position(start);
-        return new ByteBufferAsCharSequence((ByteBuffer)content.slice().limit(end));
     }
 }
