@@ -4,9 +4,7 @@
  */
 package org.pegjs.java;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +24,7 @@ public interface IParser<R> {
      * Используется генерируемым кодом парсера для хранения информации о текущем
      * месте разбора.
      */
-    public final class State implements Cloneable, Comparable<State> {
+    public final class State implements Cloneable, Comparable<State>, Serializable {
         private static final char LINE_SEPARATOR = '\u2028';
         private static final char PARAGRAPH_SEPARATOR = '\u2029';
         private int line = 1;
@@ -128,6 +126,15 @@ public interface IParser<R> {
             // Объект всегда больше, чем null.
             return o == null ? 1 : Integer.compare(offset, o.offset);
         }
+
+        @Override
+        public State clone() {
+            try {
+                return (State)super.clone();
+            } catch (CloneNotSupportedException ex) {
+                throw (InternalError)new InternalError("Must be unreacheble").initCause(ex);
+            }
+        }
     }
     public final class Expected {
         /**
@@ -142,9 +149,9 @@ public interface IParser<R> {
          * нам может и не понадобиться. Поэтому сортируется он только тогда,
          * когда это действительно нужно.
          */
-        protected final List<Error> candidates = new ArrayList<Error>();
+        protected final List<ErrorDescription> candidates = new ArrayList<ErrorDescription>();
         
-        public void add(int currentPos, Error expected) {
+        public void add(int currentPos, ErrorDescription expected) {
             if (currentPos < pos) {
                 return;
             }
@@ -191,15 +198,6 @@ public interface IParser<R> {
 
     public R parse(CharSequence input);
     public R parse(CharSequence input, String startRule);
-
-    public R parse(Reader input) throws IOException;
-    public R parse(Reader input, String startRule) throws IOException;
-
-    public R parse(Readable input) throws IOException;
-    public R parse(Readable input, String startRule) throws IOException;
-
-    public R parse(InputStream input) throws IOException;
-    public R parse(InputStream input, String startRule) throws IOException;
 
     public R parse(ByteBuffer input);
     public R parse(ByteBuffer input, String startRule);

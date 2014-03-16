@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import org.pegjs.java.ErrorDescription;
 
 /**
  * Корневой узел грамматики. В каждой грамматике существует в единственном экземпляре
@@ -51,8 +52,8 @@ public final class GrammarNode extends Node {
     @Override
     public <R, Context> R visit(Visitor<R, Context> v, Context context) { v.visit(this, context); return null; }
     
-    public int addConstError(String type, String value, String description) {
-        return addConst("new org.pegjs.java.Error(\""+type+"\", "+value+", "+description+")");
+    public int addConstError(ErrorDescription.Type type, String value, String description) {
+        return addConst("new "+ErrorDescription.class.getName()+"("+type+", "+value+", "+description+")");
     }
     public int addConst(String constant) {
         int i = consts.indexOf(constant);

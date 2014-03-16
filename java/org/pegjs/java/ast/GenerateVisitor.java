@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.pegjs.java.ErrorDescription;
 import org.pegjs.java.generator.OP;
 
 /**
@@ -67,7 +68,7 @@ final class GenerateVisitor implements Visitor<byte[], GenerateVisitor.Context> 
     }
     @Override
     public byte[] visit(NamedNode node, Context context) {
-        final int nameIndex = ast.addConstError("other", null, quote(node.name));
+        final int nameIndex = ast.addConstError(ErrorDescription.Type.USER, null, quote(node.name));
 
         /*
          * The code generated below is slightly suboptimal because |FAIL| pushes
@@ -282,7 +283,7 @@ final class GenerateVisitor implements Visitor<byte[], GenerateVisitor.Context> 
                 : quote(node.value)
             );
             final int expectedIndex = ast.addConstError(
-                "literal",
+                ErrorDescription.Type.LITERAL,
                 quote(node.value),
                 quote(quote(node.value))
             );
@@ -335,7 +336,7 @@ final class GenerateVisitor implements Visitor<byte[], GenerateVisitor.Context> 
 
         final int regexpIndex   = ast.addConst(regexp);
         final int expectedIndex = ast.addConstError(
-            "class",
+            ErrorDescription.Type.CLASS,
             quote(node.rawText),
             quote(node.rawText)
         );
@@ -349,7 +350,7 @@ final class GenerateVisitor implements Visitor<byte[], GenerateVisitor.Context> 
     @Override
     public byte[] visit(AnyNode node, Context context) {
         final int expectedIndex = ast.addConstError(
-            "any",
+            ErrorDescription.Type.ANY,
             null,
             quote("any character")
         );

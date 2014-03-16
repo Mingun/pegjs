@@ -7,14 +7,22 @@
 package org.pegjs.java.generator;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import org.pegjs.java.AbstractParser;
+import org.pegjs.java.ErrorDescription;
+import org.pegjs.java.annotations.Action;
+import org.pegjs.java.annotations.Grammar;
+import org.pegjs.java.annotations.Rule;
 import org.pegjs.java.ast.Code;
 import org.pegjs.java.ast.GrammarNode;
 import org.pegjs.java.ast.NamedNode;
@@ -32,20 +40,20 @@ final class SourceCodeGenerator {
     private final Stack stack = new Stack();
     
     private final static Map<String, String> imports = getImports(
-        "java.lang.reflect.InvocationTargetException",
-        "java.lang.reflect.Method",
-        "java.util.ArrayList",
-        "java.util.Arrays",
-        "java.util.HashMap",
-        "java.util.List",
-        "java.util.Map",
-        "java.util.regex.Pattern",
-        "org.pegjs.java.AbstractParser",
-        "org.pegjs.java.Error",
-        "org.pegjs.java.annotations.Action",
-        "org.pegjs.java.annotations.Grammar",
-        "org.pegjs.java.annotations.Rule",
-        "org.pegjs.java.exceptions.PEGException"
+        InvocationTargetException.class,
+        Method.class,
+        ArrayList.class,
+        Arrays.class,
+        HashMap.class,
+        List.class,
+        Map.class,
+        Pattern.class,
+        AbstractParser.class,
+        ErrorDescription.class,
+        Action.class,
+        Grammar.class,
+        Rule.class,
+        PEGException.class
     );
     //<editor-fold defaultstate="collapsed" desc="Опции генерации">
     private boolean useFullNames = true;
@@ -160,8 +168,8 @@ final class SourceCodeGenerator {
             result.add("//</editor-fold>");
             result.add("");
         }
-        result.add('@'+__("Grammar"));
-        result.add("public class " + className + " extends " + (base != null ? base.getName().replace('$', '.') : __("AbstractParser")) + " {");
+        result.add('@'+__(Grammar.class));
+        result.add("public class " + className + " extends " + (base != null ? base.getName().replace('$', '.') : __(AbstractParser.class)) + " {");
         generateTables(result, ast);
         result.add("    public " + className + "() {");
         result.add("        super(");
@@ -181,21 +189,21 @@ final class SourceCodeGenerator {
         result.add("    @Override");
         result.add("    protected final Object callRule(String ruleName) {");
         result.add("        try {");
-        result.add("            final "+__("Method")+" m = this.getClass().getDeclaredMethod(ruleName, (Class[]) null);");
-        result.add("            if (!m.isAnnotationPresent("+__("Rule")+".class)) {");
-        result.add("                throw new "+__("PEGException")+"(ruleName+\" not rule name\");");
+        result.add("            final "+__(Method.class)+" m = this.getClass().getDeclaredMethod(ruleName, (Class[]) null);");
+        result.add("            if (!m.isAnnotationPresent("+__(Rule.class)+".class)) {");
+        result.add("                throw new "+__(PEGException.class)+"(ruleName+\" not rule name\");");
         result.add("            }");
         result.add("            return m.invoke(this, (Object[]) null);");
-        result.add("        } catch (IllegalAccessException ex) {");
-        result.add("            throw new "+__("PEGException")+"(ex);");
-        result.add("        } catch (IllegalArgumentException ex) {");
-        result.add("            throw new "+__("PEGException")+"(ex);");
-        result.add("        } catch ("+__("InvocationTargetException")+" ex) {");
-        result.add("            throw new "+__("PEGException")+"(ex);");
-        result.add("        } catch (NoSuchMethodException ex) {");
-        result.add("            throw new "+__("PEGException")+"(ex);");
-        result.add("        } catch (SecurityException ex) {");
-        result.add("            throw new "+__("PEGException")+"(ex);");
+        result.add("        } catch ("+__(IllegalAccessException.class)+" ex) {");
+        result.add("            throw new "+__(PEGException.class)+"(ex);");
+        result.add("        } catch ("+__(IllegalArgumentException.class)+" ex) {");
+        result.add("            throw new "+__(PEGException.class)+"(ex);");
+        result.add("        } catch ("+__(InvocationTargetException.class)+" ex) {");
+        result.add("            throw new "+__(PEGException.class)+"(ex);");
+        result.add("        } catch ("+__(NoSuchMethodException.class)+" ex) {");
+        result.add("            throw new "+__(PEGException.class)+"(ex);");
+        result.add("        } catch ("+__(SecurityException.class)+" ex) {");
+        result.add("            throw new "+__(PEGException.class)+"(ex);");
         result.add("        }");
         result.add("    }");
         result.add("    //</editor-fold>");
@@ -219,9 +227,9 @@ final class SourceCodeGenerator {
         final List<CharSequence> lines = generate(rule.bytecode, 0, rule.bytecode.length);
         final List<CharSequence> result = new ArrayList<CharSequence>();
         if (rule.expression instanceof NamedNode) {
-            result.add('@'+__("Rule") + "(title=\"" + ((NamedNode)rule.expression).name + "\")");
+            result.add('@'+__(Rule.class) + "(title=\"" + ((NamedNode)rule.expression).name + "\")");
         } else {
-            result.add('@'+__("Rule"));
+            result.add('@'+__(Rule.class));
         }
         // unused подавляем потому, что начальные правила грамматики могут не вызываться
         // другими правилами, а при старте разбора они вызываются через рефлексию.
@@ -284,7 +292,7 @@ final class SourceCodeGenerator {
                     break;
                 }
                 case PUSH_EMPTY_ARRAY: {
-                    parts.add(stack.push("new "+__("ArrayList")+"()", List.class));// s? = new ArrayList();
+                    parts.add(stack.push("new "+__(ArrayList.class)+"()", List.class));// s? = new ArrayList();
                     ++ip;
                     break;
                 }
@@ -334,13 +342,13 @@ final class SourceCodeGenerator {
 
                 case APPEND: {         // APPEND
                   final String value = stack.pop();
-                  parts.add("(("+__("List")+')'+stack.top() + ").add(" + value + ");");
+                  parts.add("(("+__(List.class)+')'+stack.top() + ").add(" + value + ");");
                   ip++;
                   break;
                 }
                 case WRAP: {           // WRAP n
                   parts.add(
-                    stack.push(__("Arrays")+".asList(" + stack.pop(bc[ip + 1]) + ')', List.class)
+                    stack.push(__(Arrays.class)+".asList(" + stack.pop(bc[ip + 1]) + ')', List.class)
                   );
                   ip += 2;
                   break;
@@ -370,12 +378,12 @@ final class SourceCodeGenerator {
                 }
                 case IF_ARRLEN_MIN: {  // IF_ARRLEN_MIN t f
                     final String value = stack.pop();
-                    ip = compileCondition(bc, ip, parts, value+"!=null && (("+__("List")+')'+stack.top() + ").size() < ((Number)"+value+").intValue()", 0);
+                    ip = compileCondition(bc, ip, parts, value+"!=null && (("+__(List.class)+')'+stack.top() + ").size() < ((Number)"+value+").intValue()", 0);
                     break;
                 }
                 case IF_ARRLEN_MAX: {  // IF_ARRLEN_MAX t f
                     final String value = stack.pop();
-                    ip = compileCondition(bc, ip, parts, value+"!=null && (("+__("List")+')'+stack.top() + ").size() >= ((Number)"+value+").intValue()", 0);
+                    ip = compileCondition(bc, ip, parts, value+"!=null && (("+__(List.class)+')'+stack.top() + ").size() >= ((Number)"+value+").intValue()", 0);
                     break;
                 }
                 case WHILE_NOT_ERROR: {// WHILE_NOT_ERROR b
@@ -601,7 +609,8 @@ final class SourceCodeGenerator {
             throw new PEGException("Invalid opcode: "+op, ex);
         }
     }
-    private String __(String src) {
+    private String __(Class c) {
+        final String src = c.getSimpleName();
         if (useFullNames && imports.containsKey(src))
             return imports.get(src);
         return src;
@@ -691,9 +700,10 @@ final class SourceCodeGenerator {
         return sb.toString();
     }
     
-    private static Map<String, String> getImports(String... names) {
+    private static Map<String, String> getImports(Class... classes) {
         final Map<String, String> result = new HashMap<String, String>();
-        for (String fullName : names) {
+        for (Class c : classes) {
+            final String fullName = c.getName().replace('$', '.');
             final int i = fullName.lastIndexOf('.');
             final String name = fullName.substring(i+1);
             if (!"*".equals(name)) {
@@ -715,7 +725,7 @@ final class SourceCodeGenerator {
         result.add("    //<editor-fold defaultstate=\"collapsed\" desc=\"Таблица действий парсера\">");
         i = 0;
         for (Code c : ast.actions) {
-            result.add("    @"+__("Action"));
+            result.add("    @"+__(Action.class));
             result.add("    private " + c.returnType() + " " + f(i) + "(" + c.arguments() + ") {");
             result.add(indent(c.content));
             result.add("    }");
@@ -724,8 +734,8 @@ final class SourceCodeGenerator {
         result.add("    //</editor-fold>");
     }
     private String value(String c) {
-        return (isPattern(c) ? __("Pattern")+".compile(\""+correct(c.substring(1, c.length()-1))+"\")" :
-               (isArray(c) ? "new "+__("ArrayList")+"()" :
+        return (isPattern(c) ? __(Pattern.class)+".compile(\""+correct(c.substring(1, c.length()-(c.endsWith("i")?2:1)))+"\", "+(c.endsWith("i")?__(Pattern.class)+".CASE_INSENSITIVE":"0")+")" :
+               (isArray(c) ? "new "+__(ArrayList.class)+"()" :
                (isNULL(c) ? "null" :
                (isUndefined(c) ? "null" :
                (isExpectedObject(c) ? c : correct(c))))));
@@ -739,14 +749,14 @@ final class SourceCodeGenerator {
     private static boolean isArray(String s)   { return s.startsWith("["); }
     private static boolean isNULL(String s)    { return "null".equals(s); }
     private static boolean isUndefined(String s){ return "void 0".equals(s); }
-    private static boolean isExpectedObject(String s) { return s.startsWith("new org.pegjs.java.Error(\""); }
+    private static boolean isExpectedObject(String s) { return s.startsWith("new "+ErrorDescription.class.getName().replace('$', '.')+"("); }
     private static String  correct(String s)   { return s.replaceAll("\\\\x(..)", "\\\\u00$1"); }// \x -> \ u00
     private String  type(String c) {
-      if (isNumber(c))  return "Number";
-      if (isString(c))  return "String";
-      if (isPattern(c)) return __("Pattern");
-      if (isArray(c))   return __("ArrayList");
-      if (isExpectedObject(c))   return __("Error");
+      if (isNumber(c))  return __(Number.class);
+      if (isString(c))  return __(String.class);
+      if (isPattern(c)) return __(Pattern.class);
+      if (isArray(c))   return __(ArrayList.class);
+      if (isExpectedObject(c))   return __(ErrorDescription.class);
       return "Object";
     }
     //</editor-fold>

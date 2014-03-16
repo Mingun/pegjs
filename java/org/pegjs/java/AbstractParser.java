@@ -117,30 +117,6 @@ public abstract class AbstractParser<R> implements IParser<R> {
         return parse(input, null);
     }
     @Override
-    public final R parse(Reader input) throws IOException {
-        return parse(input, null);
-    }
-    @Override
-    public final R parse(Reader input, String startRule) throws IOException {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-    @Override
-    public final R parse(Readable input) throws IOException {
-        return parse(input, null);
-    }
-    @Override
-    public final R parse(Readable input, String startRule) throws IOException {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-    @Override
-    public final R parse(InputStream input) throws IOException {
-        return parse(input, null);
-    }
-    @Override
-    public final R parse(InputStream input, String startRule) throws IOException {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-    @Override
     public final R parse(ByteBuffer input) {
         return parse(Utils.asCharSequence(input));
     }
@@ -171,7 +147,7 @@ public abstract class AbstractParser<R> implements IParser<R> {
         } else {
             // В противном случае формируем сообщение об ошибке.
             if (result != peg$FAILED && peg$currPos < this.input.length()) {
-                fail(new Error("end", null, "end of input"));
+                fail(new ErrorDescription(ErrorDescription.Type.EOF, null, "end of input"));
             }
 
             throw buildSyntaxError(null, expected.candidates, expected.pos);
@@ -182,7 +158,7 @@ public abstract class AbstractParser<R> implements IParser<R> {
     public final void expected(String description) {
         throw buildSyntaxError(
             null,
-            Arrays.asList(new Error("other", null, description)),
+            Arrays.asList(new ErrorDescription(ErrorDescription.Type.USER, null, description)),
             peg$reportedPos
         );
     }
@@ -218,7 +194,7 @@ public abstract class AbstractParser<R> implements IParser<R> {
     protected static boolean toBool(Object o) {
         return Utils.toBool(o);
     }
-    protected final void peg$mayBeFail(Error expected) {
+    protected final void peg$mayBeFail(ErrorDescription expected) {
         if (peg$silentFails == 0) {
             fail(expected);
         }
@@ -254,7 +230,7 @@ public abstract class AbstractParser<R> implements IParser<R> {
      * позиции разбора.
      * @param expected
      */
-    private void fail(Error expected) {
+    private void fail(ErrorDescription expected) {
         this.expected.add(peg$currPos, expected);
     }
     //</editor-fold>
@@ -280,7 +256,7 @@ public abstract class AbstractParser<R> implements IParser<R> {
      * @param pos Позиция, в которой возбуждается синтаксическая ошибка.
      * @return 
      */
-    private SyntaxError buildSyntaxError(String message, List<Error> expected, int pos) {
+    private SyntaxError buildSyntaxError(String message, List<ErrorDescription> expected, int pos) {
         // Вычисляем строку и столбец.
         final Pos p = computePosDetails(pos);
         final Character found = pos < input.length() ? input.charAt(pos) : null;
