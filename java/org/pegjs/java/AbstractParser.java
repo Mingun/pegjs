@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.TreeSet;
 import java.util.regex.Pattern;
 import org.pegjs.java.exceptions.PEGException;
 import org.pegjs.java.exceptions.SyntaxError;
@@ -24,6 +23,7 @@ import org.pegjs.java.generator.OP;
  * @author Mingun
  * @param <R> Тип результата разбора.
  */
+@Deprecated
 public abstract class AbstractParser<R> implements IParser<R> {
     //<editor-fold defaultstate="collapsed" desc="Поля и константы">
     /** Специальный singleton-объект, сигнализирующий о неуспешности разбора правила. */
@@ -36,12 +36,11 @@ public abstract class AbstractParser<R> implements IParser<R> {
     protected int peg$reportedPos;
     protected int peg$silentFails;
 
-    private int cachedPos;
-    private Pos cachedPosDetails;
-    private int maxFailPos;
+    /** Позиция, обновляемая каждый раз, как требуется информация о строке или столбце. */
+    private final Pos cachedPosDetails = new Pos();
 
-    /** Список имен правил или символов, которые могут ожидаться при разборе правила. */
-    private final List<Error> maxFailExpected = new ArrayList<Error>();
+    private final Expected expected = new Expected();
+
     /** Список возможных стартовых правил. */
     private final List<String> startRuleFunctions;
     //</editor-fold>
@@ -57,17 +56,6 @@ public abstract class AbstractParser<R> implements IParser<R> {
         private int offset = 0;
         private boolean seenCR = false;
 
-        /*@Override
-        public boolean hasNext() { return input.length() < offset; }
-        @Override
-        public Pos next() {
-            next(input.charAt(offset));
-            return this;
-        }
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException("Cann't change sequence");
-        }*/
         public int line() { return line; }
         public int column() { return column; }
         public int offset() { return offset; }
@@ -88,16 +76,25 @@ public abstract class AbstractParser<R> implements IParser<R> {
                 seenCR = false;
             }
         }
-    }
-    protected final static class CacheEntry {
-        /** Позиция, где должен окончится разбор закешированного результата. */
-        public final int nextPos;
-        /** Результат разбора. */
-        public final Object result;
-
-        public CacheEntry(int nextPos, Object result) {
-            this.nextPos = nextPos;
-            this.result = result;
+        private void reset() {
+            line = 1;
+            column = 1;
+            offset = 0;
+            seenCR = false;
+        }
+        private void moveTo(CharSequence input, int pos) {
+            // Мы и так в требуемом месте, ничего делать не требуется.
+            if (offset == pos) return;
+            // Если текущая позиция после запрошенной позиции, то все надо начинать
+            // с начала.
+            if (offset > pos) {
+                reset();
+            }
+            for (int i = offset; i < pos; ++i) {
+                char ch = input.charAt(i);
+                next(ch);
+            }
+            offset = pos;
         }
     }
     //</editor-fold>
@@ -173,7 +170,7 @@ public abstract class AbstractParser<R> implements IParser<R> {
                 fail(new Error("end", null, "end of input"));
             }
 
-            throw buildSyntaxError(null, maxFailExpected, maxFailPos);
+            throw buildSyntaxError(null, expected.candidates, expected.pos);
         }
     }
     //</editor-fold>
@@ -200,13 +197,13 @@ public abstract class AbstractParser<R> implements IParser<R> {
     protected final boolean test(CharSequence seq) {
         final int end = this.peg$currPos + seq.length();
         if (input.length() <= end) return false;
-        return input.subSequence(this.peg$currPos, end).equals(seq);
+        return input.subSequence(this.peg$currPos, end).toString().contentEquals(seq);
     }
     /** Функция проверки соответствия для опкода {@linkplain OP#MATCH_STRING_IC}. */
     protected final boolean testi(CharSequence seq) {
         final int end = this.peg$currPos + seq.length();
         if (input.length() <= end) return false;
-        return input.subSequence(this.peg$currPos, end).toString().toLowerCase().equals(seq);
+        return input.subSequence(this.peg$currPos, end).toString().equalsIgnoreCase(seq.toString());
     }
     /** Функция проверки соответствия для опкода {@linkplain OP#MATCH_REGEXP}. */
     protected final boolean test(Pattern p) {
@@ -234,10 +231,8 @@ public abstract class AbstractParser<R> implements IParser<R> {
     private void clear() {
         peg$currPos = 0;
         peg$reportedPos = 0;
-        cachedPos = 0;
-        cachedPosDetails = new Pos();
-        maxFailPos = 0;
-        maxFailExpected.clear();
+        cachedPosDetails.reset();
+        expected.reset();
     }
     /**
      * Получает стартовое правило, с которого начать разбор.
@@ -257,18 +252,12 @@ public abstract class AbstractParser<R> implements IParser<R> {
         return "peg$parse"+defaultRule;
     }
     /**
-     * Добавляет указанную строку в список ожидаемых альтернатив.
+     * Добавляет указанную строку в список ожидаемых альтернатив для текущей
+     * позиции разбора.
      * @param expected
      */
     private void fail(Error expected) {
-        if (peg$currPos < maxFailPos) {
-            return;
-        }
-        if (peg$currPos > maxFailPos) {
-            maxFailPos = peg$currPos;
-            maxFailExpected.clear();
-        }
-        maxFailExpected.add(expected);
+        this.expected.add(peg$currPos, expected);
     }
     //</editor-fold>
     
@@ -278,44 +267,26 @@ public abstract class AbstractParser<R> implements IParser<R> {
      * @param pos Текущая позиция в разбираемом тексте.
      * @return 
      */
-    private final Pos computePosDetails(int pos) {
-        if (cachedPos != pos) {
-            if (cachedPos > pos) {
-                cachedPos = 0;
-                cachedPosDetails = new Pos();
-            }
-            advance(cachedPosDetails, cachedPos, pos);
-            cachedPos = pos;
-        }
+    private Pos computePosDetails(int pos) {
+        // Пододвигаем текущую позицию вперед в новое положение.
+        cachedPosDetails.moveTo(input, pos);
         return cachedPosDetails;
-    }
-    private void advance(Pos details, int startPos, int endPos) {
-        for (int i = startPos; i < endPos; ++i) {
-            char ch = input.charAt(i);
-            details.next(ch);
-        }
     }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Создание исключения синтаксической ошибки">
     /**
-     * Удаляет дубликаты из списка ожидаемых вариантов для разбора.
-     * @param expected Нормальзуемый список.
+     * 
+     * @param message
+     * @param expected
+     * @param pos Позиция, в которой возбуждается синтаксическая ошибка.
+     * @return 
      */
-    private void removeDublicates(List<Error> expected) {
-        final TreeSet<Error> set = new TreeSet<Error>(expected);
-        expected.clear();
-        expected.addAll(set);
-    }
     private SyntaxError buildSyntaxError(String message, List<Error> expected, int pos) {
         // Вычисляем строку и столбец.
         final Pos p = computePosDetails(pos);
         final Character found = pos < input.length() ? input.charAt(pos) : null;
 
-        if (expected != null) {
-            // Удаляем дубликаты из списка ожидаемых альтернатив.
-            removeDublicates(expected);
-        }
         return new SyntaxError(
             message, expected, found,
             pos, p.line, p.column
