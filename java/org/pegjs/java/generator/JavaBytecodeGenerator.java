@@ -19,6 +19,7 @@ import static org.objectweb.asm.Opcodes.V1_6;
 import org.objectweb.asm.Type;
 import org.pegjs.java.AbstractParser;
 import org.pegjs.java.IParser;
+import org.pegjs.java.Utils;
 import org.pegjs.java.annotations.Grammar;
 import org.pegjs.java.annotations.Rule;
 import org.pegjs.java.ast.GrammarNode;
@@ -260,8 +261,8 @@ final class JavaBytecodeGenerator implements Opcodes {
                 //<editor-fold defaultstate="collapsed" desc="Проверка условий">
                 case IF: {             // IF t, f
                     mv.visitVarInsn(ALOAD, stack.top());   // стек: [s?]
-                    mv.visitMethodInsn(INVOKESTATIC,        // стек: [r]
-                        className,
+                    mv.visitMethodInsn(INVOKESTATIC,       // стек: [r]
+                        Type.getInternalName(Utils.class),
                         "toBool", "(Ljava/lang/Object;)Z"
                     );
                     // toBool(s?) == (toBool(s?) != false) == !(toBool(s?) == false)
@@ -270,16 +271,20 @@ final class JavaBytecodeGenerator implements Opcodes {
                 }
                 case IF_ERROR: {       // IF_ERROR t, f
                     mv.visitVarInsn(ALOAD, stack.top());   // стек: [s?]
-                    mv.visitFieldInsn(GETSTATIC,            // стек: [s? NULL]
-                        className, "NULL", "Ljava/lang/Object;");
+                    mv.visitFieldInsn(GETSTATIC,           // стек: [s? NULL]
+                        Type.getInternalName(IParser.class),
+                        "NULL", "Ljava/lang/Object;"
+                    );
                     // (s? == NULL) == !(s? != NULL)
                     ip = compileCondition(IF_ACMPNE, bc, ip, 0, null);// стек: [], инвертированное условие к (s? == NULL)
                     break;
                 }
                 case IF_NOT_ERROR: {   // IF_NOT_ERROR t, f
                     mv.visitVarInsn(ALOAD, stack.top());   // стек: [s?]
-                    mv.visitFieldInsn(GETSTATIC,            // стек: [s? NULL]
-                        className, "NULL", "Ljava/lang/Object;");
+                    mv.visitFieldInsn(GETSTATIC,           // стек: [s? NULL]
+                        Type.getInternalName(IParser.class),
+                        "NULL", "Ljava/lang/Object;"
+                    );
                     // (s? != NULL) == !(s? == NULL)
                     ip = compileCondition(IF_ACMPEQ, bc, ip, 0, null);// стек: [], инвертированное условие к (s? != NULL)
                     break;
@@ -298,8 +303,10 @@ final class JavaBytecodeGenerator implements Opcodes {
                     final Label beginLoop = new Label();
                     mv.visitLabel(beginLoop);
                     mv.visitVarInsn(ALOAD, stack.top());   // стек: [s?]
-                    mv.visitFieldInsn(GETSTATIC,            // стек: [s? NULL]
-                        className, "NULL", "Ljava/lang/Object;");
+                    mv.visitFieldInsn(GETSTATIC,           // стек: [s? NULL]
+                        Type.getInternalName(IParser.class),
+                        "NULL", "Ljava/lang/Object;"
+                    );
                     // (s? != NULL) == !(s? == NULL)
                     ip = compileLoop(IF_ACMPEQ, bc, ip, beginLoop);// стек: [], инвертированное условие к (s? != NULL)
                     break;

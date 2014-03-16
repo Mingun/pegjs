@@ -88,7 +88,7 @@ final class GenerateVisitor implements Visitor<byte[], GenerateVisitor.Context> 
     }
     @Override
     public byte[] visit(ActionNode node, Context context) {
-        final Map<String, Integer> env = new HashMap<>();
+        final Map<String, Integer> env = new HashMap<String, Integer>();
         final boolean emitCall = !(node.expression instanceof SequenceNode) || ((SequenceNode)node.expression).elements.isEmpty();
         final byte[] expressionCode = node.expression.visit(this, new Context(
             context.sp + (emitCall ? 1 : 0),
@@ -99,12 +99,17 @@ final class GenerateVisitor implements Visitor<byte[], GenerateVisitor.Context> 
 
         return emitCall
             ? buildSequence(
+                // Запоминаем позицию перед началом разбора входа.
                 OP.PUSH_CURR_POS.a(),
+                // Разбираем вход.
                 expressionCode,
                 buildCondition(
                     OP.IF_NOT_ERROR.a(),
                     buildSequence(
+                        // Если разбор успешен, извлекаем сохраненную позицию,
+                        // чтобы действия имели доступ к позиции начала сопоставления.
                         OP.REPORT_SAVED_POS.a(1),
+                        // генерируем вызов кода действия.
                         buildCall(functionIndex, 1, env, context.sp + 2)
                     ),
                     null
@@ -117,6 +122,8 @@ final class GenerateVisitor implements Visitor<byte[], GenerateVisitor.Context> 
     public byte[] visit(SequenceNode node, Context context) {
         if (!node.elements.isEmpty()) {
             return buildSequence(
+                // Сохраняем текущую позицию начала разбора. Она приодится, если
+                // есть действия/предикаты.
                 OP.PUSH_CURR_POS.a(),
                 buildElementsCode(node, node.elements, new Context(
                     context.sp + 1,
@@ -125,6 +132,8 @@ final class GenerateVisitor implements Visitor<byte[], GenerateVisitor.Context> 
                 ))
             );
         } else {
+            // Если в последовательности ничего нет, сопоставление всегда успешно,
+            // и приводит к возврату пустого массива результатов.
             return OP.PUSH_EMPTY_ARRAY.a();
         }
     }
@@ -492,6 +501,8 @@ final class GenerateVisitor implements Visitor<byte[], GenerateVisitor.Context> 
                 final int functionIndex = ast.addAction(context.env, context.action.code);
 
                 return buildSequence(
+                    // Достаем сохраненную перед самым началом разбора позицию из
+                    // стека, делаем ее текущей позицией для действия.
                     OP.REPORT_SAVED_POS.a(node.elements.size()),
                     buildCall(
                         functionIndex,
@@ -502,6 +513,7 @@ final class GenerateVisitor implements Visitor<byte[], GenerateVisitor.Context> 
                     buildCondition(OP.IF_ERROR.a(), OP.NIP_CURR_POS.a(), OP.NIP.a())
                 );
             } else {
+                //TODO: снять ограничение на 256 элементов Sequence.
                 return buildSequence(OP.WRAP.v(), (byte)node.elements.size(), OP.NIP.v());
             }
         }

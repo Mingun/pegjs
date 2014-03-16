@@ -482,11 +482,6 @@ final class SourceCodeGenerator {
                   ip++;
                   break;
                 }
-                case BREAK: {          // BREAK endCodeBlock
-                  parts.add("break;");
-                  ip += 2;
-                  break;
-                }
                 default:
                   throw new PEGException("Unhandled opcode: " + op +" ("+bc[ip] + ").");
             }

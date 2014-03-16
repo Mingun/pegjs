@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
@@ -33,12 +32,17 @@ public abstract class AbstractParser<R> implements IParser<R> {
 
     /** Текущая позиция в строке. Активно используется генерируемыми методами разбора. */
     protected int peg$currPos;
+    /**
+     * Внутри действий/предикатов эта позиция является текущей, возвращаемой функцией
+     * {@link #offset()}, а также в этой позиции будут генерироваться пользовательские
+     * {@link #error(java.lang.String) ошибки}.
+     */
     protected int peg$reportedPos;
     protected int peg$silentFails;
 
     /** Позиция, обновляемая каждый раз, как требуется информация о строке или столбце. */
     private final Pos cachedPosDetails = new Pos();
-
+    /** Содержит список ожидаемых в указанной позиции вариантов разбора символа. */
     private final Expected expected = new Expected();
 
     /** Список возможных стартовых правил. */
@@ -212,13 +216,7 @@ public abstract class AbstractParser<R> implements IParser<R> {
         return p.matcher(String.valueOf(ch)).matches();
     }
     protected static boolean toBool(Object o) {
-        if (o instanceof Boolean) {
-            return ((Boolean)o).booleanValue();
-        }
-        if (o instanceof Number) {
-            return ((Number)o).intValue() != 0;
-        }
-        return o != null;
+        return Utils.toBool(o);
     }
     protected final void peg$mayBeFail(Error expected) {
         if (peg$silentFails == 0) {

@@ -82,4 +82,13 @@ public final class Utils {
     public static CharSequence asCharSequence(ByteBuffer content) {
         return new ByteBufferAsCharSequence(content);
     }
+    public static boolean toBool(Object o) {
+        if (o instanceof Boolean) {
+            return ((Boolean)o).booleanValue();
+        }
+        if (o instanceof Number) {
+            return ((Number)o).intValue() != 0;
+        }
+        return o != null;
+    }
 }
