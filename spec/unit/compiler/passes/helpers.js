@@ -4,6 +4,22 @@
 "use strict";
 
 beforeEach(function() {
+  function Err(message, location) {
+    this.message = message;
+    this.location = location;
+  }
+
+  var collector = {
+    emitFatalError: function(message, location) {
+      throw new Err(message, location);
+    },
+    emitError: function(message, location) {
+      throw new Err(message, location);
+    },
+    emitWarning: function() {},
+    emitInfo: function() {}
+  };
+
   this.addMatchers({
     toChangeAST: function(grammar) {
       function matchDetails(value, details) {
@@ -47,6 +63,7 @@ beforeEach(function() {
           details = arguments[arguments.length - 1],
           ast     = PEG.parser.parse(grammar);
 
+      options.collector = collector;
       this.actual(ast, options);
 
       this.message = function() {
@@ -65,7 +82,7 @@ beforeEach(function() {
       var ast = PEG.parser.parse(grammar);
 
       try {
-        this.actual(ast);
+        this.actual(ast, { collector: collector });
 
         this.message = function() {
           return "Expected the pass to report an error "
