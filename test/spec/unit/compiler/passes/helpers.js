@@ -2,6 +2,28 @@
 
 let parser = require("../../../../../lib/parser");
 
+class SingleError {
+  constructor(message, location) {
+    this.message = message;
+    this.location = location;
+  }
+}
+
+let collector = {
+  emitFatalError(message, location) {
+    throw new SingleError(message, location);
+  },
+  emitError(message, location) {
+    throw new SingleError(message, location);
+  },
+  emitWarning() {
+    // do not test warnings
+  },
+  emitInfo() {
+    // do not test info
+  }
+};
+
 module.exports = function(chai, utils) {
   let Assertion = chai.Assertion;
 
@@ -20,6 +42,7 @@ module.exports = function(chai, utils) {
         ? [ast.rules[0].name]
         : [];
     }
+    options.collector = collector;
     ast.rules = ast.rules.map(rule => Object.assign(rule, additionalRuleProps));
 
     utils.flag(this, "object")(ast, options);
@@ -37,6 +60,7 @@ module.exports = function(chai, utils) {
         ? [ast.rules[0].name]
         : [];
     }
+    options.collector = collector;
 
     let passed, result;
 
