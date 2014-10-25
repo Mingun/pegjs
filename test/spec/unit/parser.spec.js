@@ -31,6 +31,10 @@ describe("PEG.js grammar parser", function() {
     type: "sequence",
     elements: [literalAbcd, literalEfgh, literalIjkl]
   };
+  let sequence0         = {
+    type:     "sequence",
+    elements: []
+  };
   let sequence2         = {
     type: "sequence",
     elements: [labeledAbcd, labeledEfgh]
@@ -304,6 +308,9 @@ describe("PEG.js grammar parser", function() {
 
   // Canonical SequenceExpression is "'abcd' 'efgh' 'ijkl'".
   it("parses SequenceExpression", function() {
+    expect("start = ").to.parseAs(
+      oneRuleGrammar(sequence0)
+    );
     expect("start = a:'abcd'").to.parseAs(
       oneRuleGrammar(labeledAbcd)
     );

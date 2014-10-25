@@ -158,14 +158,16 @@ ActionExpression
     }
 
 SequenceExpression
-  = head:LabeledExpression tail:(__ LabeledExpression)* {
-      return tail.length > 0
-        ? {
-            type: "sequence",
-            elements: buildList(head, tail, 1),
-            location: location()
-          }
-        : head;
+  = head:LabeledExpression? tail:(__ LabeledExpression)* {
+      return head === null
+        ? { type: "sequence", elements: [], location: location() }
+        : tail.length > 0
+          ? {
+              type: "sequence",
+              elements: buildList(head, tail, 1),
+              location: location()
+            }
+          : head;
     }
 
 LabeledExpression
