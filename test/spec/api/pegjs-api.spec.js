@@ -4,6 +4,8 @@ let chai = require("chai");
 let peg = require("../../../lib/peg");
 let sinon = require("sinon");
 
+chai.use(require("chai-like"));
+
 let expect = chai.expect;
 
 describe("PEG.js API", function() {
@@ -189,6 +191,32 @@ describe("PEG.js API", function() {
 
           expect(source).to.be.a("string");
           expect(eval(source).parse("a")).to.equal("a");
+        });
+      });
+
+      describe("when |output| is set to |\"ast\"|", function() {
+        it("returns generated parser AST", function() {
+          let ast = peg.generate(grammar, { output: "ast" });
+
+          expect(ast).to.be.an("object");
+          expect(ast).to.be.like(peg.parser.parse(grammar));
+        });
+      });
+
+      describe("when |output| is set to array of outputs", function() {
+        it("returns object with keys of array", function() {
+          let result = peg.generate(grammar, { output: ["parser", "source", "ast"] });
+
+          expect(result).to.be.an("object").that.have.all.keys("parser", "source", "ast");
+
+          expect(result.parser).to.be.an("object");
+          expect(result.parser.parse("a")).to.equal("a");
+
+          expect(result.source).to.be.a("string");
+          expect(eval(result.source).parse("a")).to.equal("a");
+
+          expect(result.ast).to.be.an("object");
+          expect(result.ast).to.be.like(peg.parser.parse(grammar));
         });
       });
     });
