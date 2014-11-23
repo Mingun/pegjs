@@ -319,6 +319,41 @@ describe("PEG.js grammar parser", function() {
     );
   });
 
+  // Canonical Import is "#alias = 'path'".
+  it("parses Import", function() {
+    expect("#alias = \"path/to/grammar\";start = 'abcd'").to.parseAs({
+      type: "grammar",
+      comments: {},
+      imports: [{ type: "import", alias: "alias", path: "path/to/grammar" }],
+      initializer: null,
+      rules: [ruleStart]
+    });
+    expect("#alias = 'path/to/grammar';start = 'abcd'").to.parseAs({
+      type: "grammar",
+      comments: {},
+      imports: [{ type: "import", alias: "alias", path: "path/to/grammar" }],
+      initializer: null,
+      rules: [ruleStart]
+    });
+    expect("#alias1 = 'path/to/grammar1'\n#alias2='path/to/grammar2'\nstart = 'abcd'").to.parseAs({
+      type: "grammar",
+      comments: {},
+      imports: [
+        { type: "import", alias: "alias1", path: "path/to/grammar1" },
+        { type: "import", alias: "alias2", path: "path/to/grammar2" }
+      ],
+      initializer: null,
+      rules: [ruleStart]
+    });
+    expect("#alias = 'path/to/grammar';{ code };start = 'abcd'").to.parseAs({
+      type: "grammar",
+      comments: {},
+      imports: [{ type: "import", alias: "alias", path: "path/to/grammar" }],
+      initializer: initializer,
+      rules: [ruleStart]
+    });
+  });
+
   // Canonical Initializer is "{ code }".
   it("parses Initializer", function() {
     expect("{ code };start = 'abcd'").to.parseAs(
@@ -624,11 +659,22 @@ describe("PEG.js grammar parser", function() {
   });
 
   // Canonical RuleReferenceExpression is "a".
-  it("parses RuleReferenceExpression", function() {
-    expect("start = a").to.parseAs(ruleRefGrammar("a"));
+  describe("parses RuleReferenceExpression", function() {
+    it("refer to rule defined in this grammar", function() {
+      expect("start = a").to.parseAs(ruleRefGrammar("a"));
 
-    expect("start = a\n=").to.failToParse();
-    expect("start = a\n'abcd'\n=").to.failToParse();
+      expect("start = a\n=").to.failToParse();
+      expect("start = a\n'abcd'\n=").to.failToParse();
+    });
+
+    it("refer to rule imported from other grammar", function() {
+      expect("start = #alias").to.parseAs(oneRuleGrammar({ type: "rule_ref", namespace: "alias", name: null }));
+      expect("start = #\nalias").to.failToParse();
+      expect("start = #alias:").to.failToParse();
+      expect("start = #alias:a").to.parseAs(oneRuleGrammar({ type: "rule_ref", namespace: "alias", name: "a" }));
+      expect("start = #alias\n:a").to.failToParse();
+      expect("start = #alias:\na").to.failToParse();
+    });
   });
 
   // Canonical SemanticPredicateExpression is "!{ code }".
