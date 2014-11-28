@@ -91,6 +91,10 @@
     comments[loc.start.offset] = comment;
     return comment;
   }
+
+  /// Namespace for all code in grammar.
+  /// Use non-strong check for |null|, because it filter |undefined|, but not empty string
+  let namespace = options.defaultNamespace != null ? options.defaultNamespace : null;
 }
 
 // ---- Syntactic Grammar -----
@@ -99,7 +103,7 @@ Grammar
   = __ initializer:(@Initializer __)? rules:(@Rule __)+ {
       return {
         type: "grammar",
-        initializer: initializer,
+        initializers: initializer ? [initializer] : [],
         rules: rules,
         comments: comments,
         location: location()
@@ -111,6 +115,7 @@ Initializer
       return {
         type: "initializer",
         attributes: code[0],
+        namespace: namespace,
         code: code[1],
         location: location()
       };
@@ -176,6 +181,7 @@ ActionExpression
             type: "action",
             attributes: code[0],
             expression: expression,
+            namespace: namespace,
             code: code[1],
             location: location()
           }
@@ -314,6 +320,7 @@ SemanticPredicateExpression
       return {
         type: OPS_TO_SEMANTIC_PREDICATE_TYPES[operator],
         attributes: code[0],
+        namespace: namespace,
         code: code[1],
         location: location()
       };

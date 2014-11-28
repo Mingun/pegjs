@@ -13,8 +13,8 @@ describe("PEG.js grammar parser", function() {
   let literalEfgh       = { type: "literal",      value: "efgh", ignoreCase: false };
   let literalIjkl       = { type: "literal",      value: "ijkl", ignoreCase: false };
   let literalMnop       = { type: "literal",      value: "mnop", ignoreCase: false };
-  let semanticAnd       = { type: "semantic_and", attributes: [], code: " code " };
-  let semanticNot       = { type: "semantic_not", attributes: [], code: " code " };
+  let semanticAnd       = { type: "semantic_and", attributes: [], namespace: null, code: " code " };
+  let semanticNot       = { type: "semantic_not", attributes: [], namespace: null, code: " code " };
   let optional          = { type: "optional",     expression: literalAbcd };
   let zeroOrMore        = { type: "zero_or_more", expression: literalAbcd };
   let oneOrMore         = { type: "one_or_more",  expression: literalAbcd };
@@ -45,11 +45,11 @@ describe("PEG.js grammar parser", function() {
   };
   let groupLabeled      = { type: "group",  expression: labeledAbcd };
   let groupSequence     = { type: "group",  expression: sequence    };
-  let actionAbcd        = { type: "action", expression: literalAbcd, attributes: [], code: " code " };
-  let actionEfgh        = { type: "action", expression: literalEfgh, attributes: [], code: " code " };
-  let actionIjkl        = { type: "action", expression: literalIjkl, attributes: [], code: " code " };
-  let actionMnop        = { type: "action", expression: literalMnop, attributes: [], code: " code " };
-  let actionSequence    = { type: "action", expression: sequence,    attributes: [], code: " code " };
+  let actionAbcd        = { type: "action", expression: literalAbcd, attributes: [], namespace: null, code: " code " };
+  let actionEfgh        = { type: "action", expression: literalEfgh, attributes: [], namespace: null, code: " code " };
+  let actionIjkl        = { type: "action", expression: literalIjkl, attributes: [], namespace: null, code: " code " };
+  let actionMnop        = { type: "action", expression: literalMnop, attributes: [], namespace: null, code: " code " };
+  let actionSequence    = { type: "action", expression: sequence,    attributes: [], namespace: null, code: " code " };
   let choice            = {
     type: "choice",
     alternatives: [literalAbcd, literalEfgh, literalIjkl]
@@ -67,7 +67,7 @@ describe("PEG.js grammar parser", function() {
   let ruleB             = { type: "rule",        name: "b",          expression: literalEfgh, attributes: [] };
   let ruleC             = { type: "rule",        name: "c",          expression: literalIjkl, attributes: [] };
   let ruleStart         = { type: "rule",        name: "start",      expression: literalAbcd, attributes: [] };
-  let initializer       = { type: "initializer", attributes: [],     code: " code " };
+  let initializer       = { type: "initializer", attributes: [], namespace: null, code: " code " };
 
   function attributed(expression, names) {
     expression.attributes = names ? names.map(function(name) {
@@ -80,7 +80,7 @@ describe("PEG.js grammar parser", function() {
   function oneRuleGrammar(expression, ruleAttributes) {
     return {
       type: "grammar",
-      initializer: null,
+      initializers: [],
       comments: {},
       rules: [attributed({ type: "rule", name: "start", expression: expression }, ruleAttributes)]
     };
@@ -88,7 +88,7 @@ describe("PEG.js grammar parser", function() {
 
   function actionGrammar(code, actionAttributes) {
     return oneRuleGrammar(
-      attributed({ type: "action", expression: literalAbcd, code: code }, actionAttributes)
+      attributed({ type: "action", expression: literalAbcd, namespace: null, code: code }, actionAttributes)
     );
   }
 
@@ -143,7 +143,7 @@ describe("PEG.js grammar parser", function() {
   let trivialGrammar = literalGrammar("abcd", false);
   let twoRuleGrammar = {
     type: "grammar",
-    initializer: null,
+    initializers: [],
     comments: {},
     rules: [ruleA, ruleB]
   };
@@ -181,8 +181,8 @@ describe("PEG.js grammar parser", function() {
       grammar(node) {
         delete node.location;
 
-        if (node.initializer) {
-          strip(node.initializer);
+        if (node.initializers) {
+          node.initializers.forEach(strip);
         }
 
         Object.keys(node.comments).forEach(k => stripLeaf(node.comments[k]));
@@ -288,12 +288,8 @@ describe("PEG.js grammar parser", function() {
   it("parses Rule+", function() {
     expect("start = a").to.parseAs(ruleRefGrammar("a"));
     let grammar = ruleRefGrammar("a");
-    grammar.initializer = {
-      type: "initializer",
-      attributes: [],
-      code: ""
-    };
-    expect("{}\nstart = a").to.parseAs(grammar);
+    grammar.initializers = [initializer];
+    expect("{ code }\nstart = a").to.parseAs(grammar);
 
     expect("").to.failToParse();
     expect("{}").to.failToParse();
@@ -302,20 +298,20 @@ describe("PEG.js grammar parser", function() {
   // Canonical Grammar is "a = 'abcd'; b = 'efgh'; c = 'ijkl';".
   it("parses Grammar", function() {
     expect("\na = 'abcd';\n").to.parseAs(
-      { type: "grammar", initializer: null, comments: {}, rules: [ruleA] }
+      { type: "grammar", initializers: [], comments: {}, rules: [ruleA] }
     );
     expect("\na = 'abcd';\nb = 'efgh';\nc = 'ijkl';\n").to.parseAs(
-      { type: "grammar", initializer: null, comments: {}, rules: [ruleA, ruleB, ruleC] }
+      { type: "grammar", initializers: [], comments: {}, rules: [ruleA, ruleB, ruleC] }
     );
     expect("\n{ code };\na = 'abcd';\n").to.parseAs(
-      { type: "grammar", initializer: initializer, comments: {}, rules: [ruleA] }
+      { type: "grammar", initializers: [initializer], comments: {}, rules: [ruleA] }
     );
   });
 
   // Canonical Initializer is "{ code }".
   it("parses Initializer", function() {
     expect("{ code };start = 'abcd'").to.parseAs(
-      { type: "grammar", initializer: initializer, comments: {}, rules: [ruleStart] }
+      { type: "grammar", initializers: [initializer], comments: {}, rules: [ruleStart] }
     );
   });
 
@@ -945,17 +941,17 @@ describe("PEG.js grammar parser", function() {
 
     it("for CodeBlock", function() {
       expect("#[A]{ code };start = 'abcd'").to.parseAs(
-        { type: "grammar", comments: {}, initializer: attributed(initializer, ["A"]), rules: [ruleStart] }
+        { type: "grammar", comments: {}, initializers: [attributed(initializer, ["A"])], rules: [ruleStart] }
       );
       expect("#[A()]{ code };start = 'abcd'").to.parseAs(
-        { type: "grammar", comments: {}, initializer: attributed(initializer, ["A"]), rules: [ruleStart] }
+        { type: "grammar", comments: {}, initializers: [attributed(initializer, ["A"])], rules: [ruleStart] }
       );
 
       expect("#[A]#[B]{ code };start = 'abcd'").to.parseAs(
-        { type: "grammar", comments: {}, initializer: attributed(initializer, ["A", "B"]), rules: [ruleStart] }
+        { type: "grammar", comments: {}, initializers: [attributed(initializer, ["A", "B"])], rules: [ruleStart] }
       );
       expect("#[A()]#[B]{ code };start = 'abcd'").to.parseAs(
-        { type: "grammar", comments: {}, initializer: attributed(initializer, ["A", "B"]), rules: [ruleStart] }
+        { type: "grammar", comments: {}, initializers: [attributed(initializer, ["A", "B"])], rules: [ruleStart] }
       );
 
       expect("start = 'abcd'#[A]{ code }").to.parseAs(actionGrammar(" code ", ["A"]));
