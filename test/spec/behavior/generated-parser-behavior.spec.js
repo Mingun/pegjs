@@ -124,6 +124,64 @@ describe("generated parser behavior", function() {
           expect(parser).to.parse("a", { a: 42 }, { a: 42 });
         });
       });
+
+      describe("can be split to namespaces", function() {
+        function values(object) {
+          let result = [];
+
+          Object.keys(object).forEach(key => {
+            result.push(object[key]);
+          });
+
+          return result;
+        }
+        function convertPasses(passes) {
+          let converted = {};
+
+          Object.keys(passes).forEach(stage => {
+            converted[stage] = values(passes[stage]);
+          });
+
+          return converted;
+        }
+        function rule(name, namespace) {
+          return {
+            type: "rule",
+            name: name,
+            expression: {
+              type: "action",
+              expression: { type: "any" },
+              namespace: namespace,
+              code: "return result;"
+            }
+          };
+        }
+        let ast = {
+          type: "grammar",
+          initializers: [
+            { type: "initializer", namespace: null, code: "var result = 41;" },
+            { type: "initializer", namespace: "a",  code: "var result = 42;" },
+            { type: "initializer", namespace: "b",  code: "var result = 43;" }
+          ],
+          rules: [
+            rule("default", null),
+            rule("a", "a"),
+            rule("b", "b")
+          ]
+        };
+        let opts = Object.assign({}, options);
+        opts.allowedStartRules = ["default", "a", "b"];
+
+        let parser = peg.compiler.compile(
+          ast, convertPasses(peg.compiler.passes), opts
+        );
+
+        it("use distinct variables", function() {
+          expect(parser).to.parse("x", 41, { startRule: "default" });
+          expect(parser).to.parse("x", 42, { startRule: "a"       });
+          expect(parser).to.parse("x", 43, { startRule: "b"       });
+        });
+      });
     });
 
     describe("rule", function() {
