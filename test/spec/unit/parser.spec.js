@@ -105,8 +105,8 @@ describe("PEG.js grammar parser", function() {
   function rangeGrammar(min, max) {
     return oneRuleGrammar({
       type: "range",
-      min: min,
-      max: max,
+      min: { constant: true, value: min },
+      max: { constant: true, value: max },
       expression: literalAbcd
     });
   }
@@ -166,7 +166,12 @@ describe("PEG.js grammar parser", function() {
       optional: stripExpression,
       zero_or_more: stripExpression,
       one_or_more: stripExpression,
-      range: stripExpression,
+      range(node) {
+        delete node.max.location;
+        delete node.min.location;
+
+        stripExpression(node);
+      },
       group: stripExpression,
       semantic_and: stripLeaf,
       semantic_not: stripLeaf,
