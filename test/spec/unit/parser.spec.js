@@ -107,7 +107,8 @@ describe("PEG.js grammar parser", function() {
       type: "range",
       min: { constant: !(typeof min === "string"), value: min },
       max: { constant: !(typeof max === "string"), value: max },
-      expression: literalAbcd
+      expression: literalAbcd,
+      delimiter: null
     });
   }
 

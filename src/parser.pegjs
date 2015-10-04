@@ -226,16 +226,20 @@ RangeExpression
         min:        min,
         max:        max,
         expression: expression,
+        delimiter:  operator[2],
         location:   location()
       };
     }
 
 RangeOperator
-  = "|" __ exact:RangeBoundary __ "|" { return [exact, exact]; }
-  / "|" __ min:RangeBoundary? __ ".." __ max:RangeBoundary? __ "|" {
+  = "|" __ exact:RangeBoundary __ delimiter:("," __ Expression __)? "|" {
+      return [exact, exact, extractOptional(delimiter, 2)];
+    }
+  / "|" __ min:RangeBoundary? __ ".." __ max:RangeBoundary? __ delimiter:("," __ Expression __)? "|" {
     return [
       min !== null ? min : { constant: true, value: 0 },
-      max !== null ? max : { constant: true, value: null }
+      max !== null ? max : { constant: true, value: null },
+      extractOptional(delimiter, 2)
     ];
   }
 
