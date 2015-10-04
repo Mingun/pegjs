@@ -29,40 +29,56 @@ describe("compiler pass |reportInfiniteRepetition|", function() {
     });
   });
 
-  it("reports infinite loops for range", function() {
-    expect(pass).to.reportError("start = ('')|..|", {
-      message:  "Possible infinite loop when parsing (unbounded range repetition used with an expression that may not consume any input).",
-      location: {
-        start: { offset:  8, line: 1, column:  9 },
-        end:   { offset: 16, line: 1, column: 17 }
-      }
-    });
-    expect(pass).to.reportError("start = ('')|0..|", {
-      message:  "Possible infinite loop when parsing (unbounded range repetition used with an expression that may not consume any input).",
-      location: {
-        start: { offset:  8, line: 1, column:  9 },
-        end:   { offset: 17, line: 1, column: 18 }
-      }
-    });
-    expect(pass).to.reportError("start = ('')|1..|", {
-      message:  "Possible infinite loop when parsing (unbounded range repetition used with an expression that may not consume any input).",
-      location: {
-        start: { offset:  8, line: 1, column:  9 },
-        end:   { offset: 17, line: 1, column: 18 }
-      }
-    });
-    expect(pass).to.reportError("start = ('')|2..|", {
-      message:  "Possible infinite loop when parsing (unbounded range repetition used with an expression that may not consume any input).",
-      location: {
-        start: { offset:  8, line: 1, column:  9 },
-        end:   { offset: 17, line: 1, column: 18 }
-      }
+  describe("reports infinite loops for range", function() {
+    it("with constant boundaries", function() {
+      expect(pass).to.reportError("start = ('')|..|", {
+        message:  "Possible infinite loop when parsing (unbounded range repetition used with an expression that may not consume any input).",
+        location: {
+          start: { offset:  8, line: 1, column:  9 },
+          end:   { offset: 16, line: 1, column: 17 }
+        }
+      });
+      expect(pass).to.reportError("start = ('')|0..|", {
+        message:  "Possible infinite loop when parsing (unbounded range repetition used with an expression that may not consume any input).",
+        location: {
+          start: { offset:  8, line: 1, column:  9 },
+          end:   { offset: 17, line: 1, column: 18 }
+        }
+      });
+      expect(pass).to.reportError("start = ('')|1..|", {
+        message:  "Possible infinite loop when parsing (unbounded range repetition used with an expression that may not consume any input).",
+        location: {
+          start: { offset:  8, line: 1, column:  9 },
+          end:   { offset: 17, line: 1, column: 18 }
+        }
+      });
+      expect(pass).to.reportError("start = ('')|2..|", {
+        message:  "Possible infinite loop when parsing (unbounded range repetition used with an expression that may not consume any input).",
+        location: {
+          start: { offset:  8, line: 1, column:  9 },
+          end:   { offset: 17, line: 1, column: 18 }
+        }
+      });
+
+      expect(pass).to.not.reportError("start = ('')| ..1|");
+      expect(pass).to.not.reportError("start = ('')| ..3|");
+      expect(pass).to.not.reportError("start = ('')|2..3|");
+      expect(pass).to.not.reportError("start = ('')| 42 |");
     });
 
-    expect(pass).to.not.reportError("start = ('')| ..1|");
-    expect(pass).to.not.reportError("start = ('')| ..3|");
-    expect(pass).to.not.reportError("start = ('')|2..3|");
-    expect(pass).to.not.reportError("start = ('')| 42 |");
+    it("with variable boundaries", function() {
+      expect(pass).to.reportError("start = ('')|len..|", {
+        message:  "Possible infinite loop when parsing (unbounded range repetition used with an expression that may not consume any input).",
+        location: {
+          start: { offset:  8, line: 1, column:  9 },
+          end:   { offset: 19, line: 1, column: 20 }
+        }
+      });
+
+      expect(pass).to.not.reportError("start = ('')|..len|");
+      expect(pass).to.not.reportError("start = ('')|len1..len2|");
+      expect(pass).to.not.reportError("start = ('')|len|");
+    });
   });
 
   it("computes expressions that always consume input on success correctly", function() {

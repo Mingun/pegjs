@@ -105,8 +105,8 @@ describe("PEG.js grammar parser", function() {
   function rangeGrammar(min, max) {
     return oneRuleGrammar({
       type: "range",
-      min: { constant: true, value: min },
-      max: { constant: true, value: max },
+      min: { constant: !(typeof min === "string"), value: min },
+      max: { constant: !(typeof max === "string"), value: max },
       expression: literalAbcd
     });
   }
@@ -376,38 +376,87 @@ describe("PEG.js grammar parser", function() {
   });
 
   // Canonical RangeExpression is "'abcd'|2..3|".
-  it("parses RangeExpression", function() {
-    let grammar = rangeGrammar(2, 3);
-    expect("start = 'abcd'|2..3|"  ).to.parseAs(grammar);
-    expect("start = 'abcd'\n|2..3|").to.parseAs(grammar);
-    expect("start = 'abcd'|\n2..3|").to.parseAs(grammar);
-    expect("start = 'abcd'|2\n..3|").to.parseAs(grammar);
-    expect("start = 'abcd'|2..\n3|").to.parseAs(grammar);
-    expect("start = 'abcd'|2..3\n|").to.parseAs(grammar);
+  describe("parses RangeExpression", function() {
+    it("with constant boundaries", function() {
+      let grammar = rangeGrammar(2, 3);
+      expect("start = 'abcd'|2..3|"  ).to.parseAs(grammar);
+      expect("start = 'abcd'\n|2..3|").to.parseAs(grammar);
+      expect("start = 'abcd'|\n2..3|").to.parseAs(grammar);
+      expect("start = 'abcd'|2\n..3|").to.parseAs(grammar);
+      expect("start = 'abcd'|2..\n3|").to.parseAs(grammar);
+      expect("start = 'abcd'|2..3\n|").to.parseAs(grammar);
 
-    grammar = rangeGrammar(3, 3);
-    expect("start = 'abcd'\n|3|").to.parseAs(grammar);
-    expect("start = 'abcd'|\n3|").to.parseAs(grammar);
-    expect("start = 'abcd'|3\n|").to.parseAs(grammar);
+      grammar = rangeGrammar(3, 3);
+      expect("start = 'abcd'\n|3|").to.parseAs(grammar);
+      expect("start = 'abcd'|\n3|").to.parseAs(grammar);
+      expect("start = 'abcd'|3\n|").to.parseAs(grammar);
+    });
+
+    it("with variable boundaries", function() {
+      let grammar = rangeGrammar("min", "max");
+      expect("start = 'abcd'|min..max|"  ).to.parseAs(grammar);
+      expect("start = 'abcd'\n|min..max|").to.parseAs(grammar);
+      expect("start = 'abcd'|\nmin..max|").to.parseAs(grammar);
+      expect("start = 'abcd'|min\n..max|").to.parseAs(grammar);
+      expect("start = 'abcd'|min..\nmax|").to.parseAs(grammar);
+      expect("start = 'abcd'|min..max\n|").to.parseAs(grammar);
+
+      grammar = rangeGrammar("exact", "exact");
+      expect("start = 'abcd'\n|exact|").to.parseAs(grammar);
+      expect("start = 'abcd'|\nexact|").to.parseAs(grammar);
+      expect("start = 'abcd'|exact\n|").to.parseAs(grammar);
+    });
+
+    it("with mixed boundaries", function() {
+      let grammar = rangeGrammar(2, "max");
+      expect("start = 'abcd'|2..max|"  ).to.parseAs(grammar);
+      expect("start = 'abcd'\n|2..max|").to.parseAs(grammar);
+      expect("start = 'abcd'|\n2..max|").to.parseAs(grammar);
+      expect("start = 'abcd'|2\n..max|").to.parseAs(grammar);
+      expect("start = 'abcd'|2..\nmax|").to.parseAs(grammar);
+      expect("start = 'abcd'|2..max\n|").to.parseAs(grammar);
+
+      grammar = rangeGrammar("min", 3);
+      expect("start = 'abcd'|min..3|"  ).to.parseAs(grammar);
+      expect("start = 'abcd'\n|min..3|").to.parseAs(grammar);
+      expect("start = 'abcd'|\nmin..3|").to.parseAs(grammar);
+      expect("start = 'abcd'|min\n..3|").to.parseAs(grammar);
+      expect("start = 'abcd'|min..\n3|").to.parseAs(grammar);
+      expect("start = 'abcd'|min..3\n|").to.parseAs(grammar);
+    });
   });
 
   // Canonical RangeOperator is "|2..3|".
-  it("parses RangeOperator", function() {
-    expect("start = 'abcd'| .. |").to.parseAs(rangeGrammar(0, null));
-    expect("start = 'abcd'|0.. |").to.parseAs(rangeGrammar(0, null));
-    expect("start = 'abcd'|1.. |").to.parseAs(rangeGrammar(1, null));
-    expect("start = 'abcd'|2.. |").to.parseAs(rangeGrammar(2, null));
+  describe("parses RangeOperator", function() {
+    it("with constant boundaries", function() {
+      expect("start = 'abcd'| .. |").to.parseAs(rangeGrammar(0, null));
+      expect("start = 'abcd'|0.. |").to.parseAs(rangeGrammar(0, null));
+      expect("start = 'abcd'|1.. |").to.parseAs(rangeGrammar(1, null));
+      expect("start = 'abcd'|2.. |").to.parseAs(rangeGrammar(2, null));
 
-    expect("start = 'abcd'| ..1|").to.parseAs(rangeGrammar(0, 1));
-    expect("start = 'abcd'| ..2|").to.parseAs(rangeGrammar(0, 2));
+      expect("start = 'abcd'| ..1|").to.parseAs(rangeGrammar(0, 1));
+      expect("start = 'abcd'| ..2|").to.parseAs(rangeGrammar(0, 2));
 
-    expect("start = 'abcd'|2..2|").to.parseAs(rangeGrammar(2, 2));
-    expect("start = 'abcd'|2..3|").to.parseAs(rangeGrammar(2, 3));
-    expect("start = 'abcd'|3|"   ).to.parseAs(rangeGrammar(3, 3));
+      expect("start = 'abcd'|2..2|").to.parseAs(rangeGrammar(2, 2));
+      expect("start = 'abcd'|2..3|").to.parseAs(rangeGrammar(2, 3));
+      expect("start = 'abcd'|3|").to.parseAs(rangeGrammar(3, 3));
 
-    expect("start = 'abcd'| ..0|").to.failToParse();
-    expect("start = 'abcd'|0..0|").to.failToParse();
-    expect("start = 'abcd'|0|"   ).to.failToParse();
+      expect("start = 'abcd'| ..0|").to.failToParse();
+      expect("start = 'abcd'|0..0|").to.failToParse();
+      expect("start = 'abcd'|0|").to.failToParse();
+    });
+
+    it("with variable boundaries", function() {
+      expect("start = 'abcd'|min..   |").to.parseAs(rangeGrammar("min", null));
+      expect("start = 'abcd'|   ..max|").to.parseAs(rangeGrammar(0, "max"));
+      expect("start = 'abcd'|min..max|").to.parseAs(rangeGrammar("min", "max"));
+      expect("start = 'abcd'|exact|"   ).to.parseAs(rangeGrammar("exact", "exact"));
+    });
+
+    it("with mixed boundaries", function() {
+      expect("start = 'abcd'|2..max|"  ).to.parseAs(rangeGrammar(2, "max"));
+      expect("start = 'abcd'|min..3|"  ).to.parseAs(rangeGrammar("min", 3));
+    });
   });
 
   // Canonical RuleReferenceExpression is "a".
