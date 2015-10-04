@@ -11,7 +11,7 @@ This fork now develops independently as the initial library is in stagnation and
 any signs that in the next years it will be able to quit this period :(. In contrast work in this fork
 really is carried. Planned features to implement in the 2018:
 
-* [ ] [Ranges](https://github.com/pegjs/pegjs/issues/30)
+* [x] [Ranges](https://github.com/pegjs/pegjs/issues/30)
 * [ ] [Import grammars](https://github.com/pegjs/pegjs/issues/38)
 * [ ] [Annotations](https://github.com/pegjs/pegjs/issues/256)
 * [ ] [Stream/incremental parser](https://github.com/pegjs/pegjs/issues/507)
@@ -395,6 +395,22 @@ backtracking.
 Try to match the expression. If the match succeeds, return its match result,
 otherwise return `null`. Unlike in regular expressions, there is no
 backtracking.
+
+#### *expression* |count|<br> *expression* |min..max|
+
+Match exact `count` repetitions of `expression`. If the match succeeds, return
+their match results in an array.
+
+-or-
+
+Match expression at least `min` but not more then `max` times. If the match
+succeeds, return their match results in an array. Both `min` and `max` may
+be omitted. If `min` is omitted, then it is assumed to be `0`. If `max` is
+omitted, then it is assumed to be infinity. Hence `expression |..|` is an
+equivalent of `expression |0..|` and `expression *`. `expression |1..|` is
+equivalent of `expression +`.
+
+`count`, `min` and `max` must be positive integers.
 
 #### & *expression*
 

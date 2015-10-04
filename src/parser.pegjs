@@ -206,12 +206,41 @@ SuffixedExpression
         location: location()
       };
     }
+  / RangeExpression
   / PrimaryExpression
 
 SuffixedOperator
   = "?"
   / "*"
   / "+"
+
+RangeExpression
+  = expression:PrimaryExpression __ operator:RangeOperator {
+      let min = operator[0];
+      let max = operator[1];
+      if (max.value === 0) {
+        error("The maximum count of repetitions of the rule must be > 0.", max.location);
+      }
+      return {
+        type:       "range",
+        min:        min,
+        max:        max.value,
+        expression: expression,
+        location:   location()
+      };
+    }
+
+RangeOperator
+  = "|" __ exact:RangeBoundary __ "|" { return [exact.value, exact]; }
+  / "|" __ min:Int? __ ".." __ max:RangeBoundary? __ "|" {
+    return [
+      min !== null ? min : 0,
+      max !== null ? max : { value: null }
+    ];
+  }
+
+RangeBoundary
+  = value:Int { return { value: value, location: location() }; }
 
 PrimaryExpression
   = LiteralMatcher
@@ -436,6 +465,9 @@ CodeBlock "code block"
 
 Code
   = $((![{}] SourceCharacter)+ / "{" Code "}")*
+
+Int
+  = digits:$DecimalDigit+ { return parseInt(digits); }
 
 // Unicode Character Categories
 //
