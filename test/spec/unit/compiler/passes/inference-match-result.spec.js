@@ -109,68 +109,232 @@ describe("compiler pass |inferenceMatchResult|", function() {
   });
 
   describe("calculate |match| property for |range|", function() {
-    describe("with constant boundaries", function() {
-      it("for | .. | correctly", function() {
-        expect(pass).to.changeAST("start =  .| .. |", { rules: [{ match:  1 }] });
-        expect(pass).to.changeAST("start = ''| .. |", { rules: [{ match:  1 }] });
-        expect(pass).to.changeAST("start = []| .. |", { rules: [{ match:  1 }] });
+    describe("without delimiters", function() {
+      describe("with constant boundaries", function() {
+        it("for | .. | correctly", function() {
+          expect(pass).to.changeAST("start =  .| .. |", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start = ''| .. |", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start = []| .. |", { rules: [{ match:  1 }] });
+        });
+        it("for | ..1| correctly", function() {
+          expect(pass).to.changeAST("start =  .| ..1|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start = ''| ..1|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start = []| ..1|", { rules: [{ match:  1 }] });
+        });
+        it("for | ..3| correctly", function() {
+          expect(pass).to.changeAST("start =  .| ..3|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start = ''| ..3|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start = []| ..3|", { rules: [{ match:  1 }] });
+        });
+        it("for |0.. | correctly", function() {
+          expect(pass).to.changeAST("start =  .|0.. |", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start = ''|0.. |", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start = []|0.. |", { rules: [{ match:  1 }] });
+        });
+        it("for |1.. | correctly", function() {
+          expect(pass).to.changeAST("start =  .|1.. |", { rules: [{ match:  0 }] });
+          expect(pass).to.changeAST("start = ''|1.. |", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start = []|1.. |", { rules: [{ match: -1 }] });
+        });
+        it("for |2.. | correctly", function() {
+          expect(pass).to.changeAST("start =  .|2.. |", { rules: [{ match:  0 }] });
+          expect(pass).to.changeAST("start = ''|2.. |", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start = []|2.. |", { rules: [{ match: -1 }] });
+        });
+        it("for |2..3| correctly", function() {
+          expect(pass).to.changeAST("start =  .|2..3|", { rules: [{ match:  0 }] });
+          expect(pass).to.changeAST("start = ''|2..3|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start = []|2..3|", { rules: [{ match: -1 }] });
+        });
+        it("for | 42 | correctly", function() {
+          expect(pass).to.changeAST("start =  .| 42 |", { rules: [{ match:  0 }] });
+          expect(pass).to.changeAST("start = ''| 42 |", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start = []| 42 |", { rules: [{ match: -1 }] });
+        });
       });
-      it("for | ..1| correctly", function() {
-        expect(pass).to.changeAST("start =  .| ..1|", { rules: [{ match:  1 }] });
-        expect(pass).to.changeAST("start = ''| ..1|", { rules: [{ match:  1 }] });
-        expect(pass).to.changeAST("start = []| ..1|", { rules: [{ match:  1 }] });
-      });
-      it("for | ..3| correctly", function() {
-        expect(pass).to.changeAST("start =  .| ..3|", { rules: [{ match:  1 }] });
-        expect(pass).to.changeAST("start = ''| ..3|", { rules: [{ match:  1 }] });
-        expect(pass).to.changeAST("start = []| ..3|", { rules: [{ match:  1 }] });
-      });
-      it("for |0.. | correctly", function() {
-        expect(pass).to.changeAST("start =  .|0.. |", { rules: [{ match:  1 }] });
-        expect(pass).to.changeAST("start = ''|0.. |", { rules: [{ match:  1 }] });
-        expect(pass).to.changeAST("start = []|0.. |", { rules: [{ match:  1 }] });
-      });
-      it("for |1.. | correctly", function() {
-        expect(pass).to.changeAST("start =  .|1.. |", { rules: [{ match:  0 }] });
-        expect(pass).to.changeAST("start = ''|1.. |", { rules: [{ match:  1 }] });
-        expect(pass).to.changeAST("start = []|1.. |", { rules: [{ match: -1 }] });
-      });
-      it("for |2.. | correctly", function() {
-        expect(pass).to.changeAST("start =  .|2.. |", { rules: [{ match:  0 }] });
-        expect(pass).to.changeAST("start = ''|2.. |", { rules: [{ match:  1 }] });
-        expect(pass).to.changeAST("start = []|2.. |", { rules: [{ match: -1 }] });
-      });
-      it("for |2..3| correctly", function() {
-        expect(pass).to.changeAST("start =  .|2..3|", { rules: [{ match:  0 }] });
-        expect(pass).to.changeAST("start = ''|2..3|", { rules: [{ match:  1 }] });
-        expect(pass).to.changeAST("start = []|2..3|", { rules: [{ match: -1 }] });
-      });
-      it("for | 42 | correctly", function() {
-        expect(pass).to.changeAST("start =  .| 42 |", { rules: [{ match:  0 }] });
-        expect(pass).to.changeAST("start = ''| 42 |", { rules: [{ match:  1 }] });
-        expect(pass).to.changeAST("start = []| 42 |", { rules: [{ match: -1 }] });
+      describe("with variable boundaries", function() {
+        it("for |   ..max| correctly", function() {
+          expect(pass).to.changeAST("start =  .|   ..max|", { rules: [{ match: 0 }] });
+          expect(pass).to.changeAST("start = ''|   ..max|", { rules: [{ match: 0 }] });
+          expect(pass).to.changeAST("start = []|   ..max|", { rules: [{ match: 0 }] });
+        });
+        it("for |min..   | correctly", function() {
+          expect(pass).to.changeAST("start =  .|min..   |", { rules: [{ match: 0 }] });
+          expect(pass).to.changeAST("start = ''|min..   |", { rules: [{ match: 0 }] });
+          expect(pass).to.changeAST("start = []|min..   |", { rules: [{ match: 0 }] });
+        });
+        it("for |min..max| correctly", function() {
+          expect(pass).to.changeAST("start =  .|min..max|", { rules: [{ match: 0 }] });
+          expect(pass).to.changeAST("start = ''|min..max|", { rules: [{ match: 0 }] });
+          expect(pass).to.changeAST("start = []|min..max|", { rules: [{ match: 0 }] });
+        });
+        it("for | exact  | correctly", function() {
+          expect(pass).to.changeAST("start =  .|exact|", { rules: [{ match: 0 }] });
+          expect(pass).to.changeAST("start = ''|exact|", { rules: [{ match: 0 }] });
+          expect(pass).to.changeAST("start = []|exact|", { rules: [{ match: 0 }] });
+        });
       });
     });
-    describe("with variable boundaries", function() {
-      it("for |   ..max| correctly", function() {
-        expect(pass).to.changeAST("start =  .|   ..max|", { rules: [{ match: 0 }] });
-        expect(pass).to.changeAST("start = ''|   ..max|", { rules: [{ match: 0 }] });
-        expect(pass).to.changeAST("start = []|   ..max|", { rules: [{ match: 0 }] });
+    describe("with delimiters", function() {
+      describe("with constant boundaries", function() {
+        it("for | .. , delimiter| correctly", function() {
+          expect(pass).to.changeAST("start =  .| .. , .|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start =  .| .. ,''|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start =  .| .. ,[]|", { rules: [{ match:  1 }] });
+
+          expect(pass).to.changeAST("start = ''| .. , .|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start = ''| .. ,''|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start = ''| .. ,[]|", { rules: [{ match:  1 }] });
+
+          expect(pass).to.changeAST("start = []| .. , .|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start = []| .. ,''|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start = []| .. ,[]|", { rules: [{ match:  1 }] });
+        });
+        it("for | ..1, delimiter| correctly", function() {
+          expect(pass).to.changeAST("start =  .| ..1, .|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start =  .| ..1,''|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start =  .| ..1,[]|", { rules: [{ match:  1 }] });
+
+          expect(pass).to.changeAST("start = ''| ..1, .|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start = ''| ..1,''|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start = ''| ..1,[]|", { rules: [{ match:  1 }] });
+
+          expect(pass).to.changeAST("start = []| ..1, .|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start = []| ..1,''|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start = []| ..1,[]|", { rules: [{ match:  1 }] });
+        });
+        it("for | ..3, delimiter| correctly", function() {
+          expect(pass).to.changeAST("start =  .| ..3, .|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start =  .| ..3,''|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start =  .| ..3,[]|", { rules: [{ match:  1 }] });
+
+          expect(pass).to.changeAST("start = ''| ..3, .|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start = ''| ..3,''|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start = ''| ..3,[]|", { rules: [{ match:  1 }] });
+
+          expect(pass).to.changeAST("start = []| ..3, .|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start = []| ..3,''|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start = []| ..3,[]|", { rules: [{ match:  1 }] });
+        });
+        it("for |0.. , delimiter| correctly", function() {
+          expect(pass).to.changeAST("start =  .|0.. , .|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start =  .|0.. ,''|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start =  .|0.. ,[]|", { rules: [{ match:  1 }] });
+
+          expect(pass).to.changeAST("start = ''|0.. , .|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start = ''|0.. ,''|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start = ''|0.. ,[]|", { rules: [{ match:  1 }] });
+
+          expect(pass).to.changeAST("start = []|0.. , .|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start = []|0.. ,''|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start = []|0.. ,[]|", { rules: [{ match:  1 }] });
+        });
+        it("for |1.. , delimiter| correctly", function() {
+          expect(pass).to.changeAST("start =  .|1.. , .|", { rules: [{ match:  0 }] });
+          expect(pass).to.changeAST("start =  .|1.. ,''|", { rules: [{ match:  0 }] });
+          expect(pass).to.changeAST("start =  .|1.. ,[]|", { rules: [{ match:  0 }] });
+
+          expect(pass).to.changeAST("start = ''|1.. , .|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start = ''|1.. ,''|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start = ''|1.. ,[]|", { rules: [{ match:  1 }] });
+
+          expect(pass).to.changeAST("start = []|1.. , .|", { rules: [{ match: -1 }] });
+          expect(pass).to.changeAST("start = []|1.. ,''|", { rules: [{ match: -1 }] });
+          expect(pass).to.changeAST("start = []|1.. ,[]|", { rules: [{ match: -1 }] });
+        });
+        it("for |2.. , delimiter| correctly", function() {
+          expect(pass).to.changeAST("start =  .|2.. , .|", { rules: [{ match:  0 }] });
+          expect(pass).to.changeAST("start =  .|2.. ,''|", { rules: [{ match:  0 }] });
+          expect(pass).to.changeAST("start =  .|2.. ,[]|", { rules: [{ match: -1 }] });
+
+          expect(pass).to.changeAST("start = ''|2.. , .|", { rules: [{ match:  0 }] });
+          expect(pass).to.changeAST("start = ''|2.. ,''|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start = ''|2.. ,[]|", { rules: [{ match: -1 }] });
+
+          expect(pass).to.changeAST("start = []|2.. , .|", { rules: [{ match: -1 }] });
+          expect(pass).to.changeAST("start = []|2.. ,''|", { rules: [{ match: -1 }] });
+          expect(pass).to.changeAST("start = []|2.. ,[]|", { rules: [{ match: -1 }] });
+        });
+        it("for |2..3, delimiter| correctly", function() {
+          expect(pass).to.changeAST("start =  .|2..3, .|", { rules: [{ match:  0 }] });
+          expect(pass).to.changeAST("start =  .|2..3,''|", { rules: [{ match:  0 }] });
+          expect(pass).to.changeAST("start =  .|2..3,[]|", { rules: [{ match: -1 }] });
+
+          expect(pass).to.changeAST("start = ''|2..3, .|", { rules: [{ match:  0 }] });
+          expect(pass).to.changeAST("start = ''|2..3,''|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start = ''|2..3,[]|", { rules: [{ match: -1 }] });
+
+          expect(pass).to.changeAST("start = []|2..3, .|", { rules: [{ match: -1 }] });
+          expect(pass).to.changeAST("start = []|2..3,''|", { rules: [{ match: -1 }] });
+          expect(pass).to.changeAST("start = []|2..3,[]|", { rules: [{ match: -1 }] });
+        });
+        it("for | 42 , delimiter| correctly", function() {
+          expect(pass).to.changeAST("start =  .| 42 , .|", { rules: [{ match:  0 }] });
+          expect(pass).to.changeAST("start =  .| 42 ,''|", { rules: [{ match:  0 }] });
+          expect(pass).to.changeAST("start =  .| 42 ,[]|", { rules: [{ match: -1 }] });
+
+          expect(pass).to.changeAST("start = ''| 42 , .|", { rules: [{ match:  0 }] });
+          expect(pass).to.changeAST("start = ''| 42 ,''|", { rules: [{ match:  1 }] });
+          expect(pass).to.changeAST("start = ''| 42 ,[]|", { rules: [{ match: -1 }] });
+
+          expect(pass).to.changeAST("start = []| 42 , .|", { rules: [{ match: -1 }] });
+          expect(pass).to.changeAST("start = []| 42 ,''|", { rules: [{ match: -1 }] });
+          expect(pass).to.changeAST("start = []| 42 ,[]|", { rules: [{ match: -1 }] });
+        });
       });
-      it("for |min..   | correctly", function() {
-        expect(pass).to.changeAST("start =  .|min..   |", { rules: [{ match: 0 }] });
-        expect(pass).to.changeAST("start = ''|min..   |", { rules: [{ match: 0 }] });
-        expect(pass).to.changeAST("start = []|min..   |", { rules: [{ match: 0 }] });
-      });
-      it("for |min..max| correctly", function() {
-        expect(pass).to.changeAST("start =  .|min..max|", { rules: [{ match: 0 }] });
-        expect(pass).to.changeAST("start = ''|min..max|", { rules: [{ match: 0 }] });
-        expect(pass).to.changeAST("start = []|min..max|", { rules: [{ match: 0 }] });
-      });
-      it("for | exact  | correctly", function() {
-        expect(pass).to.changeAST("start =  .|exact|", { rules: [{ match: 0 }] });
-        expect(pass).to.changeAST("start = ''|exact|", { rules: [{ match: 0 }] });
-        expect(pass).to.changeAST("start = []|exact|", { rules: [{ match: 0 }] });
+      describe("with variable boundaries", function() {
+        it("for |   ..max, delimiter| correctly", function() {
+          expect(pass).to.changeAST("start =  .|   ..max, .|", { rules: [{ match: 0 }] });
+          expect(pass).to.changeAST("start =  .|   ..max,''|", { rules: [{ match: 0 }] });
+          expect(pass).to.changeAST("start =  .|   ..max,[]|", { rules: [{ match: 0 }] });
+
+          expect(pass).to.changeAST("start = ''|   ..max, .|", { rules: [{ match: 0 }] });
+          expect(pass).to.changeAST("start = ''|   ..max,''|", { rules: [{ match: 0 }] });
+          expect(pass).to.changeAST("start = ''|   ..max,[]|", { rules: [{ match: 0 }] });
+
+          expect(pass).to.changeAST("start = []|   ..max, .|", { rules: [{ match: 0 }] });
+          expect(pass).to.changeAST("start = []|   ..max,''|", { rules: [{ match: 0 }] });
+          expect(pass).to.changeAST("start = []|   ..max,[]|", { rules: [{ match: 0 }] });
+        });
+        it("for |min..   , delimiter| correctly", function() {
+          expect(pass).to.changeAST("start =  .|min..   , .|", { rules: [{ match: 0 }] });
+          expect(pass).to.changeAST("start =  .|min..   ,''|", { rules: [{ match: 0 }] });
+          expect(pass).to.changeAST("start =  .|min..   ,[]|", { rules: [{ match: 0 }] });
+
+          expect(pass).to.changeAST("start = ''|min..   , .|", { rules: [{ match: 0 }] });
+          expect(pass).to.changeAST("start = ''|min..   ,''|", { rules: [{ match: 0 }] });
+          expect(pass).to.changeAST("start = ''|min..   ,[]|", { rules: [{ match: 0 }] });
+
+          expect(pass).to.changeAST("start = []|min..   , .|", { rules: [{ match: 0 }] });
+          expect(pass).to.changeAST("start = []|min..   ,''|", { rules: [{ match: 0 }] });
+          expect(pass).to.changeAST("start = []|min..   ,[]|", { rules: [{ match: 0 }] });
+        });
+        it("for |min..max, delimiter| correctly", function() {
+          expect(pass).to.changeAST("start =  .|min..max, .|", { rules: [{ match: 0 }] });
+          expect(pass).to.changeAST("start =  .|min..max,''|", { rules: [{ match: 0 }] });
+          expect(pass).to.changeAST("start =  .|min..max,[]|", { rules: [{ match: 0 }] });
+
+          expect(pass).to.changeAST("start = ''|min..max, .|", { rules: [{ match: 0 }] });
+          expect(pass).to.changeAST("start = ''|min..max,''|", { rules: [{ match: 0 }] });
+          expect(pass).to.changeAST("start = ''|min..max,[]|", { rules: [{ match: 0 }] });
+
+          expect(pass).to.changeAST("start = []|min..max, .|", { rules: [{ match: 0 }] });
+          expect(pass).to.changeAST("start = []|min..max,''|", { rules: [{ match: 0 }] });
+          expect(pass).to.changeAST("start = []|min..max,[]|", { rules: [{ match: 0 }] });
+        });
+        it("for | exact  , delimiter| correctly", function() {
+          expect(pass).to.changeAST("start =  .| exact  , .|", { rules: [{ match: 0 }] });
+          expect(pass).to.changeAST("start =  .| exact  ,''|", { rules: [{ match: 0 }] });
+          expect(pass).to.changeAST("start =  .| exact  ,[]|", { rules: [{ match: 0 }] });
+
+          expect(pass).to.changeAST("start = ''| exact  , .|", { rules: [{ match: 0 }] });
+          expect(pass).to.changeAST("start = ''| exact  ,''|", { rules: [{ match: 0 }] });
+          expect(pass).to.changeAST("start = ''| exact  ,[]|", { rules: [{ match: 0 }] });
+
+          expect(pass).to.changeAST("start = []| exact  , .|", { rules: [{ match: 0 }] });
+          expect(pass).to.changeAST("start = []| exact  ,''|", { rules: [{ match: 0 }] });
+          expect(pass).to.changeAST("start = []| exact  ,[]|", { rules: [{ match: 0 }] });
+        });
       });
     });
   });
