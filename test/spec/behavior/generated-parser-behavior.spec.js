@@ -451,6 +451,38 @@ describe("generated parser behavior", function() {
                 input: "a"
               },
               {
+                grammar: "start = (a:'a')| .. | &{ return a === 'a'; }",
+                input: "a"
+              },
+              {
+                grammar: "start = (a:'a')|0.. | &{ return a === 'a'; }",
+                input: "a"
+              },
+              {
+                grammar: "start = (a:'a')|1.. | &{ return a === 'a'; }",
+                input: "a"
+              },
+              {
+                grammar: "start = (a:'a')|2.. | &{ return a === 'a'; }",
+                input: "aa"
+              },
+              {
+                grammar: "start = (a:'a')| ..1| &{ return a === 'a'; }",
+                input: "a"
+              },
+              {
+                grammar: "start = (a:'a')| ..3| &{ return a === 'a'; }",
+                input: "a"
+              },
+              {
+                grammar: "start = (a:'a')|2..3| &{ return a === 'a'; }",
+                input: "aa"
+              },
+              {
+                grammar: "start = (a:'a')|3| &{ return a === 'a'; }",
+                input: "aaa"
+              },
+              {
                 grammar: "start = $(a:'a') &{ return a === 'a'; }",
                 input: "a"
               },
@@ -662,6 +694,38 @@ describe("generated parser behavior", function() {
                 input: "a"
               },
               {
+                grammar: "start = (a:'a')| .. | !{ return a !== 'a'; }",
+                input: "a"
+              },
+              {
+                grammar: "start = (a:'a')|0.. | !{ return a !== 'a'; }",
+                input: "a"
+              },
+              {
+                grammar: "start = (a:'a')|1.. | !{ return a !== 'a'; }",
+                input: "a"
+              },
+              {
+                grammar: "start = (a:'a')|2.. | !{ return a !== 'a'; }",
+                input: "aa"
+              },
+              {
+                grammar: "start = (a:'a')| ..1| !{ return a !== 'a'; }",
+                input: "a"
+              },
+              {
+                grammar: "start = (a:'a')| ..3| !{ return a !== 'a'; }",
+                input: "a"
+              },
+              {
+                grammar: "start = (a:'a')|2..3| !{ return a !== 'a'; }",
+                input: "aa"
+              },
+              {
+                grammar: "start = (a:'a')|3| !{ return a !== 'a'; }",
+                input: "aaa"
+              },
+              {
                 grammar: "start = $(a:'a') !{ return a !== 'a'; }",
                 input: "a"
               },
@@ -854,6 +918,105 @@ describe("generated parser behavior", function() {
       });
     });
 
+    describe("range", function() {
+      it("| .. | matches correctly", function() {
+        let parser = peg.generate("start = 'a'|..|", options);
+
+        expect(parser).to.parse("",    []);
+        expect(parser).to.parse("a",   ["a"]);
+        expect(parser).to.parse("aa",  ["a", "a"]);
+        expect(parser).to.parse("aaa", ["a", "a", "a"]);
+      });
+
+      it("|0.. | matches correctly", function() {
+        let parser = peg.generate("start = 'a'|0..|", options);
+
+        expect(parser).to.parse("",    []);
+        expect(parser).to.parse("a",   ["a"]);
+        expect(parser).to.parse("aa",  ["a", "a"]);
+        expect(parser).to.parse("aaa", ["a", "a", "a"]);
+      });
+
+      it("|1.. | matches correctly", function() {
+        let parser = peg.generate("start = 'a'|1..|", options);
+
+        expect(parser).to.failToParse("");
+        expect(parser).to.parse("a",   ["a"]);
+        expect(parser).to.parse("aa",  ["a", "a"]);
+        expect(parser).to.parse("aaa", ["a", "a", "a"]);
+      });
+
+      it("|2.. | matches correctly", function() {
+        let parser = peg.generate("start = 'a'|2..|", options);
+
+        expect(parser).to.failToParse("");
+        expect(parser).to.failToParse("a");
+        expect(parser).to.parse("aa",  ["a", "a"]);
+        expect(parser).to.parse("aaa", ["a", "a", "a"]);
+      });
+
+      it("| ..1| matches correctly", function() {
+        let parser = peg.generate("start = 'a'|..1|", options);
+
+        expect(parser).to.parse("",    []);
+        expect(parser).to.parse("a",   ["a"]);
+        expect(parser).to.failToParse("aa");
+        expect(parser).to.failToParse("aaa");
+      });
+
+      it("| ..2| matches correctly", function() {
+        let parser = peg.generate("start = 'a'|..2|", options);
+
+        expect(parser).to.parse("",    []);
+        expect(parser).to.parse("a",   ["a"]);
+        expect(parser).to.parse("aa",  ["a", "a"]);
+        expect(parser).to.failToParse("aaa");
+      });
+
+      it("|2..3| matches correctly", function() {
+        let parser = peg.generate("start = 'a'|2..3|", options);
+
+        expect(parser).to.failToParse("");
+        expect(parser).to.failToParse("a");
+        expect(parser).to.parse("aa",  ["a", "a"]);
+        expect(parser).to.parse("aaa", ["a", "a", "a"]);
+        expect(parser).to.failToParse("aaaa");
+      });
+
+      it("|2..2| matches correctly", function() {
+        let parser = peg.generate("start = 'a'|2..2|", options);
+
+        expect(parser).to.failToParse("");
+        expect(parser).to.failToParse("a");
+        expect(parser).to.parse("aa",  ["a", "a"]);
+        expect(parser).to.failToParse("aaa");
+      });
+
+      it("| 2  | matches correctly", function() {
+        let parser = peg.generate("start = 'a'|2|", options);
+
+        expect(parser).to.failToParse("");
+        expect(parser).to.failToParse("a");
+        expect(parser).to.parse("aa",  ["a", "a"]);
+        expect(parser).to.failToParse("aaa");
+      });
+
+      it("|3..2| matches correctly", function() {
+        let parser = peg.generate("start = 'a'|3..2|", options);
+
+        expect(parser).to.failToParse("");
+        expect(parser).to.failToParse("a");
+        expect(parser).to.failToParse("aa");
+        expect(parser).to.failToParse("aaa");
+      });
+
+      it("does not consume input on failure", function() {
+        let parser = peg.generate("start = 'a'|3| / 'a'|2| { return 42; }", options);
+
+        expect(parser).to.parse("aa", 42);
+      });
+    });
+
     describe("text", function() {
       describe("when the expression matches", function() {
         it("returns the matched text", function() {
@@ -1042,6 +1205,38 @@ describe("generated parser behavior", function() {
                 {
                   grammar: "start = (a:'a')+ { return a; }",
                   input: "a"
+                },
+                {
+                  grammar: "start = (a:'a')| .. | { return a; }",
+                  input: "a"
+                },
+                {
+                  grammar: "start = (a:'a')|0.. | { return a; }",
+                  input: "a"
+                },
+                {
+                  grammar: "start = (a:'a')|1.. | { return a; }",
+                  input: "a"
+                },
+                {
+                  grammar: "start = (a:'a')|2.. | { return a; }",
+                  input: "aa"
+                },
+                {
+                  grammar: "start = (a:'a')| ..1| { return a; }",
+                  input: "a"
+                },
+                {
+                  grammar: "start = (a:'a')| ..3| { return a; }",
+                  input: "a"
+                },
+                {
+                  grammar: "start = (a:'a')|2..3| { return a; }",
+                  input: "aa"
+                },
+                {
+                  grammar: "start = (a:'a')|3| { return a; }",
+                  input: "aaa"
                 },
                 {
                   grammar: "start = $(a:'a') { return a; }",

@@ -20,6 +20,7 @@ describe("compiler pass |calcReportFailures|", function() {
     { type: "optional",     rule: "rule2?"          },
     { type: "zero_or_more", rule: "rule2*"          },
     { type: "one_or_more",  rule: "rule2+"          },
+    { type: "range",        rule: "rule2|42|"       },
     { type: "group",        rule: "(rule2 'a')"     },
     { type: "rule_ref",     rule: "rule2"           }
   ];
