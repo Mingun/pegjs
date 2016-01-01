@@ -65,11 +65,11 @@ describe("PEG.js grammar parser", function() {
   let ruleStart         = { type: "rule",        name: "start",      expression: literalAbcd, params: [] };
   let initializer       = { type: "initializer", code: " code " };
 
-  function oneRuleGrammar(expression) {
+  function oneRuleGrammar(expression, params) {
     return {
       type: "grammar",
       initializer: null,
-      rules: [{ type: "rule", name: "start", expression: expression, params: [] }]
+      rules: [{ type: "rule", name: "start", expression: expression, params: params || [] }]
     };
   }
 
@@ -98,8 +98,15 @@ describe("PEG.js grammar parser", function() {
     return oneRuleGrammar({ type: "any" });
   }
 
-  function ruleRefGrammar(name) {
-    return oneRuleGrammar({ type: "rule_ref", name: name, args: [] });
+  function ruleRefGrammar(name, args) {
+    return oneRuleGrammar({ type: "rule_ref", name: name, args: args || [] });
+  }
+
+  function templateGrammar(name, args) {
+    return ruleRefGrammar(name, (args || []).map(function(a) {
+      // Can't use arrow function because eslint bug
+      return { type: "arg", expression: { type: "rule_ref", name: a, args: [] } };
+    }));
   }
 
   let trivialGrammar = literalGrammar("abcd", false);
@@ -160,7 +167,8 @@ describe("PEG.js grammar parser", function() {
       group: stripExpression,
       semantic_and: stripLeaf,
       semantic_not: stripLeaf,
-      rule_ref: stripLeaf,
+      rule_ref: stripChildren("args"),
+      arg: stripExpression,
       literal: stripLeaf,
       class: stripLeaf,
       any: stripLeaf
@@ -247,16 +255,26 @@ describe("PEG.js grammar parser", function() {
   });
 
   // Canonical Rule is "a = 'abcd';".
-  it("parses Rule", function() {
-    expect("start\n=\n'abcd';").to.parseAs(
-      oneRuleGrammar(literalAbcd)
-    );
-    expect("start\n'start rule'\n=\n'abcd';").to.parseAs(
-      oneRuleGrammar(named)
-    );
+  describe("parses Rule", function() {
+    it("non-template", function() {
+      expect("start\n=\n'abcd';").to.parseAs(
+        oneRuleGrammar(literalAbcd)
+      );
+      expect("start\n'start rule'\n=\n'abcd';").to.parseAs(
+        oneRuleGrammar(named)
+      );
+    });
+
+    it("template", function() {
+      expect("start\n<A,B>\n=\n'abcd';").to.parseAs(
+        oneRuleGrammar(literalAbcd, ["A", "B"])
+      );
+      expect("start\n<A,B>\n'start rule'\n=\n'abcd';").to.parseAs(
+        oneRuleGrammar(named, ["A", "B"])
+      );
+    });
   });
 
-  // Canonical Expression is "'abcd'".
   it("parses Expression", function() {
     expect("start = 'abcd' / 'efgh' / 'ijkl'").to.parseAs(
       oneRuleGrammar(choice)
@@ -347,11 +365,21 @@ describe("PEG.js grammar parser", function() {
   });
 
   // Canonical RuleReferenceExpression is "a".
-  it("parses RuleReferenceExpression", function() {
-    expect("start = a").to.parseAs(ruleRefGrammar("a"));
+  describe("parses RuleReferenceExpression", function() {
+    it("to non-template", function() {
+      expect("start = a").to.parseAs(ruleRefGrammar("a"));
 
-    expect("start = a\n=").to.failToParse();
-    expect("start = a\n'abcd'\n=").to.failToParse();
+      expect("start = a\n=").to.failToParse();
+      expect("start = a\n'abcd'\n=").to.failToParse();
+    });
+
+    it("to template", function() {
+      expect("start = a<A>").to.parseAs(templateGrammar("a", ["A"]));
+      expect("start = a<A\n,\nB>").to.parseAs(templateGrammar("a", ["A", "B"]));
+
+      expect("start = a<>").to.failToParse();
+      expect("start = a<A,>").to.failToParse();
+    });
   });
 
   // Canonical SemanticPredicateExpression is "!{ code }".

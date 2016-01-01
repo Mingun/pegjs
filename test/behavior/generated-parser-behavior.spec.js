@@ -391,6 +391,18 @@ describe("generated parser behavior", function() {
           expect(parser).to.failToParse("b");
         });
       });
+
+      it("use template argument, not rule with same name", function() {
+        let parser = peg.generate([
+          "start = List<'a', ','>",
+          "List<E, D> = h:E t:(D r:E {return r;})* {return [h].concat(t);}",
+          "E = . { error('Must not match rule `E`'); }",
+          "D = . { error('Must not match rule `D`'); }"
+        ].join("\n"), options);
+
+        expect(parser).to.parse("a",   ["a"]);
+        expect(parser).to.parse("a,a", ["a", "a"]);
+      });
     });
 
     describe("positive semantic predicate", function() {

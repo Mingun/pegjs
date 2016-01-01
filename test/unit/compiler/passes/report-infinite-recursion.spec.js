@@ -116,4 +116,46 @@ describe("compiler pass |reportInfiniteRecursion|", function() {
       expect(pass).to.not.reportError("start = . start");
     });
   });
+
+  describe("in templates", function() {
+    it("reports left recursion for template argument", function() {
+      expect(pass).to.reportError("start<A> = start<A> 'a' 'b'", {
+        message: "Possible infinite loop when parsing (left recursion: start -> start).",
+        location: {
+          start: { offset: 11, line: 1, column: 12 },
+          end:   { offset: 19, line: 1, column: 20 }
+        }
+      });
+      expect(pass).to.reportError([
+        "start = template<start> 'a'",
+        "template<A> = A 'b'"
+      ].join("\n"), {
+        message: "Possible infinite loop when parsing (left recursion: start -> template -> start).",
+        location: {
+          start: { offset: 17, line: 1, column: 18 },
+          end:   { offset: 22, line: 1, column: 23 }
+        }
+      });
+      expect(pass).to.reportError([
+        "start = T1<T2<start>>",
+        "T1<A> = A 'a'",
+        "T2<B> = B 'b'"
+      ].join("\n"), {
+        message: "Possible infinite loop when parsing (left recursion: start -> T1 -> T2 -> start).",
+        location: {
+          start: { offset: 14, line: 1, column: 15 },
+          end:   { offset: 19, line: 1, column: 20 }
+        }
+      });
+
+      expect(pass).to.not.reportError([
+        "start = template<start> 'a'",
+        "template<A> = 'b' A"
+      ].join("\n"));
+      expect(pass).to.not.reportError([
+        "start = template<'b' start> 'a'",
+        "template<A> = A 'b'"
+      ].join("\n"));
+    });
+  });
 });
