@@ -74,6 +74,7 @@ describe("plugin API", function() {
             "      {",
             "        type: 'rule',",
             "        name: 'start',",
+            "        params: [],",
             "        expression: { type: 'literal',  value: text(), ignoreCase: false }",
             "      }",
             "    ]",

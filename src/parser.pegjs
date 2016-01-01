@@ -70,24 +70,34 @@ Initializer
     }
 
 Rule
-  = name:IdentifierName __
-    displayName:(StringLiteral __)?
-    "=" __
+  = name:RuleName __
     expression:Expression EOS
     {
       return {
         type: "rule",
-        name: name,
-        expression: displayName !== null
+        name: name[0],
+        params: name[2] !== null ? name[2][0] : [],
+        expression: name[3] !== null
           ? {
               type: "named",
-              name: displayName[0],
+              name: name[3][0],
               expression: expression,
               location: location()
             }
           : expression,
         location: location()
       };
+    }
+
+RuleName
+  = IdentifierName __
+    (TemplateParams __)?
+    (StringLiteral __)?
+    "="
+
+TemplateParams
+  = "<" __ first:IdentifierName rest:(__ "," __ IdentifierName)* __ ">" {
+      return buildList(first, rest, 3);
     }
 
 Expression
@@ -185,8 +195,18 @@ PrimaryExpression
     }
 
 RuleReferenceExpression
-  = name:IdentifierName !(__ (StringLiteral __)? "=") {
-      return { type: "rule_ref", name: name, location: location() };
+  = !RuleName name:IdentifierName args:(__ Arguments)? {
+      return { type: "rule_ref", name: name, args: args !== null ? args[1] : [], location: location() };
+    }
+
+Arguments
+  = "<" __ head:Argument tail:(__ "," __ Argument)* ">" {
+      return buildList(head, tail, 3);
+    }
+
+Argument
+  = expression:Expression {
+      return { type: "arg", expression: expression, location: location() };
     }
 
 SemanticPredicateExpression
