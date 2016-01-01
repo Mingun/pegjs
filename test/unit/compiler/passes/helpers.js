@@ -1,6 +1,7 @@
 "use strict";
 
 let parser = require("../../../../lib/parser");
+let precheck = require("../../../../lib/compiler/passes/rule-ref2param-ref");
 
 module.exports = function(chai, utils) {
   let Assertion = chai.Assertion;
@@ -65,6 +66,9 @@ module.exports = function(chai, utils) {
     let passed, result;
 
     try {
+      // Precheck passes logically parse phase, but cann't be done in parser itself
+      precheck(ast, options);
+
       utils.flag(this, "object")(ast, options);
       passed = true;
     } catch (e) {

@@ -36,6 +36,7 @@
     "lib/compiler/passes/report-infinite-recursion.js",
     "lib/compiler/passes/report-infinite-repetition.js",
     "lib/compiler/passes/report-undefined-rules.js",
+    "lib/compiler/passes/rule-ref2param-ref.js",
     "lib/compiler/visitor.js",
     "lib/grammar-error.js",
     "lib/parser.js",
