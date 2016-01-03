@@ -9,7 +9,7 @@ beforeEach(function() {
     this.location = location;
   }
 
-  var collector = {
+  var errorCollector = {
     emitFatalError: function(message, location) {
       throw new Err(message, location);
     },
@@ -19,6 +19,75 @@ beforeEach(function() {
     emitWarning: function() {},
     emitInfo: function() {}
   };
+  var warningCollector = {
+    emitFatalError: function(message, location) {},
+    emitError: function(message, location) {},
+    emitWarning: function(message, location) {
+      throw new Err(message, location);
+    },
+    emitInfo: function() {}
+  };
+
+  function createMatcher(name, collector) {
+    return function(grammar, details, options) {
+      var ast = PEG.parser.parse(grammar);
+      options = options || {};
+      options.collector = collector;
+
+      try {
+        this.actual(ast, options);
+
+        this.message = function() {
+          return "Expected the pass "
+               + "with options " + jasmine.pp(options) + " "
+               + "to report " + name + " "
+               + (details ? "with details " + jasmine.pp(details) + " ": "")
+               + "for grammar " + jasmine.pp(grammar) + ", "
+               + "but it didn't.";
+        };
+
+        return false;
+      } catch (e) {
+        /*
+         * Should be at the top level but then JSHint complains about bad for
+         * in variable.
+         */
+        var key;
+
+        if (this.isNot) {
+          this.message = function() {
+            return "Expected the pass "
+                 + "with options " + jasmine.pp(options) + " "
+                 + "not to report " + name + " "
+                 + "for grammar " + jasmine.pp(grammar) + ", "
+                 + "but it did: " + jasmine.pp(e.message) + ".";
+          };
+        } else {
+          if (details) {
+            for (key in details) {
+              if (details.hasOwnProperty(key)) {
+                if (!this.env.equals_(e[key], details[key])) {
+                  this.message = function() {
+                    return "Expected the pass "
+                         + "with options " + jasmine.pp(options) + " "
+                         + "to report " + name + " "
+                         + "with details " + jasmine.pp(details) + " "
+                         + "for grammar " + jasmine.pp(grammar) + ", "
+                         + "but " + jasmine.pp(key) + " "
+                         + "is " + jasmine.pp(e[key]) + ".";
+                  };
+
+                  return false;
+                }
+              }
+            }
+          }
+        }
+
+        return true;
+      }
+    }
+  }
 
   this.addMatchers({
     toChangeAST: function(grammar) {
@@ -63,7 +132,7 @@ beforeEach(function() {
           details = arguments[arguments.length - 1],
           ast     = PEG.parser.parse(grammar);
 
-      options.collector = collector;
+      options.collector = errorCollector;
       this.actual(ast, options);
 
       this.message = function() {
@@ -78,55 +147,7 @@ beforeEach(function() {
       return matchDetails(ast, details);
     },
 
-    toReportError: function(grammar, details) {
-      var ast = PEG.parser.parse(grammar);
-
-      try {
-        this.actual(ast, { collector: collector });
-
-        this.message = function() {
-          return "Expected the pass to report an error "
-               + (details ? "with details " + jasmine.pp(details) + " ": "")
-               + "for grammar " + jasmine.pp(grammar) + ", "
-               + "but it didn't.";
-        };
-
-        return false;
-      } catch (e) {
-        /*
-         * Should be at the top level but then JSHint complains about bad for
-         * in variable.
-         */
-        var key;
-
-        if (this.isNot) {
-          this.message = function() {
-            return "Expected the pass not to report an error "
-                 + "for grammar " + jasmine.pp(grammar) + ", "
-                 + "but it did.";
-          };
-        } else {
-          if (details) {
-            for (key in details) {
-              if (details.hasOwnProperty(key)) {
-                if (!this.env.equals_(e[key], details[key])) {
-                  this.message = function() {
-                    return "Expected the pass to report an error "
-                         + "with details " + jasmine.pp(details) + " "
-                         + "for grammar " + jasmine.pp(grammar) + ", "
-                         + "but " + jasmine.pp(key) + " "
-                         + "is " + jasmine.pp(e[key]) + ".";
-                  };
-
-                  return false;
-                }
-              }
-            }
-          }
-        }
-
-        return true;
-      }
-    }
+    toReportError:   createMatcher('an error',  errorCollector),
+    toReportWarning: createMatcher('a warning', warningCollector)
   });
 });
