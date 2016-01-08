@@ -86,7 +86,12 @@ Grammar
 
 Initializer
   = code:CodeBlock EOS {
-      return { type: "initializer", code: code, location: location() };
+      return {
+        type:        "initializer",
+        annotations: code[0],
+        code:        code[1],
+        location:    location()
+      };
     }
 
 Rule
@@ -150,10 +155,11 @@ ActionExpression
   = expression:SequenceExpression code:(__ CodeBlock)? {
       return code !== null
         ? {
-            type:       "action",
-            expression: expression,
-            code:       code[1],
-            location:   location()
+            type:        "action",
+            annotations: code[1][0],
+            expression:  expression,
+            code:        code[1][1],
+            location:    location()
           }
         : expression;
     }
@@ -226,9 +232,10 @@ RuleReferenceExpression
 SemanticPredicateExpression
   = operator:SemanticPredicateOperator __ code:CodeBlock {
       return {
-        type:     OPS_TO_SEMANTIC_PREDICATE_TYPES[operator],
-        code:     code,
-        location: location()
+        type:        OPS_TO_SEMANTIC_PREDICATE_TYPES[operator],
+        annotations: code[0],
+        code:        code[1],
+        location:    location()
       };
     }
 
@@ -472,7 +479,7 @@ AnyMatcher
   = "." { return { type: "any", location: location() }; }
 
 CodeBlock "code block"
-  = "{" code:Code "}" { return code; }
+  = annotations:(Annotation __)* "{" code:Code "}" { return [extractList(annotations, 0), code]; }
 
 Code
   = $((![{}] SourceCharacter)+ / "{" Code "}")*
