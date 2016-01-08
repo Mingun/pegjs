@@ -108,7 +108,12 @@ Grammar
 
 Initializer
   = code:CodeBlock EOS {
-      return { type: "initializer", code: code, location: location() };
+      return {
+        type: "initializer",
+        attributes: code[0],
+        code: code[1],
+        location: location()
+      };
     }
 
 Rule
@@ -169,8 +174,9 @@ ActionExpression
       return code !== null
         ? {
             type: "action",
+            attributes: code[0],
             expression: expression,
-            code: code,
+            code: code[1],
             location: location()
           }
         : expression;
@@ -307,7 +313,8 @@ SemanticPredicateExpression
   = operator:SemanticPredicateOperator __ code:CodeBlock {
       return {
         type: OPS_TO_SEMANTIC_PREDICATE_TYPES[operator],
-        code: code,
+        attributes: code[0],
+        code: code[1],
         location: location()
       };
     }
@@ -506,8 +513,8 @@ AnyMatcher
   = "." { return { type: "any", location: location() }; }
 
 CodeBlock "code block"
-  = "{" code:Code "}" { return code; }
-  / "{" { error("Unbalanced brace."); }
+  = (@Attribute __)*
+    ("{" @Code "}" / "{" { error("Unbalanced brace."); })
 
 Code
   = $((![{}] SourceCharacter)+ / "{" Code "}")*

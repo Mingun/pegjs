@@ -13,8 +13,8 @@ describe("PEG.js grammar parser", function() {
   let literalEfgh       = { type: "literal",      value: "efgh", ignoreCase: false };
   let literalIjkl       = { type: "literal",      value: "ijkl", ignoreCase: false };
   let literalMnop       = { type: "literal",      value: "mnop", ignoreCase: false };
-  let semanticAnd       = { type: "semantic_and", code: " code " };
-  let semanticNot       = { type: "semantic_not", code: " code " };
+  let semanticAnd       = { type: "semantic_and", attributes: [], code: " code " };
+  let semanticNot       = { type: "semantic_not", attributes: [], code: " code " };
   let optional          = { type: "optional",     expression: literalAbcd };
   let zeroOrMore        = { type: "zero_or_more", expression: literalAbcd };
   let oneOrMore         = { type: "one_or_more",  expression: literalAbcd };
@@ -45,11 +45,11 @@ describe("PEG.js grammar parser", function() {
   };
   let groupLabeled      = { type: "group",  expression: labeledAbcd };
   let groupSequence     = { type: "group",  expression: sequence    };
-  let actionAbcd        = { type: "action", expression: literalAbcd, code: " code " };
-  let actionEfgh        = { type: "action", expression: literalEfgh, code: " code " };
-  let actionIjkl        = { type: "action", expression: literalIjkl, code: " code " };
-  let actionMnop        = { type: "action", expression: literalMnop, code: " code " };
-  let actionSequence    = { type: "action", expression: sequence,    code: " code " };
+  let actionAbcd        = { type: "action", expression: literalAbcd, attributes: [], code: " code " };
+  let actionEfgh        = { type: "action", expression: literalEfgh, attributes: [], code: " code " };
+  let actionIjkl        = { type: "action", expression: literalIjkl, attributes: [], code: " code " };
+  let actionMnop        = { type: "action", expression: literalMnop, attributes: [], code: " code " };
+  let actionSequence    = { type: "action", expression: sequence,    attributes: [], code: " code " };
   let choice            = {
     type: "choice",
     alternatives: [literalAbcd, literalEfgh, literalIjkl]
@@ -67,7 +67,7 @@ describe("PEG.js grammar parser", function() {
   let ruleB             = { type: "rule",        name: "b",          expression: literalEfgh, attributes: [] };
   let ruleC             = { type: "rule",        name: "c",          expression: literalIjkl, attributes: [] };
   let ruleStart         = { type: "rule",        name: "start",      expression: literalAbcd, attributes: [] };
-  let initializer       = { type: "initializer", code: " code " };
+  let initializer       = { type: "initializer", attributes: [],     code: " code " };
 
   function attributed(expression, names) {
     expression.attributes = names ? names.map(function(name) {
@@ -86,9 +86,9 @@ describe("PEG.js grammar parser", function() {
     };
   }
 
-  function actionGrammar(code) {
+  function actionGrammar(code, actionAttributes) {
     return oneRuleGrammar(
-      { type: "action", expression: literalAbcd, code: code }
+      attributed({ type: "action", expression: literalAbcd, code: code }, actionAttributes)
     );
   }
 
@@ -289,8 +289,9 @@ describe("PEG.js grammar parser", function() {
     expect("start = a").to.parseAs(ruleRefGrammar("a"));
     let grammar = ruleRefGrammar("a");
     grammar.initializer = {
-      "type": "initializer",
-      "code": ""
+      type: "initializer",
+      attributes: [],
+      code: ""
     };
     expect("{}\nstart = a").to.parseAs(grammar);
 
@@ -921,24 +922,60 @@ describe("PEG.js grammar parser", function() {
   });
 
   // Attributes
-  it("parses Attributes", function() {
-    let grammar = oneRuleGrammar(literalAbcd, ["Attribute"]);
-    expect("#[Attribute] start = 'abcd'").to.parseAs(grammar);
-    expect("#[Attribute]\nstart = 'abcd'").to.parseAs(grammar);
-    expect("#[Attribute()]start = 'abcd'").to.parseAs(grammar);
+  describe("parses Attributes", function() {
+    it("for Rule", function() {
+      let grammar = oneRuleGrammar(literalAbcd, ["Attribute"]);
+      expect("#[Attribute] start = 'abcd'").to.parseAs(grammar);
+      expect("#[Attribute]\nstart = 'abcd'").to.parseAs(grammar);
+      expect("#[Attribute()]start = 'abcd'").to.parseAs(grammar);
 
-    grammar = oneRuleGrammar(literalAbcd, ["Attribute", "Attribute2"]);
-    expect("#[Attribute] #[Attribute2] start = 'abcd'").to.parseAs(grammar);
-    expect("#[Attribute]\n#[Attribute2] start = 'abcd'").to.parseAs(grammar);
-    expect("#[Attribute()]#[Attribute2] start = 'abcd'").to.parseAs(grammar);
+      grammar = oneRuleGrammar(literalAbcd, ["Attribute", "Attribute2"]);
+      expect("#[Attribute] #[Attribute2] start = 'abcd'").to.parseAs(grammar);
+      expect("#[Attribute]\n#[Attribute2] start = 'abcd'").to.parseAs(grammar);
+      expect("#[Attribute()]#[Attribute2] start = 'abcd'").to.parseAs(grammar);
 
-    grammar.rules[0].attributes = [{ type: "attribute", name: "Attribute", value: "a" }];
-    expect("#[Attribute(a)] start = 'abcd'").to.parseAs(grammar);
+      grammar.rules[0].attributes = [{ type: "attribute", name: "Attribute", value: "a" }];
+      expect("#[Attribute(a)] start = 'abcd'").to.parseAs(grammar);
 
-    grammar.rules[0].attributes = [{ type: "attribute", name: "Attribute", value: "a,(b)" }];
-    expect("#[Attribute(a,(b))]start = 'abcd'").to.parseAs(grammar);
-    expect("#[Attribute(()]start = 'abcd'").to.failToParse();
-    expect("#[Attribute())]start = 'abcd'").to.failToParse();
+      grammar.rules[0].attributes = [{ type: "attribute", name: "Attribute", value: "a,(b)" }];
+      expect("#[Attribute(a,(b))]start = 'abcd'").to.parseAs(grammar);
+      expect("#[Attribute(()]start = 'abcd'").to.failToParse();
+      expect("#[Attribute())]start = 'abcd'").to.failToParse();
+    });
+
+    it("for CodeBlock", function() {
+      expect("#[A]{ code };start = 'abcd'").to.parseAs(
+        { type: "grammar", comments: {}, initializer: attributed(initializer, ["A"]), rules: [ruleStart] }
+      );
+      expect("#[A()]{ code };start = 'abcd'").to.parseAs(
+        { type: "grammar", comments: {}, initializer: attributed(initializer, ["A"]), rules: [ruleStart] }
+      );
+
+      expect("#[A]#[B]{ code };start = 'abcd'").to.parseAs(
+        { type: "grammar", comments: {}, initializer: attributed(initializer, ["A", "B"]), rules: [ruleStart] }
+      );
+      expect("#[A()]#[B]{ code };start = 'abcd'").to.parseAs(
+        { type: "grammar", comments: {}, initializer: attributed(initializer, ["A", "B"]), rules: [ruleStart] }
+      );
+
+      expect("start = 'abcd'#[A]{ code }").to.parseAs(actionGrammar(" code ", ["A"]));
+      expect("start = 'abcd'#[A()]{ code }").to.parseAs(actionGrammar(" code ", ["A"]));
+
+      expect("start = 'abcd'#[A]#[B]{ code }").to.parseAs(actionGrammar(" code ", ["A", "B"]));
+      expect("start = 'abcd'#[A()]#[B]{ code }").to.parseAs(actionGrammar(" code ", ["A", "B"]));
+
+      expect("start = &#[A]{ code }").to.parseAs(oneRuleGrammar(attributed(semanticAnd, ["A"])));
+      expect("start = &#[A()]{ code }").to.parseAs(oneRuleGrammar(attributed(semanticAnd, ["A"])));
+
+      expect("start = &#[A]#[B]{ code }").to.parseAs(oneRuleGrammar(attributed(semanticAnd, ["A", "B"])));
+      expect("start = &#[A()]#[B]{ code }").to.parseAs(oneRuleGrammar(attributed(semanticAnd, ["A", "B"])));
+
+      expect("start = !#[A]{ code }").to.parseAs(oneRuleGrammar(attributed(semanticNot, ["A"])));
+      expect("start = !#[A()]{ code }").to.parseAs(oneRuleGrammar(attributed(semanticNot, ["A"])));
+
+      expect("start = !#[A]#[B]{ code }").to.parseAs(oneRuleGrammar(attributed(semanticNot, ["A", "B"])));
+      expect("start = !#[A()]#[B]{ code }").to.parseAs(oneRuleGrammar(attributed(semanticNot, ["A", "B"])));
+    });
   });
 
   // Unicode character category rules and token rules are not tested.
