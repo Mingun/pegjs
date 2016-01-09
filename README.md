@@ -475,7 +475,7 @@ can be accessed by action's JavaScript code.
 
 Match a sequence of expressions and return their match results in an array.
 
-#### *expression* { *action* }
+#### *expression* { *action* }<br>*expression* ^{ *action* }
 
 If the expression matches successfully, run the action, otherwise
 consider the match failed.
@@ -488,6 +488,11 @@ match result of the expression.
 
 The action has access to all variables and functions in the
 [Action Execution Environment](#action-execution-environment).
+
+If the action code is preceded by the character `^`, execution of action will be
+postponed until the moment of the end of parse or execution of the first energy
+action or a semantic predicate. Note, that `location` and `text` functions will
+not correctly work for postponed actions.
 
 #### *expression<sub>1</sub>* / *expression<sub>2</sub>* / ... / *expression<sub>n</sub>*
 

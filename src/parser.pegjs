@@ -105,12 +105,13 @@ ChoiceExpression
     }
 
 ActionExpression
-  = expression:SequenceExpression code:(__ CodeBlock)? {
+  = expression:SequenceExpression code:(__ "^"? CodeBlock)? {
       return code !== null
         ? {
             type: "action",
             expression: expression,
-            code: code[1],
+            lazy: code[1] !== null,
+            code: code[2],
             location: location()
           }
         : expression;

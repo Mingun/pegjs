@@ -41,11 +41,11 @@ describe("PEG.js grammar parser", function() {
   };
   let groupLabeled      = { type: "group",  expression: labeledAbcd };
   let groupSequence     = { type: "group",  expression: sequence    };
-  let actionAbcd        = { type: "action", expression: literalAbcd, code: " code " };
-  let actionEfgh        = { type: "action", expression: literalEfgh, code: " code " };
-  let actionIjkl        = { type: "action", expression: literalIjkl, code: " code " };
-  let actionMnop        = { type: "action", expression: literalMnop, code: " code " };
-  let actionSequence    = { type: "action", expression: sequence,    code: " code " };
+  let actionAbcd        = { type: "action", expression: literalAbcd, lazy: false, code: " code " };
+  let actionEfgh        = { type: "action", expression: literalEfgh, lazy: false, code: " code " };
+  let actionIjkl        = { type: "action", expression: literalIjkl, lazy: false, code: " code " };
+  let actionMnop        = { type: "action", expression: literalMnop, lazy: false, code: " code " };
+  let actionSequence    = { type: "action", expression: sequence,    lazy: false, code: " code " };
   let choice            = {
     type: "choice",
     alternatives: [literalAbcd, literalEfgh, literalIjkl]
@@ -75,7 +75,7 @@ describe("PEG.js grammar parser", function() {
 
   function actionGrammar(code) {
     return oneRuleGrammar(
-      { type: "action", expression: literalAbcd, code: code }
+      { type: "action", expression: literalAbcd, lazy: false, code: code }
     );
   }
 
