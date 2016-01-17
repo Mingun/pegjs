@@ -57,22 +57,42 @@ describe("compiler pass |generateBytecode|", function() {
   });
 
   describe("for named", function() {
-    let grammar = "start 'start' = 'a'";
+    let grammar1 = "start 'start' = .";
+    let grammar2 = "start 'start' = 'a'";
+    let grammar3 = "start 'start' = [a]";
 
     it("generates correct bytecode", function() {
-      expect(pass).to.changeAST(grammar, bytecodeDetails([
+      expect(pass).to.changeAST(grammar1, bytecodeDetails([
         23, 0,                        // EXPECT <0>
         28,                           // SILENT_FAILS_ON
-        23, 2, 18, 1, 2, 1, 22, 1, 3, // <expression>
+        17, 2, 1, 21, 1, 3,           // <expression>
+        29                            // SILENT_FAILS_OFF
+      ]));
+      expect(pass).to.changeAST(grammar2, bytecodeDetails([
+        23, 0,                        // EXPECT <0>
+        28,                           // SILENT_FAILS_ON
+        18, 1, 2, 1, 22, 1, 3,        // <expression>
+        29                            // SILENT_FAILS_OFF
+      ]));
+      expect(pass).to.changeAST(grammar3, bytecodeDetails([
+        23, 0,                        // EXPECT <0>
+        28,                           // SILENT_FAILS_ON
+        20, 1, 2, 1, 21, 1, 3,        // <expression>
         29                            // SILENT_FAILS_OFF
       ]));
     });
 
     it("defines correct constants", function() {
-      expect(pass).to.changeAST(grammar, constsDetails([
+      expect(pass).to.changeAST(grammar1, constsDetails([
+        "peg$otherExpectation(\"start\")"
+      ]));
+      expect(pass).to.changeAST(grammar2, constsDetails([
         "peg$otherExpectation(\"start\")",
-        "\"a\"",
-        "peg$literalExpectation(\"a\", false)"
+        "\"a\""
+      ]));
+      expect(pass).to.changeAST(grammar3, constsDetails([
+        "peg$otherExpectation(\"start\")",
+        "/^[a]/"
       ]));
     });
   });
@@ -360,9 +380,18 @@ describe("compiler pass |generateBytecode|", function() {
   });
 
   describe("for group", function() {
+    let grammar = "start = ('a')";
+
     it("generates correct bytecode", function() {
-      expect(pass).to.changeAST("start = ('a')", bytecodeDetails([
+      expect(pass).to.changeAST(grammar, bytecodeDetails([
         23, 1, 18, 0, 2, 1, 22, 0, 3  // <expression>
+      ]));
+    });
+
+    it("defines correct constants", function() {
+      expect(pass).to.changeAST(grammar, constsDetails([
+        "\"a\"",
+        "peg$literalExpectation(\"a\", false)"
       ]));
     });
   });
