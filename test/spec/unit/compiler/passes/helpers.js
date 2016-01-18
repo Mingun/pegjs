@@ -5,8 +5,11 @@ let parser = require("../../../../../lib/parser");
 module.exports = function(chai, utils) {
   let Assertion = chai.Assertion;
 
-  Assertion.addMethod("changeAST", function(grammar, props, options) {
+  Assertion.addMethod("changeAST", function(grammar, props, options, additionalRuleProps) {
     options = options !== undefined ? options : {};
+    additionalRuleProps = typeof additionalRuleProps !== "undefined"
+      ? additionalRuleProps
+      : { reportFailures: true };
 
     function matchProps(value, props) {
       function isArray(value) {
@@ -51,6 +54,8 @@ module.exports = function(chai, utils) {
         ? [ast.rules[0].name]
         : [];
     }
+    ast.rules = ast.rules.map(rule => Object.assign(rule, additionalRuleProps));
+
     utils.flag(this, "object")(ast, options);
 
     this.assert(
