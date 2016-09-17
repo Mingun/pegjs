@@ -763,7 +763,7 @@ describe("compiler pass |generateBytecode|", function() {
       it("generates correct bytecode", function() {
         expect(pass).to.changeAST("start = [a]", bytecodeDetails([
           23, 0,         // EXPECT <0>
-          20, 0, 2, 1,   // MATCH_REGEXP <0>
+          20, 0, 2, 1,   // MATCH_CLASS <0>
           21, 1,         //   * ACCEPT_N <1>
           3              //   * PUSH_FAILED
         ]));
@@ -830,7 +830,7 @@ describe("compiler pass |generateBytecode|", function() {
     describe("when |reportFailures=false|", function() {
       it("generates correct bytecode", function() {
         expect(pass).to.changeAST("start = [a]", bytecodeDetails([
-          20, 0, 2, 1,   // MATCH_REGEXP <0>
+          20, 0, 2, 1,   // MATCH_CLASS <0>
           21, 1,         //   * ACCEPT_N <1>
           3              //   * PUSH_FAILED
         ]), {}, { reportFailures: false });
