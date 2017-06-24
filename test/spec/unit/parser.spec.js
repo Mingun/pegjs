@@ -73,6 +73,7 @@ describe("PEG.js grammar parser", function() {
     return {
       type: "grammar",
       initializer: null,
+      comments: {},
       rules: [{ type: "rule", name: "start", expression: expression }]
     };
   }
@@ -118,11 +119,24 @@ describe("PEG.js grammar parser", function() {
   function rangeGrammar2(min, max) {
     return rangeGrammar(min, max, literalEfgh);
   }
+  function commented(grammar, comments) {
+    return Object.assign({}, grammar, {
+      comments: comments.reduce((result, comment) => {
+        result[comment.offset] = {
+          text: comment.text,
+          multiline: comment.multiline
+        };
+
+        return result;
+      }, {})
+    });
+  }
 
   let trivialGrammar = literalGrammar("abcd", false);
   let twoRuleGrammar = {
     type: "grammar",
     initializer: null,
+    comments: {},
     rules: [ruleA, ruleB]
   };
 
@@ -158,6 +172,9 @@ describe("PEG.js grammar parser", function() {
         if (node.initializer) {
           strip(node.initializer);
         }
+
+        Object.keys(node.comments).forEach(k => stripLeaf(node.comments[k]));
+
         node.rules.forEach(strip);
       },
 
@@ -271,20 +288,20 @@ describe("PEG.js grammar parser", function() {
   // Canonical Grammar is "a = 'abcd'; b = 'efgh'; c = 'ijkl';".
   it("parses Grammar", function() {
     expect("\na = 'abcd';\n").to.parseAs(
-      { type: "grammar", initializer: null, rules: [ruleA] }
+      { type: "grammar", initializer: null, comments: {}, rules: [ruleA] }
     );
     expect("\na = 'abcd';\nb = 'efgh';\nc = 'ijkl';\n").to.parseAs(
-      { type: "grammar", initializer: null, rules: [ruleA, ruleB, ruleC] }
+      { type: "grammar", initializer: null, comments: {}, rules: [ruleA, ruleB, ruleC] }
     );
     expect("\n{ code };\na = 'abcd';\n").to.parseAs(
-      { type: "grammar", initializer: initializer, rules: [ruleA] }
+      { type: "grammar", initializer: initializer, comments: {}, rules: [ruleA] }
     );
   });
 
   // Canonical Initializer is "{ code }".
   it("parses Initializer", function() {
     expect("{ code };start = 'abcd'").to.parseAs(
-      { type: "grammar", initializer: initializer, rules: [ruleStart] }
+      { type: "grammar", initializer: initializer, comments: {}, rules: [ruleStart] }
     );
   });
 
@@ -636,24 +653,40 @@ describe("PEG.js grammar parser", function() {
 
   // Canonical Comment is "/* comment */".
   it("parses Comment", function() {
-    expect("start =// comment\n'abcd'").to.parseAs(trivialGrammar);
-    expect("start =/* comment */'abcd'").to.parseAs(trivialGrammar);
+    expect("start =// comment\n'abcd'").to.parseAs(commented(
+      trivialGrammar, [{ offset: 7, text: " comment", multiline: false }]
+    ));
+    expect("start =/* comment */'abcd'").to.parseAs(commented(
+      trivialGrammar, [{ offset: 7, text: " comment ", multiline: true }]
+    ));
   });
 
   // Canonical MultiLineComment is "/* comment */".
   it("parses MultiLineComment", function() {
-    expect("start =/**/'abcd'").to.parseAs(trivialGrammar);
-    expect("start =/*a*/'abcd'").to.parseAs(trivialGrammar);
-    expect("start =/*abc*/'abcd'").to.parseAs(trivialGrammar);
+    expect("start =/**/'abcd'").to.parseAs(commented(
+      trivialGrammar, [{ offset: 7, text: "", multiline: true }]
+    ));
+    expect("start =/*a*/'abcd'").to.parseAs(commented(
+      trivialGrammar, [{ offset: 7, text: "a", multiline: true }]
+    ));
+    expect("start =/*abc*/'abcd'").to.parseAs(commented(
+      trivialGrammar, [{ offset: 7, text: "abc", multiline: true }]
+    ));
 
     expect("start =/**/*/'abcd'").to.failToParse();
   });
 
   // Canonical MultiLineCommentNoLineTerminator is "/* comment */".
   it("parses MultiLineCommentNoLineTerminator", function() {
-    expect("a = 'abcd'/**/\r\nb = 'efgh'").to.parseAs(twoRuleGrammar);
-    expect("a = 'abcd'/*a*/\r\nb = 'efgh'").to.parseAs(twoRuleGrammar);
-    expect("a = 'abcd'/*abc*/\r\nb = 'efgh'").to.parseAs(twoRuleGrammar);
+    expect("a = 'abcd'/**/\r\nb = 'efgh'").to.parseAs(commented(
+      twoRuleGrammar, [{ offset: 10, text: "", multiline: true }]
+    ));
+    expect("a = 'abcd'/*a*/\r\nb = 'efgh'").to.parseAs(commented(
+      twoRuleGrammar, [{ offset: 10, text: "a", multiline: true }]
+    ));
+    expect("a = 'abcd'/*abc*/\r\nb = 'efgh'").to.parseAs(commented(
+      twoRuleGrammar, [{ offset: 10, text: "abc", multiline: true }]
+    ));
 
     expect("a = 'abcd'/**/*/\r\nb = 'efgh'").to.failToParse();
     expect("a = 'abcd'/*\n*/\r\nb = 'efgh'").to.failToParse();
@@ -661,9 +694,15 @@ describe("PEG.js grammar parser", function() {
 
   // Canonical SingleLineComment is "// comment".
   it("parses SingleLineComment", function() {
-    expect("start =//\n'abcd'").to.parseAs(trivialGrammar);
-    expect("start =//a\n'abcd'").to.parseAs(trivialGrammar);
-    expect("start =//abc\n'abcd'").to.parseAs(trivialGrammar);
+    expect("start =//\n'abcd'").to.parseAs(commented(
+      trivialGrammar, [{ offset: 7, text: "", multiline: false }]
+    ));
+    expect("start =//a\n'abcd'").to.parseAs(commented(
+      trivialGrammar, [{ offset: 7, text: "a", multiline: false }]
+    ));
+    expect("start =//abc\n'abcd'").to.parseAs(commented(
+      trivialGrammar, [{ offset: 7, text: "abc", multiline: false }]
+    ));
 
     expect("start =//\n@\n'abcd'").to.failToParse();
   });
@@ -875,7 +914,9 @@ describe("PEG.js grammar parser", function() {
     expect("start ='abcd'").to.parseAs(trivialGrammar);
     expect("start = 'abcd'").to.parseAs(trivialGrammar);
     expect("start =\r\n'abcd'").to.parseAs(trivialGrammar);
-    expect("start =/* comment */'abcd'").to.parseAs(trivialGrammar);
+    expect("start =/* comment */'abcd'").to.parseAs(commented(
+      trivialGrammar, [{ offset: 7, text: " comment ", multiline: true }]
+    ));
     expect("start =   'abcd'").to.parseAs(trivialGrammar);
   });
 
@@ -883,7 +924,9 @@ describe("PEG.js grammar parser", function() {
   it("parses _", function() {
     expect("a = 'abcd'\r\nb = 'efgh'").to.parseAs(twoRuleGrammar);
     expect("a = 'abcd' \r\nb = 'efgh'").to.parseAs(twoRuleGrammar);
-    expect("a = 'abcd'/* comment */\r\nb = 'efgh'").to.parseAs(twoRuleGrammar);
+    expect("a = 'abcd'/* comment */\r\nb = 'efgh'").to.parseAs(commented(
+      twoRuleGrammar, [{ offset: 10, text: " comment ", multiline: true }]
+    ));
     expect("a = 'abcd'   \r\nb = 'efgh'").to.parseAs(twoRuleGrammar);
   });
 
@@ -891,7 +934,9 @@ describe("PEG.js grammar parser", function() {
   it("parses EOS", function() {
     expect("a = 'abcd'\n;b = 'efgh'").to.parseAs(twoRuleGrammar);
     expect("a = 'abcd' \r\nb = 'efgh'").to.parseAs(twoRuleGrammar);
-    expect("a = 'abcd' // comment\r\nb = 'efgh'").to.parseAs(twoRuleGrammar);
+    expect("a = 'abcd' // comment\r\nb = 'efgh'").to.parseAs(commented(
+      twoRuleGrammar, [{ offset: 11, text: " comment", multiline: false }]
+    ));
     expect("a = 'abcd'\nb = 'efgh'").to.parseAs(twoRuleGrammar);
   });
 
