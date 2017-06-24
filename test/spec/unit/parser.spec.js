@@ -22,11 +22,11 @@ describe("PEG.js grammar parser", function() {
   let simpleNotAbcd     = { type: "simple_not",   expression: literalAbcd };
   let simpleAndOptional = { type: "simple_and",   expression: optional    };
   let simpleNotOptional = { type: "simple_not",   expression: optional    };
-  let labeledAbcd       = { type: "labeled",      label: "a", expression: literalAbcd   };
-  let labeledEfgh       = { type: "labeled",      label: "b", expression: literalEfgh   };
-  let labeledIjkl       = { type: "labeled",      label: "c", expression: literalIjkl   };
-  let labeledMnop       = { type: "labeled",      label: "d", expression: literalMnop   };
-  let labeledSimpleNot  = { type: "labeled",      label: "a", expression: simpleNotAbcd };
+  let labeledAbcd       = { type: "labeled",      label: "a", auto: false, expression: literalAbcd   };
+  let labeledEfgh       = { type: "labeled",      label: "b", auto: false, expression: literalEfgh   };
+  let labeledIjkl       = { type: "labeled",      label: "c", auto: false, expression: literalIjkl   };
+  let labeledMnop       = { type: "labeled",      label: "d", auto: false, expression: literalMnop   };
+  let labeledSimpleNot  = { type: "labeled",      label: "a", auto: false, expression: simpleNotAbcd };
   let sequence          = {
     type: "sequence",
     elements: [literalAbcd, literalEfgh, literalIjkl]
@@ -704,7 +704,7 @@ describe("PEG.js grammar parser", function() {
       trivialGrammar, [{ offset: 7, text: "abc", multiline: false }]
     ));
 
-    expect("start =//\n@\n'abcd'").to.failToParse();
+    expect("start =//\n0\n'abcd'").to.failToParse();
   });
 
   // Canonical Identifier is "a".

@@ -183,7 +183,22 @@ SequenceExpression
     }
 
 LabeledExpression
-  = label:Identifier __ ":" __ expression:PrefixedExpression {
+  = "@" label:(Identifier __ ":")? __ expression:PrefixedExpression {
+      let lbl = extractOptional(label, 0);
+
+      if (lbl && reservedWords.has(lbl[0])) {
+        error(`Label can't be a reserved word "${lbl[0]}".`, lbl[1]);
+      }
+
+      return {
+        type: "labeled",
+        label: lbl ? lbl[0] :null,
+        auto: true,
+        expression: expression,
+        location: location()
+      };
+    }
+  / label:Identifier __ ":" __ expression:PrefixedExpression {
       if (reservedWords.has(label[0])) {
         error(`Label can't be a reserved word "${label[0]}".`, label[1]);
       }
@@ -191,6 +206,7 @@ LabeledExpression
       return {
         type: "labeled",
         label: label[0],
+        auto: false,
         expression: expression,
         location: location()
       };
