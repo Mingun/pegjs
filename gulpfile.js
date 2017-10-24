@@ -72,7 +72,7 @@ gulp.task("benchmark", () =>
 // Create the browser build.
 gulp.task("browser:build", () =>
   browserify("lib/peg.js", { standalone: "peg" })
-    .transform(babelify, { presets: "es2015", compact: false })
+    .transform(babelify, { presets: "env", compact: false })
     .bundle()
     .pipe(source("peg.js"))
     .pipe(header(HEADER))
