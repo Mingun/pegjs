@@ -46,6 +46,11 @@ module.exports = function(chai, utils) {
 
     let ast = parser.parse(grammar);
 
+    if (!options.allowedStartRules) {
+      options.allowedStartRules = ast.rules.length > 0
+        ? [ast.rules[0].name]
+        : [];
+    }
     utils.flag(this, "object")(ast, options);
 
     this.assert(
@@ -61,6 +66,12 @@ module.exports = function(chai, utils) {
     options = options !== undefined ? options : {};
 
     let ast = parser.parse(grammar);
+
+    if (!options.allowedStartRules) {
+      options.allowedStartRules = ast.rules.length > 0
+        ? [ast.rules[0].name]
+        : [];
+    }
 
     let passed, result;
 
