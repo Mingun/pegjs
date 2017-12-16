@@ -48,7 +48,7 @@
   "scripts": {
     "lint": "gulp lint",
     "spec": "gulp test",
-    "test": "gulp",
+    "test": "nyc gulp",
     "test:impact": "node test/impact",
     "test:server": "node test/server/run",
     "benchmark": "gulp benchmark",
@@ -74,6 +74,7 @@
     "gulp-transform": "^3.0.5",
     "gulp-uglify": "^3.0.0",
     "morgan": "^1.9.0",
+    "nyc": "^11.3.0",
     "run-sequence": "^2.2.0",
     "sinon": "^4.1.3",
     "vinyl-buffer": "^1.0.1",
@@ -81,5 +82,16 @@
   },
   "engines": {
     "node": ">=4"
+  },
+  "nyc": {
+    "exclude": [
+      "test",
+      "gulpfile.js",
+      "**/.eslintrc.js"
+    ],
+    "reporter": [
+      "text",
+      "text-summary"
+    ]
   }
 }
