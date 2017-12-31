@@ -49,8 +49,8 @@ When appropriate, add documentation and tests.
 Before submitting, make sure your change passes the tests (`gulp test`) and
 ESLint checks (`gulp lint`).
 
-[issues]: https://github.com/pegjs/pegjs/issues
-[issues-search-bugs]: https://github.com/pegjs/pegjs/issues?q=is%3Aopen+is%3Aissue+label%3ABug
-[issues-search-enhancements]: https://github.com/pegjs/pegjs/issues?q=is%3Aopen+is%3Aissue+label%3AEnhancement
-[pulls]: https://github.com/pegjs/pegjs/pulls
+[issues]: https://github.com/Mingun/pegjs/issues
+[issues-search-bugs]: https://github.com/Mingun/pegjs/issues?q=is%3Aopen+is%3Aissue+label%3ABug
+[issues-search-enhancements]: https://github.com/Mingun/pegjs/issues?q=is%3Aopen+is%3Aissue+label%3AEnhancement
+[pulls]: https://github.com/Mingun/pegjs/pulls
 [git-commit-messages]: http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html

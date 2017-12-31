@@ -1,17 +1,18 @@
 {
-  "name": "pegjs",
+  "name": "pegjs2",
   "version": "0.10.0",
   "description": "Parser generator for JavaScript",
   "keywords": [
     "parser generator",
     "PEG"
   ],
-  "homepage": "https://pegjs.org/",
-  "bugs": "https://github.com/pegjs/pegjs/issues",
+  "homepage": "https://github.com/Mingun/pegjs",
+  "bugs": "https://github.com/Mingun/pegjs/issues",
   "license": "MIT",
   "contributors": [
     "David Majda <david@majda.cz> (https://majda.cz/)",
-    "Futago-za Ryuu <futagoza.ryuu@gmail.com>"
+    "Futago-za Ryuu <futagoza.ryuu@gmail.com>",
+    "Mingun"
   ],
   "files": [
     "CHANGELOG.md",
@@ -44,7 +45,7 @@
   ],
   "main": "lib/peg",
   "bin": "bin/peg.js",
-  "repository": "pegjs/pegjs",
+  "repository": "Mingun/pegjs",
   "scripts": {
     "lint": "gulp lint",
     "spec": "gulp test",

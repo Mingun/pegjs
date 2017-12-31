@@ -15,7 +15,7 @@ To run the PEG.js test suites you most download the and install the module via t
   2. Download via Git and change the currently working directory:
 
      ```console
-     $ git clone https://github.com/pegjs/pegjs.git
+     $ git clone https://github.com/Mingun/pegjs.git
      $ cd pegjs
      ```
 
