@@ -64,6 +64,7 @@
     "babelify": "^8.0.0",
     "browserify": "14 - 15",
     "chai": "^4.1.2",
+    "chai-like": "^1.0.0",
     "coveralls": "^3.0.0",
     "del": "^3.0.0",
     "eslint-config-dmajda": "1.0.0",

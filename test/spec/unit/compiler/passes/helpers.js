@@ -5,44 +5,10 @@ let parser = require("../../../../../lib/parser");
 module.exports = function(chai, utils) {
   let Assertion = chai.Assertion;
 
+  chai.use(require("chai-like"));
+
   Assertion.addMethod("changeAST", function(grammar, props, options) {
     options = options !== undefined ? options : {};
-
-    function matchProps(value, props) {
-      function isArray(value) {
-        return Object.prototype.toString.apply(value) === "[object Array]";
-      }
-
-      function isObject(value) {
-        return value !== null && typeof value === "object";
-      }
-
-      if (isArray(props)) {
-        if (!isArray(value)) { return false; }
-
-        if (value.length !== props.length) { return false; }
-        for (let i = 0; i < props.length; i++) {
-          if (!matchProps(value[i], props[i])) { return false; }
-        }
-
-        return true;
-      } else if (isObject(props)) {
-        if (!isObject(value)) { return false; }
-
-        let keys = Object.keys(props);
-        for (let i = 0; i < keys.length; i++) {
-          let key = keys[i];
-
-          if (!(key in value)) { return false; }
-
-          if (!matchProps(value[key], props[key])) { return false; }
-        }
-
-        return true;
-      } else {
-        return value === props;
-      }
-    }
 
     let ast = parser.parse(grammar);
 
@@ -53,13 +19,7 @@ module.exports = function(chai, utils) {
     }
     utils.flag(this, "object")(ast, options);
 
-    this.assert(
-      matchProps(ast, props),
-      "expected #{this} to change the AST to match #{exp}",
-      "expected #{this} to not change the AST to match #{exp}",
-      props,
-      ast
-    );
+    new Assertion(ast).like(props);
   });
 
   Assertion.addMethod("reportError", function(grammar, props, options) {
