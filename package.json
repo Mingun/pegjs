@@ -62,7 +62,7 @@
     "babel-core": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "babelify": "^8.0.0",
-    "browserify": "^14.5.0",
+    "browserify": "14 - 15",
     "chai": "^4.1.2",
     "coveralls": "^3.0.0",
     "del": "^3.0.0",

@@ -44,7 +44,7 @@ const TEST_FILES = [
 ];
 
 function generate(contents) {
-  return peg.generate(contents.toString(), {
+  return peg.generate(contents, {
     output: "source",
     format: "commonjs"
   });
@@ -92,7 +92,7 @@ gulp.task("browser:clean", () =>
 // Generate the grammar parser.
 gulp.task("parser", () =>
   gulp.src("src/parser.pegjs")
-    .pipe(transform(generate))
+    .pipe(transform("utf8", generate))
     .pipe(rename({ extname: ".js" }))
     .pipe(gulp.dest("lib"))
 );
