@@ -7,8 +7,11 @@ module.exports = function(chai, utils) {
 
   chai.use(require("chai-like"));
 
-  Assertion.addMethod("changeAST", function(grammar, props, options) {
+  Assertion.addMethod("changeAST", function(grammar, props, options, additionalRuleProps) {
     options = options !== undefined ? options : {};
+    additionalRuleProps = typeof additionalRuleProps !== "undefined"
+      ? additionalRuleProps
+      : { reportFailures: true };
 
     let ast = parser.parse(grammar);
 
@@ -17,6 +20,8 @@ module.exports = function(chai, utils) {
         ? [ast.rules[0].name]
         : [];
     }
+    ast.rules = ast.rules.map(rule => Object.assign(rule, additionalRuleProps));
+
     utils.flag(this, "object")(ast, options);
 
     new Assertion(ast).like(props);
