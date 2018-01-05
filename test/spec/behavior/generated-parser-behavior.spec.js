@@ -904,12 +904,13 @@ describe("generated parser behavior", function() {
           expect(parser).to.failToParse("b");
         });
 
-        it("discards any expectations recorded when matching the expression", function() {
+        it("not discards any expectations recorded when matching the expression", function() {
           let parser = peg.generate("start = 'a' / &'b' / 'c'", options);
 
           expect(parser).to.failToParse("d", {
             expected: [
               { type: "literal", text: "a", ignoreCase: false },
+              { type: "literal", text: "b", ignoreCase: false },
               { type: "literal", text: "c", ignoreCase: false }
             ]
           });
@@ -939,13 +940,26 @@ describe("generated parser behavior", function() {
           expect(parser).to.parse("b");
         });
 
-        it("discards any expectations recorded when matching the expression", function() {
+        it("inverts any expectations recorded when matching the expression", function() {
           let parser = peg.generate("start = 'a' / !'b' / 'c'", options);
 
           expect(parser).to.failToParse("b", {
             expected: [
               { type: "literal", text: "a", ignoreCase: false },
+              { type: "not", expected: { type: "literal", text: "b", ignoreCase: false } },
               { type: "literal", text: "c", ignoreCase: false }
+            ]
+          });
+        });
+      });
+
+      describe("when the expression inverted twice", function() {
+        it("reports not inverted expectations", function() {
+          let parser = peg.generate("start = !(!'a')", options);
+
+          expect(parser).to.failToParse("b", {
+            expected: [
+              { type: "literal", text: "a", ignoreCase: false }
             ]
           });
         });
