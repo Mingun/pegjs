@@ -39,6 +39,45 @@
     "!": "semantic_not"
   };
 
+  const RESERVED_WORDS_JS = [
+    "break",
+    "case",
+    "catch",
+    "class",
+    "const",
+    "continue",
+    "debugger",
+    "default",
+    "delete",
+    "do",
+    "else",
+    "enum",
+    "export",
+    "extends",
+    "false",
+    "finally",
+    "for",
+    "function",
+    "if",
+    "import",
+    "instanceof",
+    "in",
+    "new",
+    "null",
+    "return",
+    "super",
+    "switch",
+    "this",
+    "throw",
+    "true",
+    "try",
+    "typeof",
+    "var",
+    "void",
+    "while",
+    "with"
+  ];
+
   function extractOptional(optional, index) {
     return optional ? optional[index] : null;
   }
@@ -50,6 +89,8 @@
   function buildList(head, tail, index) {
     return [head].concat(extractList(tail, index));
   }
+
+  let reservedWords = new Set(RESERVED_WORDS_JS);
 }
 
 // ---- Syntactic Grammar -----
@@ -240,7 +281,12 @@ SingleLineComment
   = "//" (!LineTerminator SourceCharacter)*
 
 Identifier
-  = !ReservedWord name:IdentifierName { return name; }
+  = name:IdentifierName {
+    if (reservedWords.has(name)) {
+      error(`Expected identifier but reserved word "${name}" found.`);
+    }
+    return name;
+  }
 
 IdentifierName "identifier"
   = head:IdentifierStart tail:IdentifierPart* { return head + tail.join(""); }
@@ -276,56 +322,6 @@ UnicodeDigit
 
 UnicodeConnectorPunctuation
   = Pc
-
-ReservedWord
-  = Keyword
-  / FutureReservedWord
-  / NullLiteral
-  / BooleanLiteral
-
-Keyword
-  = BreakToken
-  / CaseToken
-  / CatchToken
-  / ContinueToken
-  / DebuggerToken
-  / DefaultToken
-  / DeleteToken
-  / DoToken
-  / ElseToken
-  / FinallyToken
-  / ForToken
-  / FunctionToken
-  / IfToken
-  / InstanceofToken
-  / InToken
-  / NewToken
-  / ReturnToken
-  / SwitchToken
-  / ThisToken
-  / ThrowToken
-  / TryToken
-  / TypeofToken
-  / VarToken
-  / VoidToken
-  / WhileToken
-  / WithToken
-
-FutureReservedWord
-  = ClassToken
-  / ConstToken
-  / EnumToken
-  / ExportToken
-  / ExtendsToken
-  / ImportToken
-  / SuperToken
-
-NullLiteral
-  = NullToken
-
-BooleanLiteral
-  = TrueToken
-  / FalseToken
 
 LiteralMatcher "literal"
   = value:StringLiteral ignoreCase:"i"? {
@@ -497,45 +493,6 @@ Pc = [\u005F\u203F-\u2040\u2054\uFE33-\uFE34\uFE4D-\uFE4F\uFF3F]
 
 // Separator, Space
 Zs = [\u0020\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]
-
-// Tokens
-
-BreakToken      = "break"      !IdentifierPart
-CaseToken       = "case"       !IdentifierPart
-CatchToken      = "catch"      !IdentifierPart
-ClassToken      = "class"      !IdentifierPart
-ConstToken      = "const"      !IdentifierPart
-ContinueToken   = "continue"   !IdentifierPart
-DebuggerToken   = "debugger"   !IdentifierPart
-DefaultToken    = "default"    !IdentifierPart
-DeleteToken     = "delete"     !IdentifierPart
-DoToken         = "do"         !IdentifierPart
-ElseToken       = "else"       !IdentifierPart
-EnumToken       = "enum"       !IdentifierPart
-ExportToken     = "export"     !IdentifierPart
-ExtendsToken    = "extends"    !IdentifierPart
-FalseToken      = "false"      !IdentifierPart
-FinallyToken    = "finally"    !IdentifierPart
-ForToken        = "for"        !IdentifierPart
-FunctionToken   = "function"   !IdentifierPart
-IfToken         = "if"         !IdentifierPart
-ImportToken     = "import"     !IdentifierPart
-InstanceofToken = "instanceof" !IdentifierPart
-InToken         = "in"         !IdentifierPart
-NewToken        = "new"        !IdentifierPart
-NullToken       = "null"       !IdentifierPart
-ReturnToken     = "return"     !IdentifierPart
-SuperToken      = "super"      !IdentifierPart
-SwitchToken     = "switch"     !IdentifierPart
-ThisToken       = "this"       !IdentifierPart
-ThrowToken      = "throw"      !IdentifierPart
-TrueToken       = "true"       !IdentifierPart
-TryToken        = "try"        !IdentifierPart
-TypeofToken     = "typeof"     !IdentifierPart
-VarToken        = "var"        !IdentifierPart
-VoidToken       = "void"       !IdentifierPart
-WhileToken      = "while"      !IdentifierPart
-WithToken       = "with"       !IdentifierPart
 
 // Skipped
 

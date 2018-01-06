@@ -199,6 +199,60 @@ describe("PEG.js API", function() {
 
     // The |plugins| option is tested in plugin API tests.
 
+    describe("reserved words", function() {
+      const RESERVED_WORDS_JS = [
+        "break",
+        "case",
+        "catch",
+        "class",
+        "const",
+        "continue",
+        "debugger",
+        "default",
+        "delete",
+        "do",
+        "else",
+        "enum",
+        "export",
+        "extends",
+        "false",
+        "finally",
+        "for",
+        "function",
+        "if",
+        "import",
+        "instanceof",
+        "in",
+        "new",
+        "null",
+        "return",
+        "super",
+        "switch",
+        "this",
+        "throw",
+        "true",
+        "try",
+        "typeof",
+        "var",
+        "void",
+        "while",
+        "with"
+      ];
+
+      describe("throws an exception on reserved JS words used as labels", function() {
+        for (let label of RESERVED_WORDS_JS) {
+          it(label, function() {
+            expect(() => {
+              peg.generate([
+                "start = " + label + ":end",
+                "end = 'a'"
+              ].join("\n"), { output: "source" });
+            }).to.throw(peg.parser.SyntaxError);
+          });
+        }
+      });
+    });
+
     it("accepts custom options", function() {
       peg.generate("start = 'a'", { foo: 42 });
     });
