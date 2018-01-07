@@ -170,9 +170,13 @@ SequenceExpression
 
 LabeledExpression
   = label:Identifier __ ":" __ expression:PrefixedExpression {
+      if (reservedWords.has(label[0])) {
+        error(`Label can't be a reserved word "${label[0]}".`, label[1]);
+      }
+
       return {
         type: "labeled",
-        label: label,
+        label: label[0],
         expression: expression,
         location: location()
       };
@@ -281,12 +285,7 @@ SingleLineComment
   = "//" (!LineTerminator SourceCharacter)*
 
 Identifier
-  = name:IdentifierName {
-    if (reservedWords.has(name)) {
-      error(`Expected identifier but reserved word "${name}" found.`);
-    }
-    return name;
-  }
+  = name:IdentifierName { return [name, location()]; }
 
 IdentifierName "identifier"
   = head:IdentifierStart tail:IdentifierPart* { return head + tail.join(""); }

@@ -251,6 +251,19 @@ describe("PEG.js API", function() {
           });
         }
       });
+
+      describe("not throws an exception on reserved JS words used as rule name", function() {
+        for (let rule of RESERVED_WORDS_JS) {
+          it(rule, function() {
+            expect(() => {
+              peg.generate([
+                "start = " + rule,
+                rule + " = 'a'"
+              ].join("\n"), { output: "source" });
+            }).to.not.throw(peg.parser.SyntaxError);
+          });
+        }
+      });
     });
 
     it("accepts custom options", function() {
