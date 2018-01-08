@@ -31,6 +31,7 @@
     "lib/compiler/opcodes.js",
     "lib/compiler/passes/generate-bytecode.js",
     "lib/compiler/passes/generate-js.js",
+    "lib/compiler/passes/inference-match-result.js",
     "lib/compiler/passes/remove-proxy-rules.js",
     "lib/compiler/passes/report-duplicate-labels.js",
     "lib/compiler/passes/report-duplicate-rules.js",
