@@ -1,4 +1,6 @@
-{
+"use strict";
+
+module.exports = {
   "extends": "dmajda",
   "env": {
     "node": true
