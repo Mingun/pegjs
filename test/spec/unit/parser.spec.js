@@ -111,8 +111,8 @@ describe("PEG.js grammar parser", function() {
 
   let stripLocation = (function() {
     function buildVisitor(functions) {
-      return function(node) {
-        return functions[node.type].apply(null, arguments);
+      return function(node, ...args) {
+        return functions[node.type](node, ...args);
       };
     }
 

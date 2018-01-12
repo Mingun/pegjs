@@ -61,7 +61,7 @@ gulp.task("lint", () =>
 // Run tests.
 gulp.task("test", () =>
   gulp.src(TEST_FILES, { read: false })
-    .pipe(mocha())
+    .pipe(mocha({ harmony: true }))
 );
 
 // Run benchmarks.
