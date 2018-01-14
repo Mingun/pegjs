@@ -99,7 +99,6 @@ while (args.length > 0) {
   }
 
   switch (argument) {
-
     case "--":
       options["--"] = args;
       args = [];

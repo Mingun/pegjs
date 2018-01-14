@@ -68,6 +68,7 @@ module.exports = {
     "no-label-var": "error",
     "no-shadow-restricted-names": "error",
     "no-undef-init": "error",
+    "no-buffer-constructor": "error",
 
     // ----- Node.js and CommonJS -----
     "no-new-require": "error",
@@ -84,7 +85,7 @@ module.exports = {
     "eol-last": ["error", "always"],
     "func-call-spacing": ["error", "never"],
     "func-style": ["error", "declaration"],
-    "indent": ["error", 2, {
+    "indent-legacy": ["error", 2, {
       SwitchCase: 1,
       VariableDeclarator: 1,
       outerIIFEBody: 1,
@@ -98,7 +99,12 @@ module.exports = {
       mode: "minimum"
     }],
     "keyword-spacing": ["error", { before: true, after: true }],
-    "lines-around-directive": ["error", "always"],
+    "padding-line-between-statements": ["error",
+      { blankLine: "always", prev: "directive", next: "*" },
+      { blankLine: "any", prev: "directive", next: "directive" },
+      { blankLine: "always", prev: "*", next: "return" },
+      { blankLine: "any", prev: "block-like", next: "return" },
+    ],
     "max-len": ["error", {
       code: 100,
       ignoreComments: true,
