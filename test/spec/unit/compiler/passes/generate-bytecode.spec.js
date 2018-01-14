@@ -651,12 +651,12 @@ describe("compiler pass |generateBytecode|", function() {
 
         it("generates correct bytecode", function() {
           expect(pass).to.changeAST(grammar, bytecodeDetails([
-            0, 0   // PUSH
+            0   // PUSH_EMPTY_STRING
           ]));
         });
 
         it("defines correct constants", function() {
-          expect(pass).to.changeAST(grammar, constsDetails([""], [], [], []));
+          expect(pass).to.changeAST(grammar, constsDetails([], [], [], []));
         });
       });
 
@@ -711,12 +711,14 @@ describe("compiler pass |generateBytecode|", function() {
 
         it("generates correct bytecode", function() {
           expect(pass).to.changeAST(grammar, bytecodeDetails([
-            0, 0   // PUSH
+            0   // PUSH_EMPTY_STRING
           ]), {}, { reportFailures: false });
         });
 
         it("defines correct constants", function() {
-          expect(pass).to.changeAST(grammar, constsDetails([""], [], [], []), {}, { reportFailures: false });
+          expect(pass).to.changeAST(grammar, constsDetails(
+            [], [], [], []
+          ), {}, { reportFailures: false });
         });
       });
 
