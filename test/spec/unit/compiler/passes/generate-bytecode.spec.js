@@ -187,6 +187,15 @@ describe("compiler pass |generateBytecode|", function() {
           [{ predicate: false, params: [], body: " code " }]
         ));
       });
+
+      it("defines only one constant for the same code and parameters", function() {
+        expect(pass).to.changeAST("start = ('' { code }) ('' { code })", constsDetails(
+          [],
+          [],
+          [],
+          [{ predicate: false, params: [], body: " code " }]
+        ));
+      });
     });
 
     describe("with one label", function() {
@@ -248,6 +257,15 @@ describe("compiler pass |generateBytecode|", function() {
             { type: "literal", value: "b", ignoreCase: false },
             { type: "literal", value: "c", ignoreCase: false }
           ],
+          [{ predicate: false, params: ["a", "b", "c"], body: " code " }]
+        ));
+      });
+
+      it("defines only one constant for the same code and parameters", function() {
+        expect(pass).to.changeAST("start = a:'' b:'' c:'' ('' { code }) ('' { code })", constsDetails(
+          [],
+          [],
+          [],
           [{ predicate: false, params: ["a", "b", "c"], body: " code " }]
         ));
       });
@@ -493,6 +511,15 @@ describe("compiler pass |generateBytecode|", function() {
           )
         );
       });
+
+      it("defines only one constant for the same code and parameters", function() {
+        expect(pass).to.changeAST("start = &{ code } &{ code }", constsDetails(
+          [],
+          [],
+          [],
+          [{ predicate: true, params: [], body: " code " }]
+        ));
+      });
     });
 
     describe("with labels", function() {
@@ -544,6 +571,15 @@ describe("compiler pass |generateBytecode|", function() {
           [{ predicate: true, params: ["a", "b", "c"], body: " code " }]
         ));
       });
+
+      it("defines only one constant for the same code and parameters", function() {
+        expect(pass).to.changeAST("start = a:'' b:'' c:'' &{ code } &{ code }", constsDetails(
+          [],
+          [],
+          [],
+          [{ predicate: true, params: ["a", "b", "c"], body: " code " }]
+        ));
+      });
     });
   });
 
@@ -573,6 +609,15 @@ describe("compiler pass |generateBytecode|", function() {
             [{ predicate: true, params: [], body: " code " }]
           )
         );
+      });
+
+      it("defines only one constant for the same code and parameters", function() {
+        expect(pass).to.changeAST("start = !{ code } !{ code }", constsDetails(
+          [],
+          [],
+          [],
+          [{ predicate: true, params: [], body: " code " }]
+        ));
       });
     });
 
@@ -622,6 +667,15 @@ describe("compiler pass |generateBytecode|", function() {
             { type: "literal", value: "b", ignoreCase: false },
             { type: "literal", value: "c", ignoreCase: false }
           ],
+          [{ predicate: true, params: ["a", "b", "c"], body: " code " }]
+        ));
+      });
+
+      it("defines only one constant for the same code and parameters", function() {
+        expect(pass).to.changeAST("start = a:'' b:'' c:'' !{ code } !{ code }", constsDetails(
+          [],
+          [],
+          [],
           [{ predicate: true, params: ["a", "b", "c"], body: " code " }]
         ));
       });
@@ -703,6 +757,15 @@ describe("compiler pass |generateBytecode|", function() {
           ));
         });
       });
+
+      it("defines only one constant for the same literals", function() {
+        expect(pass).to.changeAST("start = 'a' 'a'", constsDetails(
+          ["a"],
+          [],
+          [{ type: "literal", value: "a", ignoreCase: false }],
+          []
+        ));
+      });
     });
 
     describe("when |reportFailures=false|", function() {
@@ -756,6 +819,15 @@ describe("compiler pass |generateBytecode|", function() {
             ["a"], [], [], []
           ), {}, { reportFailures: false });
         });
+      });
+
+      it("defines only one constant for the same literals", function() {
+        expect(pass).to.changeAST("start = 'a' 'a'", constsDetails(
+          ["a"],
+          [],
+          [],
+          []
+        ), {}, { reportFailures: false });
       });
     });
   });
@@ -827,6 +899,15 @@ describe("compiler pass |generateBytecode|", function() {
           ));
         });
       });
+
+      it("defines only one constant for the same classes", function() {
+        expect(pass).to.changeAST("start = [a] [a]", constsDetails(
+          [],
+          [{ value: ["a"], inverted: false, ignoreCase: false }],
+          [{ type: "class", value: ["a"], inverted: false, ignoreCase: false }],
+          []
+        ));
+      });
     });
 
     describe("when |reportFailures=false|", function() {
@@ -878,6 +959,15 @@ describe("compiler pass |generateBytecode|", function() {
           ), {}, { reportFailures: false });
         });
       });
+
+      it("defines only one constant for the same classes", function() {
+        expect(pass).to.changeAST("start = [a] [a]", constsDetails(
+          [],
+          [{ value: ["a"], inverted: false, ignoreCase: false }],
+          [],
+          []
+        ), {}, { reportFailures: false });
+      });
     });
   });
 
@@ -922,5 +1012,61 @@ describe("compiler pass |generateBytecode|", function() {
         );
       });
     });
+  });
+
+  it("defines different constants for predicate and action for the same code and parameters", function() {
+    expect(pass).to.changeAST("start = &{ code } { code }", constsDetails(
+      [],
+      [],
+      [],
+      [
+        { predicate: true,  params: [], body: " code " },
+        { predicate: false, params: [], body: " code " }
+      ]
+    ));
+    expect(pass).to.changeAST("start = a:'' b:'' c:'' &{ code } { code }", constsDetails(
+      [],
+      [],
+      [],
+      [
+        { predicate: true,  params: ["a", "b", "c"], body: " code " },
+        { predicate: false, params: ["a", "b", "c"], body: " code " }
+      ]
+    ));
+
+    expect(pass).to.changeAST("start = !{ code } { code }", constsDetails(
+      [],
+      [],
+      [],
+      [
+        { predicate: true,  params: [], body: " code " },
+        { predicate: false, params: [], body: " code " }
+      ]
+    ));
+    expect(pass).to.changeAST("start = a:'' b:'' c:'' !{ code } { code }", constsDetails(
+      [],
+      [],
+      [],
+      [
+        { predicate: true,  params: ["a", "b", "c"], body: " code " },
+        { predicate: false, params: ["a", "b", "c"], body: " code " }
+      ]
+    ));
+  });
+
+  it("defines only one constants for positive and negative predicates for the same code and parameters", function() {
+    expect(pass).to.changeAST("start = &{ code } !{ code }", constsDetails(
+      [],
+      [],
+      [],
+      [{ predicate: true,  params: [], body: " code " }]
+    ));
+
+    expect(pass).to.changeAST("start = a:'' b:'' c:'' &{ code } !{ code }", constsDetails(
+      [],
+      [],
+      [],
+      [{ predicate: true,  params: ["a", "b", "c"], body: " code " }]
+    ));
   });
 });
