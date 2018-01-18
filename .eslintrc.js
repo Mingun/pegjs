@@ -21,7 +21,6 @@ module.exports = {
     "valid-jsdoc": "error",
 
     // ----- Best Practices -----
-    "block-scoped-var": "error",
     "consistent-return": "error",
     "curly": "error",
     "default-case": "error",
@@ -30,8 +29,6 @@ module.exports = {
     "eqeqeq": "error",
     "guard-for-in": "error",
     "no-caller": "error",
-    "no-empty-function": "error",
-    "no-empty-pattern": "off",
     "no-eq-null": "error",
     "no-extend-native": "error",
     "no-extra-bind": "error",
@@ -44,12 +41,12 @@ module.exports = {
     "no-lone-blocks": "error",
     "no-loop-func": "error",
     "no-multi-str": "error",
-    "no-new-wrappers": "error",
     "no-new": "error",
+    "no-new-func": "error",
+    "no-new-wrappers": "error",
     "no-octal-escape": "error",
     "no-proto": "error",
     "no-return-assign": "error",
-    "no-script-url": "error",
     "no-self-compare": "error",
     "no-sequences": "error",
     "no-throw-literal": "error",
@@ -70,6 +67,7 @@ module.exports = {
     // ----- Variables -----
     "no-label-var": "error",
     "no-shadow-restricted-names": "error",
+    "no-undef-init": "error",
 
     // ----- Node.js and CommonJS -----
     "no-new-require": "error",
@@ -79,24 +77,21 @@ module.exports = {
     "block-spacing": ["error", "always"],
     "brace-style": ["error", "1tbs", { allowSingleLine: true }],
     "camelcase": ["error", { properties: "never" }],
-    "comma-dangle": ["error", "never"],
+    "comma-dangle": ["error", "only-multiline"],
     "comma-spacing": ["error", { before: false, after: true }],
-    "comma-style": ["error", "last"],
     "computed-property-spacing": ["error", "never"],
     "consistent-this": ["error", "that"],
     "eol-last": ["error", "always"],
     "func-call-spacing": ["error", "never"],
-    "func-names": ["error", "never"],
     "func-style": ["error", "declaration"],
     "indent": ["error", 2, {
       SwitchCase: 1,
       VariableDeclarator: 1,
       outerIIFEBody: 1,
       MemberExpression: 1,
-      FunctionDeclaration: { parametrs: 1, body: 1 },
-      FunctionExpression: { parametrs: 1, body: 1 }
+      FunctionDeclaration: { parameters: 1, body: 1 },
+      FunctionExpression: { parameters: 1, body: 1 }
     }],
-    "jsx-quotes": ["error", "prefer-double"],
     "key-spacing": ["error", {
       beforeColon: false,
       afterColon: true,
@@ -105,17 +100,15 @@ module.exports = {
     "keyword-spacing": ["error", { before: true, after: true }],
     "lines-around-directive": ["error", "always"],
     "max-len": ["error", {
-      code: 80,
+      code: 100,
       ignoreComments: true,
       ignoreStrings: true,
       ignoreTemplateLiterals: true
     }],
     "new-cap": ["error", { newIsCap: true, capIsNew: true, properties: true }],
     "new-parens": "error",
-    "newline-before-return": "error",
     "no-array-constructor": "error",
     "no-multiple-empty-lines": ["error", { max: 1 }],
-    "no-nested-ternary": "error",
     "no-new-object": "error",
     "no-tabs": "error",
     "no-trailing-spaces": "error",
@@ -127,16 +120,15 @@ module.exports = {
     "operator-linebreak": ["error", "before"],
     "padded-blocks": ["error", "never"],
     "quote-props": ["error", "consistent"],
-    "quotes": ["error", "double"],
-    "semi-spacing": ["error", { before: false, after: true }],
+    "quotes": ["error", "double", { "avoidEscape": true }],
     "semi": ["error", "always"],
+    "semi-spacing": ["error", { before: false, after: true }],
     "space-before-blocks": ["error", "always"],
     "space-before-function-paren": ["error", "never"],
-    "space-in-parens": ["error", "never"],
-    "space-infix-ops": "error",
+    "space-infix-ops": ["error", { "int32Hint": true }],
     "space-unary-ops": ["error", { words: true, nonwords: false }],
     "spaced-comment": ["error", "always", {
-      line: { markers: ["/"] },
+      line: { markers: ["/", "{", "}"] },
       block: { markers: ["*"], balanced: true }
     }],
     "unicode-bom": ["error", "never"],
@@ -161,6 +153,6 @@ module.exports = {
     }],
     "symbol-description": "error",
     "template-curly-spacing": ["error", "never"],
-    "yield-star-spacing": ["error", "after"]
+    "yield-star-spacing": ["error", "after"],
   }
 }

@@ -988,7 +988,7 @@ describe("compiler pass |generateBytecode|", function() {
         expect(pass).to.changeAST(
           grammar,
           constsDetails([], [], [{ type: "any" }], [])
-         );
+        );
       });
     });
 
