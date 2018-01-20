@@ -208,12 +208,46 @@ SuffixedExpression
         location: location()
       };
     }
+  / RangeExpression
   / PrimaryExpression
 
 SuffixedOperator
   = "?"
   / "*"
   / "+"
+
+RangeExpression
+  = expression:PrimaryExpression __ operator:RangeOperator {
+      let min = operator[0];
+      let max = operator[1];
+      if (max.constant && max.value === 0) {
+        error("The maximum count of repetitions of the rule must be > 0.", max.location);
+      }
+      return {
+        type:       "range",
+        min:        min,
+        max:        max,
+        expression: expression,
+        delimiter:  operator[2],
+        location:   location()
+      };
+    }
+
+RangeOperator
+  = "|" __ exact:RangeBoundary __ delimiter:("," __ Expression __)? "|" {
+      return [exact, exact, extractOptional(delimiter, 2)];
+    }
+  / "|" __ min:RangeBoundary? __ ".." __ max:RangeBoundary? __ delimiter:("," __ Expression __)? "|" {
+    return [
+      min !== null ? min : { constant: true, value: 0 },
+      max !== null ? max : { constant: true, value: null },
+      extractOptional(delimiter, 2)
+    ];
+  }
+
+RangeBoundary
+  = value:Int { return { constant: true, value: value, location: location() }; }
+  / value:Identifier { return { constant: false, value: value[0], location: location() }; }
 
 PrimaryExpression
   = LiteralMatcher
@@ -438,6 +472,9 @@ CodeBlock "code block"
 
 Code
   = $((![{}] SourceCharacter)+ / "{" Code "}")*
+
+Int
+  = digits:$DecimalDigit+ { return parseInt(digits); }
 
 // Unicode Character Categories
 //

@@ -29,6 +29,132 @@ describe("compiler pass |reportInfiniteRepetition|", function() {
     });
   });
 
+  describe("reports infinite loops for range", function() {
+    describe("with constant boundaries", function() {
+      it("without delimiter", function() {
+        expect(pass).to.reportError("start = ('')|..|", {
+          message:  "Possible infinite loop when parsing (unbounded range repetition used with an expression that may not consume any input).",
+          location: {
+            start: { offset:  8, line: 1, column:  9 },
+            end:   { offset: 16, line: 1, column: 17 }
+          }
+        });
+        expect(pass).to.reportError("start = ('')|0..|", {
+          message:  "Possible infinite loop when parsing (unbounded range repetition used with an expression that may not consume any input).",
+          location: {
+            start: { offset:  8, line: 1, column:  9 },
+            end:   { offset: 17, line: 1, column: 18 }
+          }
+        });
+        expect(pass).to.reportError("start = ('')|1..|", {
+          message:  "Possible infinite loop when parsing (unbounded range repetition used with an expression that may not consume any input).",
+          location: {
+            start: { offset:  8, line: 1, column:  9 },
+            end:   { offset: 17, line: 1, column: 18 }
+          }
+        });
+        expect(pass).to.reportError("start = ('')|2..|", {
+          message:  "Possible infinite loop when parsing (unbounded range repetition used with an expression that may not consume any input).",
+          location: {
+            start: { offset:  8, line: 1, column:  9 },
+            end:   { offset: 17, line: 1, column: 18 }
+          }
+        });
+
+        expect(pass).to.not.reportError("start = ('')| ..1|");
+        expect(pass).to.not.reportError("start = ('')| ..3|");
+        expect(pass).to.not.reportError("start = ('')|2..3|");
+        expect(pass).to.not.reportError("start = ('')| 42 |");
+      });
+
+      it("with empty delimiter", function() {
+        expect(pass).to.reportError("start = ('')| .., ''|", {
+          message:  "Possible infinite loop when parsing (unbounded range repetition used with an expression that may not consume any input).",
+          location: {
+            start: { offset:  8, line: 1, column:  9 },
+            end:   { offset: 21, line: 1, column: 22 }
+          }
+        });
+        expect(pass).to.reportError("start = ('')|0.., ''|", {
+          message:  "Possible infinite loop when parsing (unbounded range repetition used with an expression that may not consume any input).",
+          location: {
+            start: { offset:  8, line: 1, column:  9 },
+            end:   { offset: 21, line: 1, column: 22 }
+          }
+        });
+        expect(pass).to.reportError("start = ('')|1.., ''|", {
+          message:  "Possible infinite loop when parsing (unbounded range repetition used with an expression that may not consume any input).",
+          location: {
+            start: { offset:  8, line: 1, column:  9 },
+            end:   { offset: 21, line: 1, column: 22 }
+          }
+        });
+        expect(pass).to.reportError("start = ('')|2.., ''|", {
+          message:  "Possible infinite loop when parsing (unbounded range repetition used with an expression that may not consume any input).",
+          location: {
+            start: { offset:  8, line: 1, column:  9 },
+            end:   { offset: 21, line: 1, column: 22 }
+          }
+        });
+
+        expect(pass).to.not.reportError("start = ('')| ..1, ''|");
+        expect(pass).to.not.reportError("start = ('')| ..3, ''|");
+        expect(pass).to.not.reportError("start = ('')|2..3, ''|");
+        expect(pass).to.not.reportError("start = ('')| 42 , ''|");
+      });
+
+      it("with non-empty delimiter", function() {
+        expect(pass).to.not.reportError("start = ('')| .., 'a'|");
+        expect(pass).to.not.reportError("start = ('')|0.., 'a'|");
+        expect(pass).to.not.reportError("start = ('')|1.., 'a'|");
+        expect(pass).to.not.reportError("start = ('')|2.., 'a'|");
+
+        expect(pass).to.not.reportError("start = ('')| ..1, 'a'|");
+        expect(pass).to.not.reportError("start = ('')| ..3, 'a'|");
+        expect(pass).to.not.reportError("start = ('')|2..3, 'a'|");
+        expect(pass).to.not.reportError("start = ('')| 42 , 'a'|");
+      });
+    });
+
+    describe("with variable boundaries", function() {
+      it("without delimiter", function() {
+        expect(pass).to.reportError("start = ('')|len..|", {
+          message:  "Possible infinite loop when parsing (unbounded range repetition used with an expression that may not consume any input).",
+          location: {
+            start: { offset:  8, line: 1, column:  9 },
+            end:   { offset: 19, line: 1, column: 20 }
+          }
+        });
+
+        expect(pass).to.not.reportError("start = ('')|..len|");
+        expect(pass).to.not.reportError("start = ('')|len1..len2|");
+        expect(pass).to.not.reportError("start = ('')|len|");
+      });
+
+      it("with empty delimiter", function() {
+        expect(pass).to.reportError("start = ('')|len.., ''|", {
+          message:  "Possible infinite loop when parsing (unbounded range repetition used with an expression that may not consume any input).",
+          location: {
+            start: { offset:  8, line: 1, column:  9 },
+            end:   { offset: 23, line: 1, column: 24 }
+          }
+        });
+
+        expect(pass).to.not.reportError("start = ('')|..len, ''|");
+        expect(pass).to.not.reportError("start = ('')|len1..len2, ''|");
+        expect(pass).to.not.reportError("start = ('')|len, ''|");
+      });
+
+      it("with non-empty delimiter", function() {
+        expect(pass).to.not.reportError("start = ('')|len.., 'a'|");
+
+        expect(pass).to.not.reportError("start = ('')|..len, 'a'|");
+        expect(pass).to.not.reportError("start = ('')|len1..len2, 'a'|");
+        expect(pass).to.not.reportError("start = ('')|len, 'a'|");
+      });
+    });
+  });
+
   it("computes expressions that always consume input on success correctly", function() {
     expect(pass).to.reportError([
       "start = a*",

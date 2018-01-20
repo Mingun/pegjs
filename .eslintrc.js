@@ -103,7 +103,7 @@ module.exports = {
       { blankLine: "always", prev: "directive", next: "*" },
       { blankLine: "any", prev: "directive", next: "directive" },
       { blankLine: "always", prev: "*", next: "return" },
-      { blankLine: "any", prev: "block-like", next: "return" },
+      { blankLine: "any", prev: ["var", "let", "const", "block-like"], next: "return" },
     ],
     "max-len": ["error", {
       code: 100,
