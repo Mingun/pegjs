@@ -13,7 +13,7 @@ really is carried. Planned features to implement in the 2018:
 
 * [x] [Ranges](https://github.com/pegjs/pegjs/issues/30)
 * [ ] [Import grammars](https://github.com/pegjs/pegjs/issues/38)
-* [ ] [Annotations](https://github.com/pegjs/pegjs/issues/256)
+* [x] [Attributes](https://github.com/pegjs/pegjs/issues/256)
 * [ ] [Stream/incremental parser](https://github.com/pegjs/pegjs/issues/507)
 * [x] Drop useless features (optimize for code size)
 * [ ] Raise coverage up to 90%
@@ -36,6 +36,7 @@ Table of Contents
   * [Parsing Expression Types](#parsing-expression-types)
   * [Action Execution Environment](#action-execution-environment)
   * [Balanced Braces](#balanced-braces)
+  * [Attributes](#attributes)
 - [Error Messages](#error-messages)
 - [Comments](#comments)
 - [Compatibility](#compatibility)
@@ -223,7 +224,9 @@ parseInt(digits.join(""), 10); }`) that defines a pattern to match against the
 input text and possibly contains some JavaScript code that determines what
 happens when the pattern matches successfully. A rule can also contain
 *human-readable name* that is used in error messages (in our example, only the
-`integer` rule has a human-readable name). The parsing starts at the first rule,
+`integer` rule has a human-readable name) and any count of *attributes*.
+Attribute — any metadata which can be attached to the rule or code block and be
+used by a codegen or other passes. The parsing starts at the first rule,
 which is also called the *start rule*.
 
 A rule name must be a JavaScript identifier. It is followed by an equality sign
@@ -577,6 +580,29 @@ brace = [{}] {
   return text() === "{" ? 1 : -1;  // } for balance
 }
 ```
+
+### Attributes
+Syntax for defining attributes is similar to syntax of the Rust:
+
+```pegjs
+#[cached]
+#[export]
+rule = n:$[0-9]+ #[type(int)] { return parseInt(n); }
+```
+
+Attributes can have any name. Their sense completely is defined by a code of plug-ins
+which will process them. In an example above the attributes is used to mark the rule
+exported and caching parse result. Attribute for code block used to specify it return
+type, that useful for generating code for static typing languages. There are no built-in
+attributes.
+
+Each attribute has *name* and *value*. In example above there three attributes with
+names `cached`, `export` and `type`. Attribute `type` also has value `int`. Attribute
+value is written in the parenthesis at once after his name. There are no restrictions
+for value of attribute except that the parentheses in it shall be balanced. In AST
+all attributes live in the array property `attributes` of nodes of type `initializer`,
+`semantic_and`, `semantic_or` or `rule`. If you need the attributes attached to grammar,
+attach them to the initialiser.
 
 Error Messages
 --------------

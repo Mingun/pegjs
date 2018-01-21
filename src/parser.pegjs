@@ -108,11 +108,17 @@ Grammar
 
 Initializer
   = code:CodeBlock EOS {
-      return { type: "initializer", code: code, location: location() };
+      return {
+        type: "initializer",
+        attributes: code[0],
+        code: code[1],
+        location: location()
+      };
     }
 
 Rule
-  = name:IdentifierName __
+  = attributes:(@Attribute __)*
+    name:IdentifierName __
     displayName:(@StringLiteral __)?
     "=" __
     expression:Expression EOS
@@ -120,6 +126,7 @@ Rule
       return {
         type: "rule",
         name: name,
+        attributes: attributes,
         expression: displayName !== null
           ? {
               type: "named",
@@ -134,6 +141,22 @@ Rule
 
 Expression
   = ChoiceExpression
+
+Attribute 'attribute'
+  = "#[" name:IdentifierName __ value:AttributeValue? "]" {
+    return {
+      type: "attribute",
+      name: name,
+      value: value,
+      location: location()
+    };
+  }
+
+AttributeValue
+  = "(" @BalancedParenthesis? ")"
+
+BalancedParenthesis
+  = $((![()] .)+ / "(" BalancedParenthesis ")")+
 
 ChoiceExpression
   = head:ActionExpression tail:(__ "/" __ @ActionExpression)* {
@@ -151,8 +174,9 @@ ActionExpression
       return code !== null
         ? {
             type: "action",
+            attributes: code[0],
             expression: expression,
-            code: code,
+            code: code[1],
             location: location()
           }
         : expression;
@@ -289,7 +313,8 @@ SemanticPredicateExpression
   = operator:SemanticPredicateOperator __ code:CodeBlock {
       return {
         type: OPS_TO_SEMANTIC_PREDICATE_TYPES[operator],
-        code: code,
+        attributes: code[0],
+        code: code[1],
         location: location()
       };
     }
@@ -488,8 +513,8 @@ AnyMatcher
   = "." { return { type: "any", location: location() }; }
 
 CodeBlock "code block"
-  = "{" code:Code "}" { return code; }
-  / "{" { error("Unbalanced brace."); }
+  = (@Attribute __)*
+    ("{" @Code "}" / "{" { error("Unbalanced brace."); })
 
 Code
   = $((![{}] SourceCharacter)+ / "{" Code "}")*
