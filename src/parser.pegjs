@@ -78,17 +78,6 @@
     "with"
   ];
 
-  function extractOptional(optional, index) {
-    return optional ? optional[index] : null;
-  }
-
-  function extractList(list, index) {
-    return list.map(element => element[index]);
-  }
-
-  function buildList(head, tail, index) {
-    return [head].concat(extractList(tail, index));
-  }
 
   let reservedWords = new Set(RESERVED_WORDS_JS);
   let comments = {};
@@ -107,11 +96,11 @@
 // ---- Syntactic Grammar -----
 
 Grammar
-  = __ initializer:(Initializer __)? rules:(Rule __)+ {
+  = __ initializer:(@Initializer __)? rules:(@Rule __)+ {
       return {
         type: "grammar",
-        initializer: extractOptional(initializer, 0),
-        rules: extractList(rules, 0),
+        initializer: initializer,
+        rules: rules,
         comments: comments,
         location: location()
       };
@@ -124,7 +113,7 @@ Initializer
 
 Rule
   = name:IdentifierName __
-    displayName:(StringLiteral __)?
+    displayName:(@StringLiteral __)?
     "=" __
     expression:Expression EOS
     {
@@ -134,7 +123,7 @@ Rule
         expression: displayName !== null
           ? {
               type: "named",
-              name: displayName[0],
+              name: displayName,
               expression: expression,
               location: location()
             }
@@ -147,43 +136,56 @@ Expression
   = ChoiceExpression
 
 ChoiceExpression
-  = head:ActionExpression tail:(__ "/" __ ActionExpression)* {
+  = head:ActionExpression tail:(__ "/" __ @ActionExpression)* {
       return tail.length > 0
         ? {
             type: "choice",
-            alternatives: buildList(head, tail, 3),
+            alternatives: [head, ...tail],
             location: location()
           }
         : head;
     }
 
 ActionExpression
-  = expression:SequenceExpression code:(__ CodeBlock)? {
+  = expression:SequenceExpression code:(__ @CodeBlock)? {
       return code !== null
         ? {
             type: "action",
             expression: expression,
-            code: code[1],
+            code: code,
             location: location()
           }
         : expression;
     }
 
 SequenceExpression
-  = head:LabeledExpression? tail:(__ LabeledExpression)* {
+  = head:LabeledExpression? tail:(__ @LabeledExpression)* {
       return head === null
         ? { type: "sequence", elements: [], location: location() }
         : tail.length > 0
           ? {
               type: "sequence",
-              elements: buildList(head, tail, 1),
+              elements: [head, ...tail],
               location: location()
             }
           : head;
     }
 
 LabeledExpression
-  = label:Identifier __ ":" __ expression:PrefixedExpression {
+  = "@" label:(@Identifier __ ":")? __ expression:PrefixedExpression {
+      if (label && reservedWords.has(label[0])) {
+        error(`Label can't be a reserved word "${label[0]}".`, label[1]);
+      }
+
+      return {
+        type: "labeled",
+        label: label ? label[0] :null,
+        auto: true,
+        expression: expression,
+        location: location()
+      };
+    }
+  / label:Identifier __ ":" __ expression:PrefixedExpression {
       if (reservedWords.has(label[0])) {
         error(`Label can't be a reserved word "${label[0]}".`, label[1]);
       }
@@ -191,6 +193,7 @@ LabeledExpression
       return {
         type: "labeled",
         label: label[0],
+        auto: false,
         expression: expression,
         location: location()
       };
@@ -246,14 +249,14 @@ RangeExpression
     }
 
 RangeOperator
-  = "|" __ exact:RangeBoundary __ delimiter:("," __ Expression __)? "|" {
-      return [exact, exact, extractOptional(delimiter, 2)];
+  = "|" __ exact:RangeBoundary __ delimiter:("," __ @Expression __)? "|" {
+      return [exact, exact, delimiter];
     }
-  / "|" __ min:RangeBoundary? __ ".." __ max:RangeBoundary? __ delimiter:("," __ Expression __)? "|" {
+  / "|" __ min:RangeBoundary? __ ".." __ max:RangeBoundary? __ delimiter:("," __ @Expression __)? "|" {
     return [
       min !== null ? min : { constant: true, value: 0 },
       max !== null ? max : { constant: true, value: null },
-      extractOptional(delimiter, 2)
+      delimiter
     ];
   }
 

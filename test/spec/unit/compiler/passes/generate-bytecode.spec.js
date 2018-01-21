@@ -333,6 +333,12 @@ describe("compiler pass |generateBytecode|", function() {
       expect(pass).to.changeAST("start = a:'a'", bytecodeDetails([
         23, 0, 18, 0, 2, 1, 22, 0, 3  // <expression>
       ]));
+      expect(pass).to.changeAST("start = @'a'", bytecodeDetails([
+        23, 0, 18, 0, 2, 1, 22, 0, 3  // <expression>
+      ]));
+      expect(pass).to.changeAST("start = @a:'a'", bytecodeDetails([
+        23, 0, 18, 0, 2, 1, 22, 0, 3  // <expression>
+      ]));
     });
   });
 

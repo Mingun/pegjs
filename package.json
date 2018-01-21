@@ -35,6 +35,7 @@
     "lib/compiler/passes/inference-match-result.js",
     "lib/compiler/passes/remove-proxy-rules.js",
     "lib/compiler/passes/report-duplicate-labels.js",
+    "lib/compiler/passes/report-ambiguous-labels.js",
     "lib/compiler/passes/report-duplicate-rules.js",
     "lib/compiler/passes/report-infinite-recursion.js",
     "lib/compiler/passes/report-infinite-repetition.js",

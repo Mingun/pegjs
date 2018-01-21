@@ -1904,17 +1904,31 @@ describe("generated parser behavior", function() {
     describe("label", function() {
       describe("when the expression matches", function() {
         it("returns its match result", function() {
-          let parser = peg.generate("start = a:'a'", options);
+          let testcases = [
+            "start = a:'a'",
+            "start = @'a'",
+            "start = @a:'a'"
+          ];
 
-          expect(parser).to.parse("a", "a");
+          testcases.forEach(testcase => {
+            let parser = peg.generate(testcase, options);
+            expect(parser).to.parse("a", "a");
+          });
         });
       });
 
       describe("when the expression doesn't match", function() {
         it("reports match failure", function() {
-          let parser = peg.generate("start = a:'a'", options);
+          let testcases = [
+            "start = a:'a'",
+            "start = @'a'",
+            "start = @a:'a'"
+          ];
 
-          expect(parser).to.failToParse("b");
+          testcases.forEach(testcase => {
+            let parser = peg.generate(testcase, options);
+            expect(parser).to.failToParse("b");
+          });
         });
       });
     });
@@ -1925,6 +1939,38 @@ describe("generated parser behavior", function() {
           let parser = peg.generate("start = 'a' 'b' 'c'", options);
 
           expect(parser).to.parse("abc", ["a", "b", "c"]);
+        });
+
+        describe("with only one auto-label", function() {
+          it("returns one element", function() {
+            let testcases = [
+              "start =   'a'   @'b' 'c'",
+              "start = a:'a'   @'b' 'c'",
+              "start =   'a' @b:'b' 'c'",
+              "start = a:'a' @b:'b' 'c'"
+            ];
+
+            testcases.forEach(testcase => {
+              let parser = peg.generate(testcase, options);
+              expect(parser).to.parse("abc", "b");
+            });
+          });
+        });
+
+        describe("with multiply auto-labels", function() {
+          it("returns an array with their values", function() {
+            let testcases = [
+              "start = @'a'   @'b'   'c'",
+              "start = @'a'   @'b' c:'c'",
+              "start = @'a' @b:'b'   'c'",
+              "start = @'a' @b:'b' c:'c'"
+            ];
+
+            testcases.forEach(testcase => {
+              let parser = peg.generate(testcase, options);
+              expect(parser).to.parse("abc", ["a", "b"]);
+            });
+          });
         });
       });
 
