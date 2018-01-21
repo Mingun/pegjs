@@ -15,7 +15,6 @@ let options = {
   "dependencies": {},
   "exportVar": null,
   "format": "commonjs",
-  "optimize": "speed",
   "output": "source",
   "plugins": [],
   "trace": false
@@ -24,7 +23,6 @@ let options = {
 const EXPORT_VAR_FORMATS = ["globals", "umd"];
 const DEPENDENCY_FORMATS = ["amd", "commonjs", "es", "umd"];
 const MODULE_FORMATS = ["amd", "bare", "commonjs", "es", "globals", "umd"];
-const OPTIMIZATION_GOALS = ["size", "speed"];
 
 // Helpers
 
@@ -168,15 +166,6 @@ while (args.length > 0) {
     case "--help":
       console.log(fs.readFileSync(path.join(__dirname, "usage.txt"), "utf8").trim());
       process.exit();
-      break;
-
-    case "-O":
-    case "--optimize":
-      argument = nextArg("-O/--optimize");
-      if (OPTIMIZATION_GOALS.indexOf(argument) === -1) {
-        abort(`Optimization goal must be either ${formatChoicesList(OPTIMIZATION_GOALS)}.`);
-      }
-      options.optimize = argument;
       break;
 
     case "-o":

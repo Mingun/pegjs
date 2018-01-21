@@ -11,14 +11,14 @@ let expect = chai.expect;
 describe("generated parser behavior", function() {
   function varyOptimizationOptions(block) {
     let optionsVariants = [
-      { cache: false, optimize: "speed", trace: false },
-      { cache: false, optimize: "speed", trace: true  },
-      { cache: false, optimize: "size",  trace: false },
-      { cache: false, optimize: "size",  trace: true  },
-      { cache: true,  optimize: "speed", trace: false },
-      { cache: true,  optimize: "speed", trace: true  },
-      { cache: true,  optimize: "size",  trace: false },
-      { cache: true,  optimize: "size",  trace: true  }
+      { cache: false, trace: false },
+      { cache: false, trace: true  },
+      { cache: false, trace: false },
+      { cache: false, trace: true  },
+      { cache: true,  trace: false },
+      { cache: true,  trace: true  },
+      { cache: true,  trace: false },
+      { cache: true,  trace: true  }
     ];
 
     optionsVariants.forEach(variant => {

@@ -108,7 +108,6 @@ You can tweak the generated parser with several options:
   * `--extra-options` — additional options (in JSON format) to pass to `peg.generate`
   * `-c`, `--config`, `--extra-options-file` — file with additional options (in JSON format) to pass to `peg.generate`
   * `-f`, `--format` — format of the generated parser: `amd`, `bare`, `commonjs`, `es`, `globals`, `umd` (default: `commonjs`)
-  * `-O`, `--optimize` — selects between optimizing the generated parser for parsing speed (`speed`) or code size (`size`) (default: `speed`)
   * `-p`, `--plugin` — makes PEG.js use a specified plugin (can be specified multiple times)
   * `--trace` — makes the parser trace its progress
 
@@ -154,7 +153,6 @@ object to `peg.generate`. The following options are supported:
                   valid only when `format` is set to `"globals"` or `"umd"`
   * `format` — format of the generated parser (`"amd"`, `"bare"`, `"commonjs"`, `"es"`, `"globals"`, or `"umd"`);
                valid only when `output` is set to `"source"` (default: `"bare"`)
-  * `optimize`— selects between optimizing the generated parser for parsing speed (`"speed"`) or code size (`"size"`) (default: `"speed"`)
   * `output` — if set to `"parser"` (default), the method will return generated parser object;
                if set to `"source"`, it will return parser source code as a string
   * `plugins` — plugins to use

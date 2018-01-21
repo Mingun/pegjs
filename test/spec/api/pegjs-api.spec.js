@@ -38,56 +38,25 @@ describe("PEG.js API", function() {
         })).to.throw();
       });
 
-      // The |allowedStartRules| option is implemented separately for each
-      // optimization mode, so we need to test it in both.
+      describe("when |allowedStartRules| is not set", function() {
+        it("generated parser can start only from the first rule", function() {
+          let parser = peg.generate(grammar);
 
-      describe("when optimizing for parsing speed", function() {
-        describe("when |allowedStartRules| is not set", function() {
-          it("generated parser can start only from the first rule", function() {
-            let parser = peg.generate(grammar, { optimize: "speed" });
-
-            expect(parser.parse("x", { startRule: "a" })).to.equal("x");
-            expect(() => { parser.parse("x", { startRule: "b" }); }).to.throw();
-            expect(() => { parser.parse("x", { startRule: "c" }); }).to.throw();
-          });
-        });
-
-        describe("when |allowedStartRules| is set", function() {
-          it("generated parser can start only from specified rules", function() {
-            let parser = peg.generate(grammar, {
-              optimize: "speed",
-              allowedStartRules: ["b", "c"]
-            });
-
-            expect(() => { parser.parse("x", { startRule: "a" }); }).to.throw();
-            expect(parser.parse("x", { startRule: "b" })).to.equal("x");
-            expect(parser.parse("x", { startRule: "c" })).to.equal("x");
-          });
+          expect(parser.parse("x", { startRule: "a" })).to.equal("x");
+          expect(() => { parser.parse("x", { startRule: "b" }); }).to.throw();
+          expect(() => { parser.parse("x", { startRule: "c" }); }).to.throw();
         });
       });
 
-      describe("when optimizing for code size", function() {
-        describe("when |allowedStartRules| is not set", function() {
-          it("generated parser can start only from the first rule", function() {
-            let parser = peg.generate(grammar, { optimize: "size" });
-
-            expect(parser.parse("x", { startRule: "a" })).to.equal("x");
-            expect(() => { parser.parse("x", { startRule: "b" }); }).to.throw();
-            expect(() => { parser.parse("x", { startRule: "c" }); }).to.throw();
+      describe("when |allowedStartRules| is set", function() {
+        it("generated parser can start only from specified rules", function() {
+          let parser = peg.generate(grammar, {
+            allowedStartRules: ["b", "c"]
           });
-        });
 
-        describe("when |allowedStartRules| is set", function() {
-          it("generated parser can start only from specified rules", function() {
-            let parser = peg.generate(grammar, {
-              optimize: "size",
-              allowedStartRules: ["b", "c"]
-            });
-
-            expect(() => { parser.parse("x", { startRule: "a" }); }).to.throw();
-            expect(parser.parse("x", { startRule: "b" })).to.equal("x");
-            expect(parser.parse("x", { startRule: "c" })).to.equal("x");
-          });
+          expect(() => { parser.parse("x", { startRule: "a" }); }).to.throw();
+          expect(parser.parse("x", { startRule: "b" })).to.equal("x");
+          expect(parser.parse("x", { startRule: "c" })).to.equal("x");
         });
       });
     });
@@ -160,9 +129,6 @@ describe("PEG.js API", function() {
         });
       });
     });
-
-    // The |optimize| option isn't tested because there is no meaningful way to
-    // write the tests without turning this into a performance test.
 
     describe("output", function() {
       let grammar = "start = 'a'";
