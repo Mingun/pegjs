@@ -16,6 +16,7 @@ let source = require("vinyl-source-stream");
 let spawn = require("child_process").spawn;
 let transform = require("gulp-transform");
 let uglify = require("gulp-uglify");
+let yargs = require("yargs");
 
 const HEADER = [
   "// PEG.js " + package_.version,
@@ -61,7 +62,7 @@ gulp.task("lint", () =>
 // Run tests.
 gulp.task("test", () =>
   gulp.src(TEST_FILES, { read: false })
-    .pipe(mocha({ harmony: true }))
+    .pipe(mocha({ harmony: true, grep: yargs.argv.grep }))
 );
 
 // Run benchmarks.
