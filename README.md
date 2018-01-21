@@ -15,9 +15,9 @@ really is carried. Planned features to implement in the 2018:
 * [ ] [Import grammars](https://github.com/pegjs/pegjs/issues/38)
 * [ ] [Annotations](https://github.com/pegjs/pegjs/issues/256)
 * [ ] [Stream/incremental parser](https://github.com/pegjs/pegjs/issues/507)
-* [ ] Drop useless features (bytecode)
+* [x] Drop useless features (optimize for code size)
 * [ ] Raise coverage up to 90%
-* [ ] Many other usefull features
+* [x] Ability to extract comments of the grammar
 
 Table of Contents
 -----------------
@@ -37,6 +37,7 @@ Table of Contents
   * [Action Execution Environment](#action-execution-environment)
   * [Balanced Braces](#balanced-braces)
 - [Error Messages](#error-messages)
+- [Comments](#comments)
 - [Compatibility](#compatibility)
 - [Development](#development)
   * [Useful Links](#useful-links)
@@ -154,7 +155,11 @@ object to `peg.generate`. The following options are supported:
   * `format` — format of the generated parser (`"amd"`, `"bare"`, `"commonjs"`, `"es"`, `"globals"`, or `"umd"`);
                valid only when `output` is set to `"source"` (default: `"bare"`)
   * `output` — if set to `"parser"` (default), the method will return generated parser object;
-               if set to `"source"`, it will return parser source code as a string
+               if set to `"source"`, it will return parser source code as a string;
+               if set to `"ast"`, it will return grammar AST as object;
+               array from any above-mentioned formats. In this case will return an object with the keys
+               corresponding to values of an array and the values on keys corresponding to result of
+               the specified output
   * `plugins` — plugins to use
   * `trace` — makes the parser trace its progress (default: `false`)
 
@@ -336,6 +341,7 @@ subexpressions and thus forming a recursive structure:
   * [( expression )](#-expression-)
   * [expression *](#expression-)
   * [expression +](#expression--1)
+  * [expression |..|](#expression-count-expression-minmax-expression-count-delimiter-expression-expression-minmax-delimiter-expression)
   * [expression ?](#expression--2)
   * [& expression](#-expression)
   * [! expression](#-expression-1)
@@ -394,7 +400,7 @@ Try to match the expression. If the match succeeds, return its match result,
 otherwise return `null`. Unlike in regular expressions, there is no
 backtracking.
 
-#### *expression* |count|<br> *expression* |min..max|
+#### *expression* |count|<br> *expression* |min..max|<br> *expression* |count, delimiter-expression|<br> *expression* |min..max, delimiter-expression|
 
 Match exact `count` repetitions of `expression`. If the match succeeds, return
 their match results in an array.
@@ -408,7 +414,13 @@ omitted, then it is assumed to be infinity. Hence `expression |..|` is an
 equivalent of `expression |0..|` and `expression *`. `expression |1..|` is
 equivalent of `expression +`.
 
-`count`, `min` and `max` must be positive integers.
+If `delimiter-expression` is specified, then it must present between each
+`expression`. Delimiters a not part of the result and just skipped.
+
+`count`, `min` and `max` must be positive integers or they can be names of
+labels of prior visible expressions. In this case the labeled expressions
+shall return non-negative integers which are considered as element counts.
+If expressions to return something other, it is considered as `0`.
 
 #### & *expression*
 
@@ -550,7 +562,7 @@ available to them.
 
 * `text()` returns the source text between `start` and `end`
   (which will be "" for predicates).
-  
+
 ### Balanced Braces
 
 Code fragments such as actions and predicates must have balanced curly braces,
@@ -609,6 +621,20 @@ then PEG.js prefers an error message that implies a smaller attempted parse
 tree:
 
 > Expected end of input but "," found.
+
+Comments
+--------
+All comments which are present at grammar during parse get to a map under
+a `comments` key in a node with type `grammar`. As a key to the comment serves
+offset with which it begins. Each comment has following structure:
+
+```js
+{
+  text: 'text in the comment, just after // or /* and before */',
+  multiline: true|false,// true for /**/ comments, false for // comments
+  location: location()
+}
+```
 
 Compatibility
 -------------
