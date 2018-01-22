@@ -156,4 +156,18 @@ describe("compiler pass |reportInfiniteRecursion|", function() {
       expect(pass).to.reportError("start = ''| 42 , start|");
     });
   });
+
+  it("not check imported rules", function() {
+    expect(pass).to.not.reportError("start = #start");
+    expect(pass).to.not.reportError("start = #start:start");
+
+    expect(pass).to.not.reportError([
+      "start = stop",
+      "stop = #start"
+    ].join("\n"));
+    expect(pass).to.not.reportError([
+      "start = stop",
+      "stop = #start:start"
+    ].join("\n"));
+  });
 });

@@ -26,4 +26,9 @@ describe("compiler pass |reportUndefinedRules|", function() {
       allowedStartRules: ["missing"]
     });
   });
+
+  it("not report imported rules as undefined", function() {
+    expect(pass).to.not.reportError("start = #imported");
+    expect(pass).to.not.reportError("start = #imported:rule");
+  });
 });

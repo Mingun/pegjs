@@ -56,4 +56,51 @@ describe("compiler pass |removeProxyRules|", function() {
       );
     });
   });
+
+  describe("when a proxy rule is reffered to imported rule", function() {
+    it("do not update references and doesn't remove it", function() {
+      expect(pass).to.changeAST(
+        [
+          "start = notProxy",
+          "notProxy = #notProxied",
+          "notProxied = 'a'"
+        ].join("\n"),
+        {
+          rules: [
+            {
+              name:       "start",
+              expression: { type: "rule_ref", name: "notProxy" }
+            },
+            {
+              name:       "notProxy",
+              expression: { type: "rule_ref", namespace: "notProxied", name: null }
+            },
+            { name: "notProxied" }
+          ]
+        },
+        { allowedStartRules: ["start"] }
+      );
+      expect(pass).to.changeAST(
+        [
+          "start = notProxy",
+          "notProxy = #imported:notProxied",
+          "notProxied = 'a'"
+        ].join("\n"),
+        {
+          rules: [
+            {
+              name:       "start",
+              expression: { type: "rule_ref", name: "notProxy" }
+            },
+            {
+              name:       "notProxy",
+              expression: { type: "rule_ref", namespace: "imported", name: "notProxied" }
+            },
+            { name: "notProxied" }
+          ]
+        },
+        { allowedStartRules: ["start", "notProxy"] }
+      );
+    });
+  });
 });
