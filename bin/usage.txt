@@ -38,9 +38,6 @@ Options:
     --no-trace                     Disable tracing in generated parser
                                    (default behavior)
 
--O, --optimize <goal>              Select optimization for speed or size
-                                   (default: speed)
-
 -o, --output <file>                Output file
 
 -p, --plugin <plugin>              Use a specified plugin
