@@ -173,8 +173,8 @@ describe("compiler pass |generateBytecode|", function() {
           5,                            // PUSH_CURR_POS
           23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
           15, 6, 0,                     // IF_NOT_ERROR
-          24, 1,                        //   * LOAD_SAVED_POS
-          26, 0, 1, 0,                  //     CALL <0>
+          24, 1,                        //   * LOAD_SAVED_POS <1>
+          26, 0, 1, 0,                  //     CALL <0>, pop 1, args []
           9                             // NIP
         ]));
       });
@@ -206,8 +206,8 @@ describe("compiler pass |generateBytecode|", function() {
           5,                            // PUSH_CURR_POS
           23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
           15, 7, 0,                     // IF_NOT_ERROR
-          24, 1,                        //   * LOAD_SAVED_POS
-          26, 0, 1, 1, 0,               //     CALL <0>
+          24, 1,                        //   * LOAD_SAVED_POS <1>
+          26, 0, 1, 1, 0,               //     CALL <0>, pop 1, args [1]
           9                             // NIP
         ]));
       });
@@ -234,12 +234,12 @@ describe("compiler pass |generateBytecode|", function() {
           15, 25, 4,                    //     IF_NOT_ERROR
           23, 2, 18, 2, 2, 1, 22, 2, 3, //       * <elements[2]>
           15, 9, 4,                     //         IF_NOT_ERROR
-          24, 3,                        //           * LOAD_SAVED_POS
-          26, 0, 4, 3, 2, 1, 0,         //             CALL <0>
-          8, 3,                         //           * POP_N
+          24, 3,                        //           * LOAD_SAVED_POS <3>
+          26, 0, 4, 3, 2, 1, 0,         //             CALL <0>, pop 4, args [2,1,0]
+          8, 3,                         //           * POP_N <3>
           7,                            //             POP_CURR_POS
           3,                            //             PUSH_FAILED
-          8, 2,                         //       * POP_N
+          8, 2,                         //       * POP_N <2>
           7,                            //         POP_CURR_POS
           3,                            //         PUSH_FAILED
           6,                            //   * POP
@@ -299,12 +299,12 @@ describe("compiler pass |generateBytecode|", function() {
           15, 19, 4,                    //     IF_NOT_ERROR
           23, 2, 18, 2, 2, 1, 22, 2, 3, //       * <elements[2]>
           15, 3, 4,                     //         IF_NOT_ERROR
-          11, 3,                        //           * WRAP
+          11, 3,                        //           * WRAP <3>
           9,                            //             NIP
-          8, 3,                         //           * POP_N
+          8, 3,                         //           * POP_N <3>
           7,                            //             POP_CURR_POS
           3,                            //             PUSH_FAILED
-          8, 2,                         //       * POP_N
+          8, 2,                         //       * POP_N <2>
           7,                            //         POP_CURR_POS
           3,                            //         PUSH_FAILED
           6,                            //   * POP
@@ -725,8 +725,8 @@ describe("compiler pass |generateBytecode|", function() {
             5,                            // PUSH_CURR_POS
             23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
             15, 6, 0,                     // IF_NOT_ERROR
-            24, 1,                        //   * REPORT_SAVED_POS <1>
-            26, 0, 1, 0,                  //     CALL <0>
+            24, 1,                        //   * LOAD_SAVED_POS <1>
+            26, 0, 1, 0,                  //     CALL <0>, pop 1, args []
             9,                            // NIP
 
             15, 43, 3,                    // IF_NOT_ERROR
@@ -744,7 +744,7 @@ describe("compiler pass |generateBytecode|", function() {
 
             15, 3, 4,                     //     IF_NOT_ERROR
             11, 2,                        //       * WRAP <2>
-            9,                            //         POP
+            9,                            //         NIP
             8, 2,                         //       * POP_N <2>
             7,                            //         POP_CURR_POS
             3,                            //         PUSH_FAILED
@@ -774,8 +774,8 @@ describe("compiler pass |generateBytecode|", function() {
             5,                            // PUSH_CURR_POS
             23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
             15, 6, 0,                     // IF_NOT_ERROR
-            24, 1,                        //   * REPORT_SAVED_POS <1>
-            26, 0, 1, 0,                  //     CALL <0>
+            24, 1,                        //   * LOAD_SAVED_POS <1>
+            26, 0, 1, 0,                  //     CALL <0>, pop 1, args []
             9,                            // NIP
 
             15, 42, 3,                    // IF_NOT_ERROR
@@ -795,7 +795,7 @@ describe("compiler pass |generateBytecode|", function() {
 
             15, 3, 4,                     //     IF_NOT_ERROR
             11, 2,                        //       * WRAP <2>
-            9,                            //         POP
+            9,                            //         NIP
             8, 2,                         //       * POP_N <2>
             7,                            //         POP_CURR_POS
             3,                            //         PUSH_FAILED
@@ -825,8 +825,8 @@ describe("compiler pass |generateBytecode|", function() {
             5,                            // PUSH_CURR_POS
             23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
             15, 6, 0,                     // IF_NOT_ERROR
-            24, 1,                        //   * REPORT_SAVED_POS <1>
-            26, 0, 1, 0,                  //     CALL <0>
+            24, 1,                        //   * LOAD_SAVED_POS <1>
+            26, 0, 1, 0,                  //     CALL <0>, pop 1, args []
             9,                            // NIP
 
             15, 80, 3,                    // IF_NOT_ERROR
@@ -834,8 +834,8 @@ describe("compiler pass |generateBytecode|", function() {
             5,                            //   * PUSH_CURR_POS
             23, 0, 18, 0, 2, 1, 22, 0, 3, //     <expression>
             15, 7, 0,                     //     IF_NOT_ERROR
-            24, 1,                        //       * REPORT_SAVED_POS <1>
-            26, 1, 1, 1, 2,               //         CALL <1>
+            24, 1,                        //       * LOAD_SAVED_POS <1>
+            26, 1, 1, 1, 2,               //         CALL <1>, pop 1, args [2]
             9,                            //     NIP
             15, 52, 4,                    //     IF_NOT_ERROR
             // "a"|min..max|
@@ -894,8 +894,8 @@ describe("compiler pass |generateBytecode|", function() {
             5,                            // PUSH_CURR_POS
             23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
             15, 6, 0,                     // IF_NOT_ERROR
-            24, 1,                        //   * REPORT_SAVED_POS <1>
-            26, 0, 1, 0,                  //     CALL <0>
+            24, 1,                        //   * LOAD_SAVED_POS <1>
+            26, 0, 1, 0,                  //     CALL <0>, pop 1, args []
             9,                            // NIP
 
             15, 52, 3,                    // IF_NOT_ERROR
@@ -967,7 +967,7 @@ describe("compiler pass |generateBytecode|", function() {
       it("generates correct bytecode", function() {
         expect(pass).to.changeAST(grammar, bytecodeDetails([
           25,            // UPDATE_SAVED_POS
-          26, 0, 0, 0,   // CALL <0>
+          26, 0, 0, 0,   // CALL <0>, pop 0, args []
           13, 2, 2,      // IF
           6,             //   * POP
           1,             //     PUSH_UNDEFINED
@@ -1011,22 +1011,22 @@ describe("compiler pass |generateBytecode|", function() {
           23, 2, 18, 2, 2, 1, 22, 2, 3, //       * <elements[2]>
           15, 25, 4,                    //         IF_NOT_ERROR
           25,                           //           * UPDATE_SAVED_POS
-          26, 0, 0, 3, 2, 1, 0,         //             CALL <0>
+          26, 0, 0, 3, 2, 1, 0,         //             CALL <0>, pop 0, args [2,1,0]
           13, 2, 2,                     //             IF
           6,                            //               * POP
           1,                            //                 PUSH_UNDEFINED
           6,                            //               * POP
           3,                            //                 PUSH_FAILED
           15, 3, 4,                     //             IF_NOT_ERROR
-          11, 4,                        //               * WRAP
+          11, 4,                        //               * WRAP <4>
           9,                            //                 NIP
-          8, 4,                         //               * POP_N
+          8, 4,                         //               * POP_N <4>
           7,                            //                 POP_CURR_POS
           3,                            //                 PUSH_FAILED
-          8, 3,                         //           * POP_N
+          8, 3,                         //           * POP_N <3>
           7,                            //             POP_CURR_POS
           3,                            //             PUSH_FAILED
-          8, 2,                         //       * POP_N
+          8, 2,                         //       * POP_N <2>
           7,                            //         POP_CURR_POS
           3,                            //         PUSH_FAILED
           6,                            //   * POP
@@ -1066,7 +1066,7 @@ describe("compiler pass |generateBytecode|", function() {
       it("generates correct bytecode", function() {
         expect(pass).to.changeAST(grammar, bytecodeDetails([
           25,            // UPDATE_SAVED_POS
-          26, 0, 0, 0,   // CALL <0>
+          26, 0, 0, 0,   // CALL <0>, pop 0, args []
           13, 2, 2,      // IF
           6,             //   * POP
           3,             //     PUSH_FAILED
@@ -1110,22 +1110,22 @@ describe("compiler pass |generateBytecode|", function() {
           23, 2, 18, 2, 2, 1, 22, 2, 3, //       * <elements[2]>
           15, 25, 4,                    //         IF_NOT_ERROR
           25,                           //           * UPDATE_SAVED_POS
-          26, 0, 0, 3, 2, 1, 0,         //             CALL <0>
+          26, 0, 0, 3, 2, 1, 0,         //             CALL <0>, pop 0, args [2,1,0]
           13, 2, 2,                     //             IF
           6,                            //               * POP
           3,                            //                 PUSH_FAILED
           6,                            //               * POP
           1,                            //                 PUSH_UNDEFINED
           15, 3, 4,                     //             IF_NOT_ERROR
-          11, 4,                        //               * WRAP
+          11, 4,                        //               * WRAP <4>
           9,                            //                 NIP
-          8, 4,                         //               * POP_N
+          8, 4,                         //               * POP_N <4>
           7,                            //                 POP_CURR_POS
           3,                            //                 PUSH_FAILED
-          8, 3,                         //           * POP_N
+          8, 3,                         //           * POP_N <3>
           7,                            //             POP_CURR_POS
           3,                            //             PUSH_FAILED
-          8, 2,                         //       * POP_N
+          8, 2,                         //       * POP_N <2>
           7,                            //         POP_CURR_POS
           3,                            //         PUSH_FAILED
           6,                            //   * POP
