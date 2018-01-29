@@ -229,13 +229,14 @@ describe("compiler pass |generateBytecode|", function() {
         expect(pass).to.changeAST(grammar, bytecodeDetails([
           5,                            // PUSH_CURR_POS
           23, 0, 18, 0, 2, 1, 22, 0, 3, // <elements[0]>
-          15, 41, 3,                    // IF_NOT_ERROR
+          15, 42, 3,                    // IF_NOT_ERROR
           23, 1, 18, 1, 2, 1, 22, 1, 3, //   * <elements[1]>
-          15, 25, 4,                    //     IF_NOT_ERROR
+          15, 26, 4,                    //     IF_NOT_ERROR
           23, 2, 18, 2, 2, 1, 22, 2, 3, //       * <elements[2]>
-          15, 9, 4,                     //         IF_NOT_ERROR
+          15, 10, 4,                    //         IF_NOT_ERROR
           24, 3,                        //           * LOAD_SAVED_POS <3>
-          26, 0, 4, 3, 2, 1, 0,         //             CALL <0>, pop 4, args [2,1,0]
+          26, 0, 3, 3, 2, 1, 0,         //             CALL <0>, pop 3, args [2,1,0]
+          9,                            //             NIP
           8, 3,                         //           * POP_N <3>
           7,                            //             POP_CURR_POS
           3,                            //             PUSH_FAILED
@@ -346,12 +347,13 @@ describe("compiler pass |generateBytecode|", function() {
         expect(pass).to.changeAST("start = @'a' 'b' 'c'", bytecodeDetails([
           5,                            // PUSH_CURR_POS
           23, 0, 18, 0, 2, 1, 22, 0, 3, // <elements[0]>
-          15, 35, 3,                    // IF_NOT_ERROR
+          15, 36, 3,                    // IF_NOT_ERROR
           23, 1, 18, 1, 2, 1, 22, 1, 3, //   * <elements[1]>
-          15, 19, 4,                    //     IF_NOT_ERROR
+          15, 20, 4,                    //     IF_NOT_ERROR
           23, 2, 18, 2, 2, 1, 22, 2, 3, //       * <elements[2]>
-          15, 3, 4,                     //         IF_NOT_ERROR
-          36, 4, 2,                     //           * GET <2>, pop 4
+          15, 4, 4,                     //         IF_NOT_ERROR
+          36, 3, 2,                     //           * GET <2>, pop 3
+          9,                            //             NIP
           8, 3,                         //           * POP_N <3>
           7,                            //             POP_CURR_POS
           3,                            //             PUSH_FAILED
@@ -370,12 +372,13 @@ describe("compiler pass |generateBytecode|", function() {
         expect(pass).to.changeAST("start = @'a' 'b' @'c'", bytecodeDetails([
           5,                            // PUSH_CURR_POS
           23, 0, 18, 0, 2, 1, 22, 0, 3, // <elements[0]>
-          15, 37, 3,                    // IF_NOT_ERROR
+          15, 38, 3,                    // IF_NOT_ERROR
           23, 1, 18, 1, 2, 1, 22, 1, 3, //   * <elements[1]>
-          15, 21, 4,                    //     IF_NOT_ERROR
+          15, 22, 4,                    //     IF_NOT_ERROR
           23, 2, 18, 2, 2, 1, 22, 2, 3, //       * <elements[2]>
-          15, 5, 4,                     //         IF_NOT_ERROR
-          37, 4, 2, 2, 0,               //           * WRAP_SOME <[2, 0]>, pop 4
+          15, 6, 4,                     //         IF_NOT_ERROR
+          37, 3, 2, 2, 0,               //           * WRAP_SOME <[2, 0]>, pop 3
+          9,                            //             NIP
           8, 3,                         //           * POP_N <3>
           7,                            //             POP_CURR_POS
           3,                            //             PUSH_FAILED
@@ -416,7 +419,7 @@ describe("compiler pass |generateBytecode|", function() {
         6,                            //   * POP
         7,                            //     POP_CURR_POS
         1,                            //     PUSH_UNDEFINED
-        6,                            //   * POP
+        9,                            //   * NIP
         6,                            //     POP
         3                             //     PUSH_FAILED
       ]));
@@ -442,7 +445,7 @@ describe("compiler pass |generateBytecode|", function() {
         23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
         39, 1,                        // EXPECT_NS_END <true>
         14, 3, 3,                     // IF_ERROR
-        6,                            //   * POP
+        9,                            //   * NIP
         6,                            //     POP
         1,                            //     PUSH_UNDEFINED
         6,                            //   * POP
