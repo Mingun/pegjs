@@ -13,12 +13,8 @@ describe("generated parser behavior", function() {
     let optionsVariants = [
       { cache: false, trace: false },
       { cache: false, trace: true  },
-      { cache: false, trace: false },
-      { cache: false, trace: true  },
       { cache: true,  trace: false },
       { cache: true,  trace: true  },
-      { cache: true,  trace: false },
-      { cache: true,  trace: true  }
     ];
 
     optionsVariants.forEach(variant => {
