@@ -72,17 +72,19 @@ describe("utility class Stack", function() {
   });
 
   describe("`checkedIf` method", function() {
-    let stack;
+    let stack, stack2;
 
     beforeEach(function() {
       stack = new Stack("rule", "v", "let");
       stack.push("1");
+
+      stack2 = new Stack("rule", "x", "let");
     });
 
     it("without else brach do not throws error", function() {
-      expect(() => stack.checkedIf(0, () => {})).to.not.throw();
-      expect(() => stack.checkedIf(0, () => stack.pop())).to.not.throw();
-      expect(() => stack.checkedIf(0, () => stack.push("2"))).to.not.throw();
+      expect(() => Stack.checkedIf([stack2, stack], 0, () => {})).to.not.throw();
+      expect(() => Stack.checkedIf([stack2, stack], 0, () => stack.pop())).to.not.throw();
+      expect(() => Stack.checkedIf([stack2, stack], 0, () => stack.push("2"))).to.not.throw();
     });
 
     it("do not throws error when stack pointer not moves in both arms", function() {
@@ -103,13 +105,14 @@ describe("utility class Stack", function() {
         stack.pop();
       }
 
-      expect(() => stack.checkedIf(0, fn1, fn1)).to.not.throw();
-      expect(() => stack.checkedIf(0, fn2, fn2)).to.not.throw();
-      expect(() => stack.checkedIf(0, fn3, fn3)).to.not.throw();
-      expect(() => stack.checkedIf(0, fn4, fn4)).to.not.throw();
+      expect(() => Stack.checkedIf([stack2, stack], 0, fn1, fn1)).to.not.throw();
+      expect(() => Stack.checkedIf([stack2, stack], 0, fn2, fn2)).to.not.throw();
+      expect(() => Stack.checkedIf([stack2, stack], 0, fn3, fn3)).to.not.throw();
+      expect(() => Stack.checkedIf([stack2, stack], 0, fn4, fn4)).to.not.throw();
     });
     it("do not throws error when stack pointer increases on the same value in both arms", function() {
-      expect(() => stack.checkedIf(0,
+      expect(() => Stack.checkedIf(
+        [stack2, stack], 0,
         () => stack.push("1"),
         () => stack.push("2")
       )).to.not.throw();
@@ -117,7 +120,8 @@ describe("utility class Stack", function() {
     it("do not throws error when stack pointer decreases on the same value in both arms", function() {
       stack.push("2");
 
-      expect(() => stack.checkedIf(0,
+      expect(() => Stack.checkedIf(
+        [stack2, stack], 0,
         () => stack.pop(2),
         () => { stack.pop(); stack.pop(); }
       )).to.not.throw();
@@ -125,45 +129,69 @@ describe("utility class Stack", function() {
 
     describe("throws error when stack pointer", function() {
       it("do not move in `if` and decreases in `then`", function() {
-        expect(() => stack.checkedIf(0, () => {}, () => stack.pop())).to.throw(Error,
-          "Rule 'rule', position 0: "
+        expect(() => Stack.checkedIf(
+          [stack2, stack], 0,
+          () => {},
+          () => stack.pop()
+        )).to.throw(Error,
+          "Rule 'rule', position 0, stack 'v': "
           + "Branches of a condition can't move the stack pointer differently "
           + "(before: 0, after then: 0, after else: -1)."
         );
       });
       it("decreases in `if` and do not move in `then`", function() {
-        expect(() => stack.checkedIf(0, () => stack.pop(), () => {})).to.throw(Error,
-          "Rule 'rule', position 0: "
+        expect(() => Stack.checkedIf(
+          [stack2, stack], 0,
+          () => stack.pop(),
+          () => {}
+        )).to.throw(Error,
+          "Rule 'rule', position 0, stack 'v': "
           + "Branches of a condition can't move the stack pointer differently "
           + "(before: 0, after then: -1, after else: 0)."
         );
       });
 
       it("do not move in `if` and increases in `then`", function() {
-        expect(() => stack.checkedIf(0, () => {}, () => stack.push("2"))).to.throw(Error,
-          "Rule 'rule', position 0: "
+        expect(() => Stack.checkedIf(
+          [stack2, stack], 0,
+          () => {},
+          () => stack.push("2")
+        )).to.throw(Error,
+          "Rule 'rule', position 0, stack 'v': "
           + "Branches of a condition can't move the stack pointer differently "
           + "(before: 0, after then: 0, after else: 1)."
         );
       });
       it("increases in `if` and do not move in `then`", function() {
-        expect(() => stack.checkedIf(0, () => stack.push("2"), () => {})).to.throw(Error,
-          "Rule 'rule', position 0: "
+        expect(() => Stack.checkedIf(
+          [stack2, stack], 0,
+          () => stack.push("2"),
+          () => {}
+        )).to.throw(Error,
+          "Rule 'rule', position 0, stack 'v': "
           + "Branches of a condition can't move the stack pointer differently "
           + "(before: 0, after then: 1, after else: 0)."
         );
       });
 
       it("decreases in `if` and increases in `then`", function() {
-        expect(() => stack.checkedIf(0, () => stack.pop(), () => stack.push("2"))).to.throw(Error,
-          "Rule 'rule', position 0: "
+        expect(() => Stack.checkedIf(
+          [stack2, stack], 0,
+          () => stack.pop(),
+          () => stack.push("2")
+        )).to.throw(Error,
+          "Rule 'rule', position 0, stack 'v': "
           + "Branches of a condition can't move the stack pointer differently "
           + "(before: 0, after then: -1, after else: 1)."
         );
       });
       it("increases in `if` and decreases in `then`", function() {
-        expect(() => stack.checkedIf(0, () => stack.push("2"), () => stack.pop())).to.throw(Error,
-          "Rule 'rule', position 0: "
+        expect(() => Stack.checkedIf(
+          [stack2, stack], 0,
+          () => stack.push("2"),
+          () => stack.pop()
+        )).to.throw(Error,
+          "Rule 'rule', position 0, stack 'v': "
           + "Branches of a condition can't move the stack pointer differently "
           + "(before: 0, after then: 1, after else: -1)."
         );
@@ -172,11 +200,13 @@ describe("utility class Stack", function() {
   });
 
   describe("`checkedLoop` method", function() {
-    let stack;
+    let stack, stack2;
 
     beforeEach(function() {
       stack = new Stack("rule", "v", "let");
       stack.push("1");
+
+      stack2 = new Stack("rule", "x", "let");
     });
 
     it("do not throws error when stack pointer not moves", function() {
@@ -197,21 +227,27 @@ describe("utility class Stack", function() {
         stack.pop();
       }
 
-      expect(() => stack.checkedLoop(0, fn1)).to.not.throw();
-      expect(() => stack.checkedLoop(0, fn2)).to.not.throw();
-      expect(() => stack.checkedLoop(0, fn3)).to.not.throw();
-      expect(() => stack.checkedLoop(0, fn4)).to.not.throw();
+      expect(() => Stack.checkedLoop([stack2, stack], 0, fn1)).to.not.throw();
+      expect(() => Stack.checkedLoop([stack2, stack], 0, fn2)).to.not.throw();
+      expect(() => Stack.checkedLoop([stack2, stack], 0, fn3)).to.not.throw();
+      expect(() => Stack.checkedLoop([stack2, stack], 0, fn4)).to.not.throw();
     });
     it("throws error when stack pointer increases", function() {
-      expect(() => stack.checkedLoop(0, () => stack.push("1"))).to.throw(Error,
-        "Rule 'rule', position 0: "
+      expect(() => Stack.checkedLoop(
+        [stack2, stack], 0,
+        () => stack.push("1")
+      )).to.throw(Error,
+        "Rule 'rule', position 0, stack 'v': "
         + "Body of a loop can't move the stack pointer "
         + "(before: 0, after: 1)."
       );
     });
     it("throws error when stack pointer decreases", function() {
-      expect(() => stack.checkedLoop(0, () => stack.pop())).to.throw(Error,
-        "Rule 'rule', position 0: "
+      expect(() => Stack.checkedLoop(
+        [stack2, stack], 0,
+        () => stack.pop()
+      )).to.throw(Error,
+        "Rule 'rule', position 0, stack 'v': "
         + "Body of a loop can't move the stack pointer "
         + "(before: 0, after: -1)."
       );
