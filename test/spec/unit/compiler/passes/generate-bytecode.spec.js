@@ -172,8 +172,8 @@ describe("compiler pass |generateBytecode|", function() {
         expect(pass).to.changeAST(grammar, bytecodeDetails([
           5,                            // PUSH_CURR_POS
           23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
-          15, 6, 0,                     // IF_NOT_ERROR
-          24, 1,                        //   * LOAD_SAVED_POS <1>
+          15, 5, 0,                     // IF_NOT_ERROR
+          24,                           //   * LOAD_SAVED_POS
           26, 0, 1, 0,                  //     CALL <0>, pop 1, args []
           9                             // POP_POS
         ]));
@@ -205,8 +205,8 @@ describe("compiler pass |generateBytecode|", function() {
         expect(pass).to.changeAST(grammar, bytecodeDetails([
           5,                            // PUSH_CURR_POS
           23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
-          15, 7, 0,                     // IF_NOT_ERROR
-          24, 1,                        //   * LOAD_SAVED_POS <1>
+          15, 6, 0,                     // IF_NOT_ERROR
+          24,                           //   * LOAD_SAVED_POS
           26, 0, 1, 1, 0,               //     CALL <0>, pop 1, args [1]
           9                             // POP_POS
         ]));
@@ -229,12 +229,12 @@ describe("compiler pass |generateBytecode|", function() {
         expect(pass).to.changeAST(grammar, bytecodeDetails([
           5,                            // PUSH_CURR_POS
           23, 0, 18, 0, 2, 1, 22, 0, 3, // <elements[0]>
-          15, 42, 3,                    // IF_NOT_ERROR
+          15, 41, 3,                    // IF_NOT_ERROR
           23, 1, 18, 1, 2, 1, 22, 1, 3, //   * <elements[1]>
-          15, 26, 4,                    //     IF_NOT_ERROR
+          15, 25, 4,                    //     IF_NOT_ERROR
           23, 2, 18, 2, 2, 1, 22, 2, 3, //       * <elements[2]>
-          15, 10, 4,                    //         IF_NOT_ERROR
-          24, 3,                        //           * LOAD_SAVED_POS <3>
+          15, 9, 4,                     //         IF_NOT_ERROR
+          24,                           //           * LOAD_SAVED_POS
           26, 0, 3, 3, 2, 1, 0,         //             CALL <0>, pop 3, args [2,1,0]
           9,                            //             POP_POS
           8, 3,                         //           * POP_N <3>
@@ -775,8 +775,8 @@ describe("compiler pass |generateBytecode|", function() {
             // "a"{return 42;}
             5,                            // PUSH_CURR_POS
             23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
-            15, 6, 0,                     // IF_NOT_ERROR
-            24, 1,                        //   * LOAD_SAVED_POS <1>
+            15, 5, 0,                     // IF_NOT_ERROR
+            24,                           //   * LOAD_SAVED_POS
             26, 0, 1, 0,                  //     CALL <0>, pop 1, args []
             9,                            // POP_POS
 
@@ -824,8 +824,8 @@ describe("compiler pass |generateBytecode|", function() {
             // "a"{return 42;}
             5,                            // PUSH_CURR_POS
             23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
-            15, 6, 0,                     // IF_NOT_ERROR
-            24, 1,                        //   * LOAD_SAVED_POS <1>
+            15, 5, 0,                     // IF_NOT_ERROR
+            24,                           //   * LOAD_SAVED_POS
             26, 0, 1, 0,                  //     CALL <0>, pop 1, args []
             9,                            // POP_POS
 
@@ -875,17 +875,17 @@ describe("compiler pass |generateBytecode|", function() {
             // "a"{return 42;}
             5,                            // PUSH_CURR_POS
             23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
-            15, 6, 0,                     // IF_NOT_ERROR
-            24, 1,                        //   * LOAD_SAVED_POS <1>
+            15, 5, 0,                     // IF_NOT_ERROR
+            24,                           //   * LOAD_SAVED_POS
             26, 0, 1, 0,                  //     CALL <0>, pop 1, args []
             9,                            // POP_POS
 
-            15, 80, 3,                    // IF_NOT_ERROR
+            15, 79, 3,                    // IF_NOT_ERROR
             // "a"{return 42;}
             5,                            //   * PUSH_CURR_POS
             23, 0, 18, 0, 2, 1, 22, 0, 3, //     <expression>
-            15, 7, 0,                     //     IF_NOT_ERROR
-            24, 1,                        //       * LOAD_SAVED_POS <1>
+            15, 6, 0,                     //     IF_NOT_ERROR
+            24,                           //       * LOAD_SAVED_POS
             26, 1, 1, 1, 2,               //         CALL <1>, pop 1, args [2]
             9,                            //     POP_POS
             15, 52, 4,                    //     IF_NOT_ERROR
@@ -944,8 +944,8 @@ describe("compiler pass |generateBytecode|", function() {
             // "a"{return 42;}
             5,                            // PUSH_CURR_POS
             23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
-            15, 6, 0,                     // IF_NOT_ERROR
-            24, 1,                        //   * LOAD_SAVED_POS <1>
+            15, 5, 0,                     // IF_NOT_ERROR
+            24,                           //   * LOAD_SAVED_POS
             26, 0, 1, 0,                  //     CALL <0>, pop 1, args []
             9,                            // POP_POS
 
