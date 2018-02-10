@@ -236,12 +236,12 @@ describe("compiler pass |generateBytecode|", function() {
           15, 8, 4,                     //         IF_NOT_ERROR
           24,                           //           * LOAD_SAVED_POS
           26, 0, 3, 3, 2, 1, 0,         //             CALL <0>, pop 3, args [2,1,0]
-          8, 3,                         //           * POP_N <3>
+          7,                            //           * LOAD_CURR_POS
+          8, 3,                         //             POP_N <3>
           3,                            //             PUSH_FAILED
-          7,                            //             LOAD_CURR_POS
-          8, 2,                         //       * POP_N <2>
+          7,                            //       * LOAD_CURR_POS
+          8, 2,                         //         POP_N <2>
           3,                            //         PUSH_FAILED
-          7,                            //         LOAD_CURR_POS
           7,                            //   * LOAD_CURR_POS
           9,                            // POP_POS
         ]));
@@ -299,12 +299,12 @@ describe("compiler pass |generateBytecode|", function() {
           23, 2, 18, 2, 2, 1, 22, 2, 3, //       * <elements[2]>
           15, 2, 4,                     //         IF_NOT_ERROR
           11, 3,                        //           * WRAP <3>
-          8, 3,                         //           * POP_N <3>
+          7,                            //           * LOAD_CURR_POS
+          8, 3,                         //             POP_N <3>
           3,                            //             PUSH_FAILED
-          7,                            //             LOAD_CURR_POS
-          8, 2,                         //       * POP_N <2>
+          7,                            //       * LOAD_CURR_POS
+          8, 2,                         //         POP_N <2>
           3,                            //         PUSH_FAILED
-          7,                            //         LOAD_CURR_POS
           7,                            //   * LOAD_CURR_POS
           9,                            // POP_POS
         ]));
@@ -349,12 +349,12 @@ describe("compiler pass |generateBytecode|", function() {
           23, 2, 18, 2, 2, 1, 22, 2, 3, //       * <elements[2]>
           15, 3, 4,                     //         IF_NOT_ERROR
           36, 3, 2,                     //           * GET <2>, pop 3
-          8, 3,                         //           * POP_N <3>
+          7,                            //           * LOAD_CURR_POS
+          8, 3,                         //             POP_N <3>
           3,                            //             PUSH_FAILED
-          7,                            //             LOAD_CURR_POS
-          8, 2,                         //       * POP_N <2>
+          7,                            //       * LOAD_CURR_POS
+          8, 2,                         //         POP_N <2>
           3,                            //         PUSH_FAILED
-          7,                            //         LOAD_CURR_POS
           7,                            //   * LOAD_CURR_POS
           9,                            // POP_POS
         ]));
@@ -372,12 +372,12 @@ describe("compiler pass |generateBytecode|", function() {
           23, 2, 18, 2, 2, 1, 22, 2, 3, //       * <elements[2]>
           15, 5, 4,                     //         IF_NOT_ERROR
           37, 3, 2, 2, 0,               //           * WRAP_SOME <[2, 0]>, pop 3
-          8, 3,                         //           * POP_N <3>
+          7,                            //           * LOAD_CURR_POS
+          8, 3,                         //             POP_N <3>
           3,                            //             PUSH_FAILED
-          7,                            //             LOAD_CURR_POS
-          8, 2,                         //       * POP_N <2>
+          7,                            //       * LOAD_CURR_POS
+          8, 2,                         //         POP_N <2>
           3,                            //         PUSH_FAILED
-          7,                            //         LOAD_CURR_POS
           7,                            //   * LOAD_CURR_POS
           9,                            // POP_POS
         ]));
@@ -407,9 +407,9 @@ describe("compiler pass |generateBytecode|", function() {
         23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
         39, 0,                        // EXPECT_NS_END <false>
         15, 3, 0,                     // IF_NOT_ERROR
-        6,                            //   * POP
+        7,                            //   * LOAD_CURR_POS
+        6,                            //     POP
         1,                            //     PUSH_UNDEFINED
-        7,                            //     LOAD_CURR_POS
         9,                            // POP_POS
       ]));
     });
@@ -436,9 +436,9 @@ describe("compiler pass |generateBytecode|", function() {
         14, 2, 3,                     // IF_ERROR
         6,                            //   * POP
         1,                            //     PUSH_UNDEFINED
-        6,                            //   * POP
+        7,                            //   * LOAD_CURR_POS
+        6,                            //     POP
         3,                            //     PUSH_FAILED
-        7,                            //     LOAD_CURR_POS
         9,                            // POP_POS
       ]));
     });
@@ -619,9 +619,9 @@ describe("compiler pass |generateBytecode|", function() {
               23, 0, 18, 0, 2, 1, 22, 0, 3, //     <expression>
               6,                            // POP
               30, 2, 3, 0,                  // IF_LT <2>
-              6,                            //   * POP
+              7,                            //   * LOAD_CURR_POS
+              6,                            //     POP
               3,                            //     PUSH_FAILED
-              7,                            //     LOAD_CURR_POS
               9,                            // POP_POS
             ]));
           });
@@ -673,9 +673,9 @@ describe("compiler pass |generateBytecode|", function() {
               23, 0, 18, 0, 2, 1, 22, 0, 3, //     <expression>
               6,                            // POP
               30, 1, 3, 0,                  // IF_LT <1>
-              6,                            //   * POP
+              7,                            //   * LOAD_CURR_POS
+              6,                            //     POP
               3,                            //     PUSH_FAILED
-              7,                            //     LOAD_CURR_POS
               9,                            // POP_POS
             ]));
           });
@@ -705,9 +705,9 @@ describe("compiler pass |generateBytecode|", function() {
               23, 0, 18, 0, 2, 1, 22, 0, 3, //       * <expression>
               6,                            // POP
               30, 2, 3, 0,                  // IF_LT <2>
-              6,                            //   * POP
+              7,                            //   * LOAD_CURR_POS
+              6,                            //     POP
               3,                            //     PUSH_FAILED
-              7,                            //     LOAD_CURR_POS
               9,                            // POP_POS
             ]));
           });
@@ -737,9 +737,9 @@ describe("compiler pass |generateBytecode|", function() {
               23, 0, 18, 0, 2, 1, 22, 0, 3, //       * <expression>
               6,                            // POP
               30, 42, 3, 0,                 // IF_LT <42>
-              6,                            //   * POP
+              7,                            //   * LOAD_CURR_POS
+              6,                            //     POP
               3,                            //     PUSH_FAILED
-              7,                            //     LOAD_CURR_POS
               9,                            // POP_POS
             ]));
           });
@@ -785,9 +785,9 @@ describe("compiler pass |generateBytecode|", function() {
 
               15, 2, 4,                     //     IF_NOT_ERROR
               11, 2,                        //       * WRAP <2>
-              8, 2,                         //       * POP_N <2>
+              7,                            //       * LOAD_CURR_POS
+              8, 2,                         //         POP_N <2>
               3,                            //         PUSH_FAILED
-              7,                            //         LOAD_CURR_POS
               7,                            //   * LOAD_CURR_POS
               9,                            // POP_POS
             ]));
@@ -827,16 +827,16 @@ describe("compiler pass |generateBytecode|", function() {
               23, 0, 18, 0, 2, 1, 22, 0, 3, //         <expression>
               6,                            //     POP
               32, 1, 3, 0,                  //     IF_LT_DYNAMIC <1>
-              6,                            //       * POP
+              7,                            //       * LOAD_CURR_POS
+              6,                            //         POP
               3,                            //         PUSH_FAILED
-              7,                            //         LOAD_CURR_POS
               9,                            //     POP_POS
 
               15, 2, 4,                     //     IF_NOT_ERROR
               11, 2,                        //       * WRAP <2>
-              8, 2,                         //       * POP_N <2>
+              7,                            //       * LOAD_CURR_POS
+              8, 2,                         //         POP_N <2>
               3,                            //         PUSH_FAILED
-              7,                            //         LOAD_CURR_POS
               7,                            //   * LOAD_CURR_POS
               9,                            // POP_POS
             ]));
@@ -888,19 +888,19 @@ describe("compiler pass |generateBytecode|", function() {
               23, 0, 18, 0, 2, 1, 22, 0, 3, //               * <expression>
               6,                            //         POP
               32, 2, 3, 0,                  //         IF_LT_DYNAMIC <2>
-              6,                            //           * POP
+              7,                            //           * LOAD_CURR_POS
+              6,                            //             POP
               3,                            //             PUSH_FAILED
-              7,                            //             LOAD_CURR_POS
               9,                            //         POP_POS
 
               15, 2, 4,                     //         IF_NOT_ERROR
               11, 3,                        //           * WRAP <3>
-              8, 3,                         //           * POP_N <3>
+              7,                            //           * LOAD_CURR_POS
+              8, 3,                         //             POP_N <3>
               3,                            //             PUSH_FAILED
-              7,                            //             LOAD_CURR_POS
-              8, 2,                         //       * POP_N <2>
+              7,                            //       * LOAD_CURR_POS
+              8, 2,                         //         POP_N <2>
               3,                            //         PUSH_FAILED
-              7,                            //         LOAD_CURR_POS
               7,                            //   * LOAD_CURR_POS
               9,                            // POP_POS
             ]));
@@ -947,16 +947,16 @@ describe("compiler pass |generateBytecode|", function() {
               23, 0, 18, 0, 2, 1, 22, 0, 3, //           * <expression>
               6,                            //     POP
               32, 1, 3, 0,                  //     IF_LT_DYNAMIC <1>
-              6,                            //       * POP
+              7,                            //       * LOAD_CURR_POS
+              6,                            //         POP
               3,                            //         PUSH_FAILED
-              7,                            //         LOAD_CURR_POS
               9,                            //     POP_POS
 
               15, 2, 4,                     //     IF_NOT_ERROR
               11, 2,                        //       * WRAP <2>
-              8, 2,                         //       * POP_N <2>
+              7,                            //       * LOAD_CURR_POS
+              8, 2,                         //         POP_N <2>
               3,                            //         PUSH_FAILED
-              7,                            //         LOAD_CURR_POS
               7,                            //   * LOAD_CURR_POS
               9,                            // POP_POS
             ]));
@@ -1102,9 +1102,9 @@ describe("compiler pass |generateBytecode|", function() {
               9,                            //     POP_POS
               6,                            // POP
               30, 2, 3, 0,                  // IF_LT <2>
-              6,                            //   * POP
+              7,                            //   * LOAD_CURR_POS
+              6,                            //     POP
               3,                            //     PUSH_FAILED
-              7,                            //     LOAD_CURR_POS
               9,                            // POP_POS
             ]));
           });
@@ -1176,9 +1176,9 @@ describe("compiler pass |generateBytecode|", function() {
               9,                            //     POP_POS
               6,                            // POP
               30, 1, 3, 0,                  // IF_LT <1>
-              6,                            //   * POP
+              7,                            //   * LOAD_CURR_POS
+              6,                            //     POP
               3,                            //     PUSH_FAILED
-              7,                            //     LOAD_CURR_POS
               9,                            // POP_POS
             ]));
           });
@@ -1218,9 +1218,9 @@ describe("compiler pass |generateBytecode|", function() {
               9,                            //         POP_POS
               6,                            // POP
               30, 2, 3, 0,                  // IF_LT <2>
-              6,                            //   * POP
+              7,                            //   * LOAD_CURR_POS
+              6,                            //     POP
               3,                            //     PUSH_FAILED
-              7,                            //     LOAD_CURR_POS
               9,                            // POP_POS
             ]));
           });
@@ -1260,9 +1260,9 @@ describe("compiler pass |generateBytecode|", function() {
               9,                            //         POP_POS
               6,                            // POP
               30, 42, 3, 0,                 // IF_LT <42>
-              6,                            //   * POP
+              7,                            //   * LOAD_CURR_POS
+              6,                            //     POP
               3,                            //     PUSH_FAILED
-              7,                            //     LOAD_CURR_POS
               9,                            // POP_POS
             ]));
           });
@@ -1318,9 +1318,9 @@ describe("compiler pass |generateBytecode|", function() {
 
               15, 2, 4,                     //     IF_NOT_ERROR
               11, 2,                        //       * WRAP <2>
-              8, 2,                         //       * POP_N <2>
+              7,                            //       * LOAD_CURR_POS
+              8, 2,                         //         POP_N <2>
               3,                            //         PUSH_FAILED
-              7,                            //         LOAD_CURR_POS
               7,                            //   * LOAD_CURR_POS
               9,                            // POP_POS
             ]));
@@ -1370,16 +1370,16 @@ describe("compiler pass |generateBytecode|", function() {
               9,                            //         POP_POS
               6,                            //     POP
               32, 1, 3, 0,                  //     IF_LT_DYNAMIC <1>
-              6,                            //       * POP
+              7,                            //       * LOAD_CURR_POS
+              6,                            //         POP
               3,                            //         PUSH_FAILED
-              7,                            //         LOAD_CURR_POS
               9,                            //     POP_POS
 
               15, 2, 4,                     //     IF_NOT_ERROR
               11, 2,                        //       * WRAP <2>
-              8, 2,                         //       * POP_N <2>
+              7,                            //       * LOAD_CURR_POS
+              8, 2,                         //         POP_N <2>
               3,                            //         PUSH_FAILED
-              7,                            //         LOAD_CURR_POS
               7,                            //   * LOAD_CURR_POS
               9,                            // POP_POS
             ]));
@@ -1441,19 +1441,19 @@ describe("compiler pass |generateBytecode|", function() {
               9,                            //                 POP_POS
               6,                            //         POP
               32, 2, 3, 0,                  //         IF_LT_DYNAMIC <2>
-              6,                            //           * POP
+              7,                            //           * LOAD_CURR_POS
+              6,                            //             POP
               3,                            //             PUSH_FAILED
-              7,                            //             LOAD_CURR_POS
               9,                            //         POP_POS
 
               15, 2, 4,                     //         IF_NOT_ERROR
               11, 3,                        //           * WRAP <3>
-              8, 3,                         //           * POP_N <3>
+              7,                            //           * LOAD_CURR_POS
+              8, 3,                         //             POP_N <3>
               3,                            //             PUSH_FAILED
-              7,                            //             LOAD_CURR_POS
-              8, 2,                         //       * POP_N <2>
+              7,                            //       * LOAD_CURR_POS
+              8, 2,                         //         POP_N <2>
               3,                            //         PUSH_FAILED
-              7,                            //         LOAD_CURR_POS
               7,                            //   * LOAD_CURR_POS
               9,                            // POP_POS
             ]));
@@ -1510,16 +1510,16 @@ describe("compiler pass |generateBytecode|", function() {
               9,                            //             POP_POS
               6,                            //     POP
               32, 1, 3, 0,                  //     IF_LT_DYNAMIC <1>
-              6,                            //       * POP
+              7,                            //       * LOAD_CURR_POS
+              6,                            //         POP
               3,                            //         PUSH_FAILED
-              7,                            //         LOAD_CURR_POS
               9,                            //     POP_POS
 
               15, 2, 4,                     //     IF_NOT_ERROR
               11, 2,                        //       * WRAP <2>
-              8, 2,                         //       * POP_N <2>
+              7,                            //       * LOAD_CURR_POS
+              8, 2,                         //         POP_N <2>
               3,                            //         PUSH_FAILED
-              7,                            //         LOAD_CURR_POS
               7,                            //   * LOAD_CURR_POS
               9,                            // POP_POS
             ]));
@@ -1619,15 +1619,15 @@ describe("compiler pass |generateBytecode|", function() {
           3,                            //                 PUSH_FAILED
           15, 2, 4,                     //             IF_NOT_ERROR
           11, 4,                        //               * WRAP <4>
-          8, 4,                         //               * POP_N <4>
+          7,                            //               * LOAD_CURR_POS
+          8, 4,                         //                 POP_N <4>
           3,                            //                 PUSH_FAILED
-          7,                            //                 LOAD_CURR_POS
-          8, 3,                         //           * POP_N <3>
+          7,                            //           * LOAD_CURR_POS
+          8, 3,                         //             POP_N <3>
           3,                            //             PUSH_FAILED
-          7,                            //             LOAD_CURR_POS
-          8, 2,                         //       * POP_N <2>
+          7,                            //       * LOAD_CURR_POS
+          8, 2,                         //         POP_N <2>
           3,                            //         PUSH_FAILED
-          7,                            //         LOAD_CURR_POS
           7,                            //   * LOAD_CURR_POS
           9,                            // POP_POS
         ]));
@@ -1716,15 +1716,15 @@ describe("compiler pass |generateBytecode|", function() {
           1,                            //                 PUSH_UNDEFINED
           15, 2, 4,                     //             IF_NOT_ERROR
           11, 4,                        //               * WRAP <4>
-          8, 4,                         //               * POP_N <4>
+          7,                            //               * LOAD_CURR_POS
+          8, 4,                         //                 POP_N <4>
           3,                            //                 PUSH_FAILED
-          7,                            //                 LOAD_CURR_POS
-          8, 3,                         //           * POP_N <3>
+          7,                            //           * LOAD_CURR_POS
+          8, 3,                         //             POP_N <3>
           3,                            //             PUSH_FAILED
-          7,                            //             LOAD_CURR_POS
-          8, 2,                         //       * POP_N <2>
+          7,                            //       * LOAD_CURR_POS
+          8, 2,                         //         POP_N <2>
           3,                            //         PUSH_FAILED
-          7,                            //         LOAD_CURR_POS
           7,                            //   * LOAD_CURR_POS
           9,                            // POP_POS
         ]));
