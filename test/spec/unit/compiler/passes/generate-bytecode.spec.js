@@ -398,10 +398,9 @@ describe("compiler pass |generateBytecode|", function() {
       expect(pass).to.changeAST("start = $'a'", bytecodeDetails([
         5,                            // PUSH_CURR_POS
         23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
-        15, 2, 1,                     // IF_NOT_ERROR
-        6,                            //   * POP
-        12,                           //     TEXT
-        9                             //   * POP_POS
+        15, 1, 0,                     // IF_NOT_ERROR
+        12,                           //   * TEXT
+        9                             // POP_POS
       ]));
     });
   });
