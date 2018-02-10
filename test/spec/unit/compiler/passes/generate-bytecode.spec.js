@@ -767,14 +767,14 @@ describe("compiler pass |generateBytecode|", function() {
 
     describe("variable boudaries", function() {
       describe("| ..x| (edge case -- no min boundary)", function() {
-        let grammar = "start = max:('a'{return 42;}) 'a'| ..max|";
+        let grammar = "start = max:({return 42;}) 'a'| ..max|";
 
         it("generates correct bytecode", function() {
           expect(pass).to.changeAST(grammar, bytecodeDetails([
             5,                            // PUSH_CURR_POS
-            // "a"{return 42;}
+            // {return 42;}
             5,                            // PUSH_CURR_POS
-            23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
+            4,                            // PUSH_EMPTY_ARRAY
             15, 5, 0,                     // IF_NOT_ERROR
             24,                           //   * LOAD_SAVED_POS
             26, 0, 1, 0,                  //     CALL <0>, pop 1, args []
@@ -816,14 +816,14 @@ describe("compiler pass |generateBytecode|", function() {
       });
 
       describe("|x.. | (edge case -- no max boundary)", function() {
-        let grammar = "start = min:('a'{return 42;}) 'a'|min.. |";
+        let grammar = "start = min:({return 42;}) 'a'|min.. |";
 
         it("generates correct bytecode", function() {
           expect(pass).to.changeAST(grammar, bytecodeDetails([
             5,                            // PUSH_CURR_POS
-            // "a"{return 42;}
+            // {return 42;}
             5,                            // PUSH_CURR_POS
-            23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
+            4,                            // PUSH_EMPTY_ARRAY
             15, 5, 0,                     // IF_NOT_ERROR
             24,                           //   * LOAD_SAVED_POS
             26, 0, 1, 0,                  //     CALL <0>, pop 1, args []
@@ -867,23 +867,23 @@ describe("compiler pass |generateBytecode|", function() {
       });
 
       describe("|x..y|", function() {
-        let grammar = "start = min:('a'{return 42;}) max:('a'{return 42;}) 'a'|min..max|";
+        let grammar = "start = min:({return 42;}) max:({return 42;}) 'a'|min..max|";
 
         it("generates correct bytecode", function() {
           expect(pass).to.changeAST(grammar, bytecodeDetails([
             5,                            // PUSH_CURR_POS
-            // "a"{return 42;} - min
+            // {return 42;} - min
             5,                            // PUSH_CURR_POS
-            23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
+            4,                            // PUSH_EMPTY_ARRAY
             15, 5, 0,                     // IF_NOT_ERROR
             24,                           //   * LOAD_SAVED_POS
             26, 0, 1, 0,                  //     CALL <0>, pop 1, args []
             9,                            // POP_POS
 
-            15, 79, 3,                    // IF_NOT_ERROR
-            // "a"{return 42;} - max
+            15, 71, 3,                    // IF_NOT_ERROR
+            // {return 42;} - max
             5,                            //   * PUSH_CURR_POS
-            23, 0, 18, 0, 2, 1, 22, 0, 3, //     <expression>
+            4,                            //     PUSH_EMPTY_ARRAY
             15, 6, 0,                     //     IF_NOT_ERROR
             24,                           //       * LOAD_SAVED_POS
             26, 1, 1, 1, 1,               //         CALL <1>, pop 1, args [1]
@@ -936,14 +936,14 @@ describe("compiler pass |generateBytecode|", function() {
       });
 
       describe("|exact| (edge case -- exact repetitions)", function() {
-        let grammar = "start = exact:('a'{return 42;}) 'a'|exact|";
+        let grammar = "start = exact:({return 42;}) 'a'|exact|";
 
         it("generates correct bytecode", function() {
           expect(pass).to.changeAST(grammar, bytecodeDetails([
             5,                            // PUSH_CURR_POS
-            // "a"{return 42;}
+            // {return 42;}
             5,                            // PUSH_CURR_POS
-            23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
+            4,                            // PUSH_EMPTY_ARRAY
             15, 5, 0,                     // IF_NOT_ERROR
             24,                           //   * LOAD_SAVED_POS
             26, 0, 1, 0,                  //     CALL <0>, pop 1, args []
