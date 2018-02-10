@@ -229,23 +229,23 @@ describe("compiler pass |generateBytecode|", function() {
         expect(pass).to.changeAST(grammar, bytecodeDetails([
           5,                            // PUSH_CURR_POS
           23, 0, 18, 0, 2, 1, 22, 0, 3, // <elements[0]>
-          15, 41, 3,                    // IF_NOT_ERROR
+          15, 40, 3,                    // IF_NOT_ERROR
           23, 1, 18, 1, 2, 1, 22, 1, 3, //   * <elements[1]>
-          15, 25, 4,                    //     IF_NOT_ERROR
+          15, 24, 4,                    //     IF_NOT_ERROR
           23, 2, 18, 2, 2, 1, 22, 2, 3, //       * <elements[2]>
-          15, 9, 4,                     //         IF_NOT_ERROR
+          15, 8, 4,                     //         IF_NOT_ERROR
           24,                           //           * LOAD_SAVED_POS
           26, 0, 3, 3, 2, 1, 0,         //             CALL <0>, pop 3, args [2,1,0]
-          9,                            //             POP_POS
           8, 3,                         //           * POP_N <3>
           3,                            //             PUSH_FAILED
-          7,                            //             POP_CURR_POS
+          7,                            //             LOAD_CURR_POS
           8, 2,                         //       * POP_N <2>
           3,                            //         PUSH_FAILED
-          7,                            //         POP_CURR_POS
+          7,                            //         LOAD_CURR_POS
           6,                            //   * POP
           3,                            //     PUSH_FAILED
-          7,                            //     POP_CURR_POS
+          7,                            //     LOAD_CURR_POS
+          9,                            // POP_POS
         ]));
       });
 
@@ -295,22 +295,22 @@ describe("compiler pass |generateBytecode|", function() {
         expect(pass).to.changeAST(grammar, bytecodeDetails([
           5,                            // PUSH_CURR_POS
           23, 0, 18, 0, 2, 1, 22, 0, 3, // <elements[0]>
-          15, 35, 3,                    // IF_NOT_ERROR
+          15, 34, 3,                    // IF_NOT_ERROR
           23, 1, 18, 1, 2, 1, 22, 1, 3, //   * <elements[1]>
-          15, 19, 4,                    //     IF_NOT_ERROR
+          15, 18, 4,                    //     IF_NOT_ERROR
           23, 2, 18, 2, 2, 1, 22, 2, 3, //       * <elements[2]>
-          15, 3, 4,                     //         IF_NOT_ERROR
+          15, 2, 4,                     //         IF_NOT_ERROR
           11, 3,                        //           * WRAP <3>
-          9,                            //             POP_POS
           8, 3,                         //           * POP_N <3>
           3,                            //             PUSH_FAILED
-          7,                            //             POP_CURR_POS
+          7,                            //             LOAD_CURR_POS
           8, 2,                         //       * POP_N <2>
           3,                            //         PUSH_FAILED
-          7,                            //         POP_CURR_POS
+          7,                            //         LOAD_CURR_POS
           6,                            //   * POP
           3,                            //     PUSH_FAILED
-          7,                            //     POP_CURR_POS
+          7,                            //     LOAD_CURR_POS
+          9,                            // POP_POS
         ]));
       });
 
@@ -347,22 +347,22 @@ describe("compiler pass |generateBytecode|", function() {
         expect(pass).to.changeAST("start = @'a' 'b' 'c'", bytecodeDetails([
           5,                            // PUSH_CURR_POS
           23, 0, 18, 0, 2, 1, 22, 0, 3, // <elements[0]>
-          15, 36, 3,                    // IF_NOT_ERROR
+          15, 35, 3,                    // IF_NOT_ERROR
           23, 1, 18, 1, 2, 1, 22, 1, 3, //   * <elements[1]>
-          15, 20, 4,                    //     IF_NOT_ERROR
+          15, 19, 4,                    //     IF_NOT_ERROR
           23, 2, 18, 2, 2, 1, 22, 2, 3, //       * <elements[2]>
-          15, 4, 4,                     //         IF_NOT_ERROR
+          15, 3, 4,                     //         IF_NOT_ERROR
           36, 3, 2,                     //           * GET <2>, pop 3
-          9,                            //             POP_POS
           8, 3,                         //           * POP_N <3>
           3,                            //             PUSH_FAILED
-          7,                            //             POP_CURR_POS
+          7,                            //             LOAD_CURR_POS
           8, 2,                         //       * POP_N <2>
           3,                            //         PUSH_FAILED
-          7,                            //         POP_CURR_POS
+          7,                            //         LOAD_CURR_POS
           6,                            //   * POP
           3,                            //     PUSH_FAILED
-          7,                            //     POP_CURR_POS
+          7,                            //     LOAD_CURR_POS
+          9,                            // POP_POS
         ]));
       });
     });
@@ -372,22 +372,22 @@ describe("compiler pass |generateBytecode|", function() {
         expect(pass).to.changeAST("start = @'a' 'b' @'c'", bytecodeDetails([
           5,                            // PUSH_CURR_POS
           23, 0, 18, 0, 2, 1, 22, 0, 3, // <elements[0]>
-          15, 38, 3,                    // IF_NOT_ERROR
+          15, 37, 3,                    // IF_NOT_ERROR
           23, 1, 18, 1, 2, 1, 22, 1, 3, //   * <elements[1]>
-          15, 22, 4,                    //     IF_NOT_ERROR
+          15, 21, 4,                    //     IF_NOT_ERROR
           23, 2, 18, 2, 2, 1, 22, 2, 3, //       * <elements[2]>
-          15, 6, 4,                     //         IF_NOT_ERROR
+          15, 5, 4,                     //         IF_NOT_ERROR
           37, 3, 2, 2, 0,               //           * WRAP_SOME <[2, 0]>, pop 3
-          9,                            //             POP_POS
           8, 3,                         //           * POP_N <3>
           3,                            //             PUSH_FAILED
-          7,                            //             POP_CURR_POS
+          7,                            //             LOAD_CURR_POS
           8, 2,                         //       * POP_N <2>
           3,                            //         PUSH_FAILED
-          7,                            //         POP_CURR_POS
+          7,                            //         LOAD_CURR_POS
           6,                            //   * POP
           3,                            //     PUSH_FAILED
-          7,                            //     POP_CURR_POS
+          7,                            //     LOAD_CURR_POS
+          9,                            // POP_POS
         ]));
       });
     });
@@ -415,13 +415,13 @@ describe("compiler pass |generateBytecode|", function() {
         38,                           // EXPECT_NS_BEGIN
         23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
         39, 0,                        // EXPECT_NS_END <false>
-        15, 3, 3,                     // IF_NOT_ERROR
+        15, 3, 2,                     // IF_NOT_ERROR
         6,                            //   * POP
         1,                            //     PUSH_UNDEFINED
-        7,                            //     POP_CURR_POS
+        7,                            //     LOAD_CURR_POS
         6,                            //   * POP
         3,                            //     PUSH_FAILED
-        9,                            //     POP_POS
+        9,                            // POP_POS
       ]));
     });
 
@@ -444,13 +444,13 @@ describe("compiler pass |generateBytecode|", function() {
         38,                           // EXPECT_NS_BEGIN
         23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
         39, 1,                        // EXPECT_NS_END <true>
-        14, 3, 3,                     // IF_ERROR
+        14, 2, 3,                     // IF_ERROR
         6,                            //   * POP
         1,                            //     PUSH_UNDEFINED
-        9,                            //     POP_POS
         6,                            //   * POP
         3,                            //     PUSH_FAILED
-        7,                            //     POP_CURR_POS
+        7,                            //     LOAD_CURR_POS
+        9,                            // POP_POS
       ]));
     });
 
@@ -628,11 +628,11 @@ describe("compiler pass |generateBytecode|", function() {
             10,                           //   * APPEND
             23, 0, 18, 0, 2, 1, 22, 0, 3, //     <expression>
             6,                            // POP
-            30, 2, 3, 1,                  // IF_LT <2>
+            30, 2, 3, 0,                  // IF_LT <2>
             6,                            //   * POP
             3,                            //     PUSH_FAILED
-            7,                            //     POP_CURR_POS
-            9,                            //   * POP_POS
+            7,                            //     LOAD_CURR_POS
+            9,                            // POP_POS
           ]));
         });
 
@@ -682,11 +682,11 @@ describe("compiler pass |generateBytecode|", function() {
             10,                           //   * APPEND
             23, 0, 18, 0, 2, 1, 22, 0, 3, //     <expression>
             6,                            // POP
-            30, 1, 3, 1,                  // IF_LT <1>
+            30, 1, 3, 0,                  // IF_LT <1>
             6,                            //   * POP
             3,                            //     PUSH_FAILED
-            7,                            //     POP_CURR_POS
-            9,                            //   * POP_POS
+            7,                            //     LOAD_CURR_POS
+            9,                            // POP_POS
           ]));
         });
 
@@ -714,11 +714,11 @@ describe("compiler pass |generateBytecode|", function() {
             3,                            //       * PUSH_FAILED
             23, 0, 18, 0, 2, 1, 22, 0, 3, //       * <expression>
             6,                            // POP
-            30, 2, 3, 1,                  // IF_LT <2>
+            30, 2, 3, 0,                  // IF_LT <2>
             6,                            //   * POP
             3,                            //     PUSH_FAILED
-            7,                            //     POP_CURR_POS
-            9,                            //   * POP_POS
+            7,                            //     LOAD_CURR_POS
+            9,                            // POP_POS
           ]));
         });
 
@@ -746,11 +746,11 @@ describe("compiler pass |generateBytecode|", function() {
             3,                            //       * PUSH_FAILED
             23, 0, 18, 0, 2, 1, 22, 0, 3, //       * <expression>
             6,                            // POP
-            30, 42, 3, 1,                 // IF_LT <42>
+            30, 42, 3, 0,                 // IF_LT <42>
             6,                            //   * POP
             3,                            //     PUSH_FAILED
-            7,                            //     POP_CURR_POS
-            9,                            //   * POP_POS
+            7,                            //     LOAD_CURR_POS
+            9,                            // POP_POS
           ]));
         });
 
@@ -780,7 +780,7 @@ describe("compiler pass |generateBytecode|", function() {
             26, 0, 1, 0,                  //     CALL <0>, pop 1, args []
             9,                            // POP_POS
 
-            15, 43, 3,                    // IF_NOT_ERROR
+            15, 42, 3,                    // IF_NOT_ERROR
             // "a"| ..max|
             4,                            //   * PUSH_EMPTY_ARRAY
             33, 1, 1, 9,                  //     IF_GE_DYNAMIC <1>
@@ -793,15 +793,15 @@ describe("compiler pass |generateBytecode|", function() {
             23, 0, 18, 0, 2, 1, 22, 0, 3, //           * <expression>
             6,                            //     POP
 
-            15, 3, 4,                     //     IF_NOT_ERROR
+            15, 2, 4,                     //     IF_NOT_ERROR
             11, 2,                        //       * WRAP <2>
-            9,                            //         POP_POS
             8, 2,                         //       * POP_N <2>
             3,                            //         PUSH_FAILED
-            7,                            //         POP_CURR_POS
+            7,                            //         LOAD_CURR_POS
             6,                            //   * POP
             3,                            //     PUSH_FAILED
-            7,                            //     POP_CURR_POS
+            7,                            //     LOAD_CURR_POS
+            9,                            // POP_POS
           ]));
         });
 
@@ -829,7 +829,7 @@ describe("compiler pass |generateBytecode|", function() {
             26, 0, 1, 0,                  //     CALL <0>, pop 1, args []
             9,                            // POP_POS
 
-            15, 42, 3,                    // IF_NOT_ERROR
+            15, 41, 3,                    // IF_NOT_ERROR
             // "a"|min..|
             5,                            //   * PUSH_CURR_POS
             4,                            //     PUSH_EMPTY_ARRAY
@@ -838,21 +838,21 @@ describe("compiler pass |generateBytecode|", function() {
             10,                           //       * APPEND
             23, 0, 18, 0, 2, 1, 22, 0, 3, //         <expression>
             6,                            //     POP
-            32, 1, 3, 1,                  //     IF_LT_DYNAMIC <1>
+            32, 1, 3, 0,                  //     IF_LT_DYNAMIC <1>
             6,                            //       * POP
             3,                            //         PUSH_FAILED
-            7,                            //         POP_CURR_POS
-            9,                            //       * POP_POS
+            7,                            //         LOAD_CURR_POS
+            9,                            //     POP_POS
 
-            15, 3, 4,                     //     IF_NOT_ERROR
+            15, 2, 4,                     //     IF_NOT_ERROR
             11, 2,                        //       * WRAP <2>
-            9,                            //         POP_POS
             8, 2,                         //       * POP_N <2>
             3,                            //         PUSH_FAILED
-            7,                            //         POP_CURR_POS
+            7,                            //         LOAD_CURR_POS
             6,                            //   * POP
             3,                            //     PUSH_FAILED
-            7,                            //     POP_CURR_POS
+            7,                            //     LOAD_CURR_POS
+            9,                            // POP_POS
           ]));
         });
 
@@ -880,7 +880,7 @@ describe("compiler pass |generateBytecode|", function() {
             26, 0, 1, 0,                  //     CALL <0>, pop 1, args []
             9,                            // POP_POS
 
-            15, 71, 3,                    // IF_NOT_ERROR
+            15, 70, 3,                    // IF_NOT_ERROR
             // {return 42;} - max
             5,                            //   * PUSH_CURR_POS
             4,                            //     PUSH_EMPTY_ARRAY
@@ -888,7 +888,7 @@ describe("compiler pass |generateBytecode|", function() {
             24,                           //       * LOAD_SAVED_POS
             26, 1, 1, 1, 1,               //         CALL <1>, pop 1, args [1]
             9,                            //     POP_POS
-            15, 52, 4,                    //     IF_NOT_ERROR
+            15, 51, 4,                    //     IF_NOT_ERROR
             // "a"|min..max|
             5,                            //       * PUSH_CURR_POS
             4,                            //         PUSH_EMPTY_ARRAY
@@ -901,24 +901,24 @@ describe("compiler pass |generateBytecode|", function() {
             3,                            //               * PUSH_FAILED
             23, 0, 18, 0, 2, 1, 22, 0, 3, //               * <expression>
             6,                            //         POP
-            32, 2, 3, 1,                  //         IF_LT_DYNAMIC <2>
+            32, 2, 3, 0,                  //         IF_LT_DYNAMIC <2>
             6,                            //           * POP
             3,                            //             PUSH_FAILED
-            7,                            //             POP_CURR_POS
-            9,                            //           * POP_POS
+            7,                            //             LOAD_CURR_POS
+            9,                            //         POP_POS
 
-            15, 3, 4,                     //         IF_NOT_ERROR
+            15, 2, 4,                     //         IF_NOT_ERROR
             11, 3,                        //           * WRAP <3>
-            9,                            //             POP_POS
             8, 3,                         //           * POP_N <3>
             3,                            //             PUSH_FAILED
-            7,                            //             POP_CURR_POS
+            7,                            //             LOAD_CURR_POS
             8, 2,                         //       * POP_N <2>
             3,                            //         PUSH_FAILED
-            7,                            //         POP_CURR_POS
-            6,                            // * POP
-            3,                            //   PUSH_FAILED
-            7,                            //   POP_CURR_POS
+            7,                            //         LOAD_CURR_POS
+            6,                            //   * POP
+            3,                            //     PUSH_FAILED
+            7,                            //     LOAD_CURR_POS
+            9,                            // POP_POS
           ]));
         });
 
@@ -949,7 +949,7 @@ describe("compiler pass |generateBytecode|", function() {
             26, 0, 1, 0,                  //     CALL <0>, pop 1, args []
             9,                            // POP_POS
 
-            15, 52, 3,                    // IF_NOT_ERROR
+            15, 51, 3,                    // IF_NOT_ERROR
             // "a"|exact|
             5,                            //   * PUSH_CURR_POS
             4,                            //     PUSH_EMPTY_ARRAY
@@ -962,21 +962,21 @@ describe("compiler pass |generateBytecode|", function() {
             3,                            //           * PUSH_FAILED
             23, 0, 18, 0, 2, 1, 22, 0, 3, //           * <expression>
             6,                            //     POP
-            32, 1, 3, 1,                  //     IF_LT_DYNAMIC <1>
+            32, 1, 3, 0,                  //     IF_LT_DYNAMIC <1>
             6,                            //       * POP
             3,                            //         PUSH_FAILED
-            7,                            //         POP_CURR_POS
-            9,                            //       * POP_POS
+            7,                            //         LOAD_CURR_POS
+            9,                            //     POP_POS
 
-            15, 3, 4,                    //     IF_NOT_ERROR
-            11, 2,                       //       * WRAP <2>
-            9,                           //         POP_POS
-            8, 2,                        //       * POP_N <2>
-            3,                           //         PUSH_FAILED
-            7,                           //         POP_CURR_POS
-            6,                           // * POP
-            3,                           //   PUSH_FAILED
-            7,                           //   POP_CURR_POS
+            15, 2, 4,                     //     IF_NOT_ERROR
+            11, 2,                        //       * WRAP <2>
+            8, 2,                         //       * POP_N <2>
+            3,                            //         PUSH_FAILED
+            7,                            //         LOAD_CURR_POS
+            6,                            //   * POP
+            3,                            //     PUSH_FAILED
+            7,                            //     LOAD_CURR_POS
+            9,                            // POP_POS
           ]));
         });
 
@@ -1056,11 +1056,11 @@ describe("compiler pass |generateBytecode|", function() {
         expect(pass).to.changeAST(grammar, bytecodeDetails([
           5,                            // PUSH_CURR_POS
           23, 0, 18, 0, 2, 1, 22, 0, 3, // <elements[0]>
-          15, 57, 3,                    // IF_NOT_ERROR
+          15, 56, 3,                    // IF_NOT_ERROR
           23, 1, 18, 1, 2, 1, 22, 1, 3, //   * <elements[1]>
-          15, 41, 4,                    //     IF_NOT_ERROR
+          15, 40, 4,                    //     IF_NOT_ERROR
           23, 2, 18, 2, 2, 1, 22, 2, 3, //       * <elements[2]>
-          15, 25, 4,                    //         IF_NOT_ERROR
+          15, 24, 4,                    //         IF_NOT_ERROR
           25,                           //           * UPDATE_SAVED_POS
           26, 0, 0, 3, 2, 1, 0,         //             CALL <0>, pop 0, args [2,1,0]
           13, 2, 2,                     //             IF
@@ -1068,21 +1068,21 @@ describe("compiler pass |generateBytecode|", function() {
           1,                            //                 PUSH_UNDEFINED
           6,                            //               * POP
           3,                            //                 PUSH_FAILED
-          15, 3, 4,                     //             IF_NOT_ERROR
+          15, 2, 4,                     //             IF_NOT_ERROR
           11, 4,                        //               * WRAP <4>
-          9,                            //                 POP_POS
           8, 4,                         //               * POP_N <4>
           3,                            //                 PUSH_FAILED
-          7,                            //                 POP_CURR_POS
+          7,                            //                 LOAD_CURR_POS
           8, 3,                         //           * POP_N <3>
           3,                            //             PUSH_FAILED
-          7,                            //             POP_CURR_POS
+          7,                            //             LOAD_CURR_POS
           8, 2,                         //       * POP_N <2>
           3,                            //         PUSH_FAILED
-          7,                            //         POP_CURR_POS
+          7,                            //         LOAD_CURR_POS
           6,                            //   * POP
           3,                            //     PUSH_FAILED
-          7,                            //     POP_CURR_POS
+          7,                            //     LOAD_CURR_POS
+          9,                            // POP_POS
         ]));
       });
 
@@ -1155,11 +1155,11 @@ describe("compiler pass |generateBytecode|", function() {
         expect(pass).to.changeAST(grammar, bytecodeDetails([
           5,                            // PUSH_CURR_POS
           23, 0, 18, 0, 2, 1, 22, 0, 3, // <elements[0]>
-          15, 57, 3,                    // IF_NOT_ERROR
+          15, 56, 3,                    // IF_NOT_ERROR
           23, 1, 18, 1, 2, 1, 22, 1, 3, //   * <elements[1]>
-          15, 41, 4,                    //     IF_NOT_ERROR
+          15, 40, 4,                    //     IF_NOT_ERROR
           23, 2, 18, 2, 2, 1, 22, 2, 3, //       * <elements[2]>
-          15, 25, 4,                    //         IF_NOT_ERROR
+          15, 24, 4,                    //         IF_NOT_ERROR
           25,                           //           * UPDATE_SAVED_POS
           26, 0, 0, 3, 2, 1, 0,         //             CALL <0>, pop 0, args [2,1,0]
           13, 2, 2,                     //             IF
@@ -1167,21 +1167,21 @@ describe("compiler pass |generateBytecode|", function() {
           3,                            //                 PUSH_FAILED
           6,                            //               * POP
           1,                            //                 PUSH_UNDEFINED
-          15, 3, 4,                     //             IF_NOT_ERROR
+          15, 2, 4,                     //             IF_NOT_ERROR
           11, 4,                        //               * WRAP <4>
-          9,                            //                 POP_POS
           8, 4,                         //               * POP_N <4>
           3,                            //                 PUSH_FAILED
-          7,                            //                 POP_CURR_POS
+          7,                            //                 LOAD_CURR_POS
           8, 3,                         //           * POP_N <3>
           3,                            //             PUSH_FAILED
-          7,                            //             POP_CURR_POS
+          7,                            //             LOAD_CURR_POS
           8, 2,                         //       * POP_N <2>
           3,                            //         PUSH_FAILED
-          7,                            //         POP_CURR_POS
+          7,                            //         LOAD_CURR_POS
           6,                            //   * POP
           3,                            //     PUSH_FAILED
-          7,                            //     POP_CURR_POS
+          7,                            //     LOAD_CURR_POS
+          9,                            // POP_POS
         ]));
       });
 
