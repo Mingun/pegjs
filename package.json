@@ -57,6 +57,7 @@
     "test:impact": "node test/impact",
     "test:server": "node test/server/run",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "report": "nyc report -r html",
     "benchmark": "gulp benchmark",
     "browser:build": "gulp browser:build",
     "browser:clean": "gulp browser:build",
