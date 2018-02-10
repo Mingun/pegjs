@@ -1,7 +1,7 @@
 "use strict";
 
 let chai = require("chai");
-let Stack = require("../../../../lib/compiler/Stack");
+let Stack = require("../../../../lib/compiler/stack");
 
 let expect = chai.expect;
 
