@@ -229,7 +229,7 @@ describe("compiler pass |generateBytecode|", function() {
         expect(pass).to.changeAST(grammar, bytecodeDetails([
           5,                            // PUSH_CURR_POS
           23, 0, 18, 0, 2, 1, 22, 0, 3, // <elements[0]>
-          15, 40, 3,                    // IF_NOT_ERROR
+          15, 40, 1,                    // IF_NOT_ERROR
           23, 1, 18, 1, 2, 1, 22, 1, 3, //   * <elements[1]>
           15, 24, 4,                    //     IF_NOT_ERROR
           23, 2, 18, 2, 2, 1, 22, 2, 3, //       * <elements[2]>
@@ -242,9 +242,7 @@ describe("compiler pass |generateBytecode|", function() {
           8, 2,                         //       * POP_N <2>
           3,                            //         PUSH_FAILED
           7,                            //         LOAD_CURR_POS
-          6,                            //   * POP
-          3,                            //     PUSH_FAILED
-          7,                            //     LOAD_CURR_POS
+          7,                            //   * LOAD_CURR_POS
           9,                            // POP_POS
         ]));
       });
@@ -295,7 +293,7 @@ describe("compiler pass |generateBytecode|", function() {
         expect(pass).to.changeAST(grammar, bytecodeDetails([
           5,                            // PUSH_CURR_POS
           23, 0, 18, 0, 2, 1, 22, 0, 3, // <elements[0]>
-          15, 34, 3,                    // IF_NOT_ERROR
+          15, 34, 1,                    // IF_NOT_ERROR
           23, 1, 18, 1, 2, 1, 22, 1, 3, //   * <elements[1]>
           15, 18, 4,                    //     IF_NOT_ERROR
           23, 2, 18, 2, 2, 1, 22, 2, 3, //       * <elements[2]>
@@ -307,9 +305,7 @@ describe("compiler pass |generateBytecode|", function() {
           8, 2,                         //       * POP_N <2>
           3,                            //         PUSH_FAILED
           7,                            //         LOAD_CURR_POS
-          6,                            //   * POP
-          3,                            //     PUSH_FAILED
-          7,                            //     LOAD_CURR_POS
+          7,                            //   * LOAD_CURR_POS
           9,                            // POP_POS
         ]));
       });
@@ -347,7 +343,7 @@ describe("compiler pass |generateBytecode|", function() {
         expect(pass).to.changeAST("start = @'a' 'b' 'c'", bytecodeDetails([
           5,                            // PUSH_CURR_POS
           23, 0, 18, 0, 2, 1, 22, 0, 3, // <elements[0]>
-          15, 35, 3,                    // IF_NOT_ERROR
+          15, 35, 1,                    // IF_NOT_ERROR
           23, 1, 18, 1, 2, 1, 22, 1, 3, //   * <elements[1]>
           15, 19, 4,                    //     IF_NOT_ERROR
           23, 2, 18, 2, 2, 1, 22, 2, 3, //       * <elements[2]>
@@ -359,9 +355,7 @@ describe("compiler pass |generateBytecode|", function() {
           8, 2,                         //       * POP_N <2>
           3,                            //         PUSH_FAILED
           7,                            //         LOAD_CURR_POS
-          6,                            //   * POP
-          3,                            //     PUSH_FAILED
-          7,                            //     LOAD_CURR_POS
+          7,                            //   * LOAD_CURR_POS
           9,                            // POP_POS
         ]));
       });
@@ -372,7 +366,7 @@ describe("compiler pass |generateBytecode|", function() {
         expect(pass).to.changeAST("start = @'a' 'b' @'c'", bytecodeDetails([
           5,                            // PUSH_CURR_POS
           23, 0, 18, 0, 2, 1, 22, 0, 3, // <elements[0]>
-          15, 37, 3,                    // IF_NOT_ERROR
+          15, 37, 1,                    // IF_NOT_ERROR
           23, 1, 18, 1, 2, 1, 22, 1, 3, //   * <elements[1]>
           15, 21, 4,                    //     IF_NOT_ERROR
           23, 2, 18, 2, 2, 1, 22, 2, 3, //       * <elements[2]>
@@ -384,9 +378,7 @@ describe("compiler pass |generateBytecode|", function() {
           8, 2,                         //       * POP_N <2>
           3,                            //         PUSH_FAILED
           7,                            //         LOAD_CURR_POS
-          6,                            //   * POP
-          3,                            //     PUSH_FAILED
-          7,                            //     LOAD_CURR_POS
+          7,                            //   * LOAD_CURR_POS
           9,                            // POP_POS
         ]));
       });
@@ -414,12 +406,10 @@ describe("compiler pass |generateBytecode|", function() {
         38,                           // EXPECT_NS_BEGIN
         23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
         39, 0,                        // EXPECT_NS_END <false>
-        15, 3, 2,                     // IF_NOT_ERROR
+        15, 3, 0,                     // IF_NOT_ERROR
         6,                            //   * POP
         1,                            //     PUSH_UNDEFINED
         7,                            //     LOAD_CURR_POS
-        6,                            //   * POP
-        3,                            //     PUSH_FAILED
         9,                            // POP_POS
       ]));
     });
@@ -779,7 +769,7 @@ describe("compiler pass |generateBytecode|", function() {
             26, 0, 1, 0,                  //     CALL <0>, pop 1, args []
             9,                            // POP_POS
 
-            15, 42, 3,                    // IF_NOT_ERROR
+            15, 42, 1,                    // IF_NOT_ERROR
             // "a"| ..max|
             4,                            //   * PUSH_EMPTY_ARRAY
             33, 1, 1, 9,                  //     IF_GE_DYNAMIC <1>
@@ -797,9 +787,7 @@ describe("compiler pass |generateBytecode|", function() {
             8, 2,                         //       * POP_N <2>
             3,                            //         PUSH_FAILED
             7,                            //         LOAD_CURR_POS
-            6,                            //   * POP
-            3,                            //     PUSH_FAILED
-            7,                            //     LOAD_CURR_POS
+            7,                            //   * LOAD_CURR_POS
             9,                            // POP_POS
           ]));
         });
@@ -828,7 +816,7 @@ describe("compiler pass |generateBytecode|", function() {
             26, 0, 1, 0,                  //     CALL <0>, pop 1, args []
             9,                            // POP_POS
 
-            15, 41, 3,                    // IF_NOT_ERROR
+            15, 41, 1,                    // IF_NOT_ERROR
             // "a"|min..|
             5,                            //   * PUSH_CURR_POS
             4,                            //     PUSH_EMPTY_ARRAY
@@ -848,9 +836,7 @@ describe("compiler pass |generateBytecode|", function() {
             8, 2,                         //       * POP_N <2>
             3,                            //         PUSH_FAILED
             7,                            //         LOAD_CURR_POS
-            6,                            //   * POP
-            3,                            //     PUSH_FAILED
-            7,                            //     LOAD_CURR_POS
+            7,                            //   * LOAD_CURR_POS
             9,                            // POP_POS
           ]));
         });
@@ -879,7 +865,7 @@ describe("compiler pass |generateBytecode|", function() {
             26, 0, 1, 0,                  //     CALL <0>, pop 1, args []
             9,                            // POP_POS
 
-            15, 70, 3,                    // IF_NOT_ERROR
+            15, 70, 1,                    // IF_NOT_ERROR
             // {return 42;} - max
             5,                            //   * PUSH_CURR_POS
             4,                            //     PUSH_EMPTY_ARRAY
@@ -914,9 +900,7 @@ describe("compiler pass |generateBytecode|", function() {
             8, 2,                         //       * POP_N <2>
             3,                            //         PUSH_FAILED
             7,                            //         LOAD_CURR_POS
-            6,                            //   * POP
-            3,                            //     PUSH_FAILED
-            7,                            //     LOAD_CURR_POS
+            7,                            //   * LOAD_CURR_POS
             9,                            // POP_POS
           ]));
         });
@@ -948,7 +932,7 @@ describe("compiler pass |generateBytecode|", function() {
             26, 0, 1, 0,                  //     CALL <0>, pop 1, args []
             9,                            // POP_POS
 
-            15, 51, 3,                    // IF_NOT_ERROR
+            15, 51, 1,                    // IF_NOT_ERROR
             // "a"|exact|
             5,                            //   * PUSH_CURR_POS
             4,                            //     PUSH_EMPTY_ARRAY
@@ -972,9 +956,7 @@ describe("compiler pass |generateBytecode|", function() {
             8, 2,                         //       * POP_N <2>
             3,                            //         PUSH_FAILED
             7,                            //         LOAD_CURR_POS
-            6,                            //   * POP
-            3,                            //     PUSH_FAILED
-            7,                            //     LOAD_CURR_POS
+            7,                            //   * LOAD_CURR_POS
             9,                            // POP_POS
           ]));
         });
@@ -1055,7 +1037,7 @@ describe("compiler pass |generateBytecode|", function() {
         expect(pass).to.changeAST(grammar, bytecodeDetails([
           5,                            // PUSH_CURR_POS
           23, 0, 18, 0, 2, 1, 22, 0, 3, // <elements[0]>
-          15, 56, 3,                    // IF_NOT_ERROR
+          15, 56, 1,                    // IF_NOT_ERROR
           23, 1, 18, 1, 2, 1, 22, 1, 3, //   * <elements[1]>
           15, 40, 4,                    //     IF_NOT_ERROR
           23, 2, 18, 2, 2, 1, 22, 2, 3, //       * <elements[2]>
@@ -1078,9 +1060,7 @@ describe("compiler pass |generateBytecode|", function() {
           8, 2,                         //       * POP_N <2>
           3,                            //         PUSH_FAILED
           7,                            //         LOAD_CURR_POS
-          6,                            //   * POP
-          3,                            //     PUSH_FAILED
-          7,                            //     LOAD_CURR_POS
+          7,                            //   * LOAD_CURR_POS
           9,                            // POP_POS
         ]));
       });
@@ -1154,7 +1134,7 @@ describe("compiler pass |generateBytecode|", function() {
         expect(pass).to.changeAST(grammar, bytecodeDetails([
           5,                            // PUSH_CURR_POS
           23, 0, 18, 0, 2, 1, 22, 0, 3, // <elements[0]>
-          15, 56, 3,                    // IF_NOT_ERROR
+          15, 56, 1,                    // IF_NOT_ERROR
           23, 1, 18, 1, 2, 1, 22, 1, 3, //   * <elements[1]>
           15, 40, 4,                    //     IF_NOT_ERROR
           23, 2, 18, 2, 2, 1, 22, 2, 3, //       * <elements[2]>
@@ -1177,9 +1157,7 @@ describe("compiler pass |generateBytecode|", function() {
           8, 2,                         //       * POP_N <2>
           3,                            //         PUSH_FAILED
           7,                            //         LOAD_CURR_POS
-          6,                            //   * POP
-          3,                            //     PUSH_FAILED
-          7,                            //     LOAD_CURR_POS
+          7,                            //   * LOAD_CURR_POS
           9,                            // POP_POS
         ]));
       });
