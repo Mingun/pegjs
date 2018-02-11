@@ -153,13 +153,16 @@ describe("compiler pass |generateBytecode|", function() {
   describe("for choice", function() {
     it("generates correct bytecode", function() {
       expect(pass).to.changeAST("start = 'a' / 'b' / 'c'", bytecodeDetails([
-        23, 0, 18, 0, 2, 1, 22, 0, 3, // <alternatives[0]>
-        14, 23, 0,                    // IF_ERROR
-        6,                            //   * POP
-        23, 1, 18, 1, 2, 1, 22, 1, 3, //     <alternatives[1]>
-        14, 10, 0,                    //     IF_ERROR
-        6,                            //       * POP
-        23, 2, 18, 2, 2, 1, 22, 2, 3  //         <alternatives[2]>
+        41, 0, 39,                    // LOOP false
+        23, 0, 18, 0, 2, 1, 22, 0, 3, //   * <alternatives[0]>
+        15, 2, 0,                     //     IF_NOT_ERROR
+        8, 0,                         //       * BREAK <0>
+        6,                            //     POP
+        23, 1, 18, 1, 2, 1, 22, 1, 3, //   - <alternatives[1]>
+        15, 2, 0,                     //     IF_NOT_ERROR
+        8, 0,                         //       * BREAK <0>
+        6,                            //     POP
+        23, 2, 18, 2, 2, 1, 22, 2, 3, //   - <alternatives[2]>
       ]));
     });
   });
