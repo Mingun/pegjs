@@ -484,11 +484,12 @@ describe("compiler pass |generateBytecode|", function() {
     it("generates correct bytecode", function() {
       expect(pass).to.changeAST(grammar, bytecodeDetails([
         4,                            // PUSH_EMPTY_ARRAY
-        23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
-        16, 10,                       // WHILE_NOT_ERROR
-        10,                           //   * APPEND
-        23, 0, 18, 0, 2, 1, 22, 0, 3, //     <expression>
-        6                             // POP
+        41, 1, 16,                    // LOOP true
+        23, 0, 18, 0, 2, 1, 22, 0, 3, //   * <expression>
+        14, 3, 1,                     //     IF_ERROR
+        6,                            //       * POP
+        8, 0,                         //         BREAK <0>
+        10,                           //       * APPEND
       ]));
     });
 
@@ -507,16 +508,19 @@ describe("compiler pass |generateBytecode|", function() {
 
     it("generates correct bytecode", function() {
       expect(pass).to.changeAST(grammar, bytecodeDetails([
+        5,                            // PUSH_CURR_POS
         4,                            // PUSH_EMPTY_ARRAY
-        23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
-        15, 13, 3,                    // IF_NOT_ERROR
-        16, 10,                       //   * WHILE_NOT_ERROR
+        41, 1, 16,                    // LOOP true
+        23, 0, 18, 0, 2, 1, 22, 0, 3, //   * <expression>
+        14, 3, 1,                     //     IF_ERROR
+        6,                            //       * POP
+        8, 0,                         //         BREAK <0>
         10,                           //       * APPEND
-        23, 0, 18, 0, 2, 1, 22, 0, 3, //         <expression>
+        30, 1, 3, 0,                  // IF_LT <1>
+        7,                            //   * LOAD_CURR_POS
         6,                            //     POP
-        6,                            //   * POP
-        6,                            //     POP
-        3                             //     PUSH_FAILED
+        3,                            //     PUSH_FAILED
+        9,                            // POP_POS
       ]));
     });
 
