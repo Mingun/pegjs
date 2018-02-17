@@ -538,11 +538,12 @@ describe("compiler pass |generateBytecode|", function() {
         it("generates correct bytecode", function() {
           expect(pass).to.changeAST(grammar, bytecodeDetails([
             4,                            // PUSH_EMPTY_ARRAY
-            23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
-            16, 10,                       // WHILE_NOT_ERROR
-            10,                           //   * APPEND
-            23, 0, 18, 0, 2, 1, 22, 0, 3, //     <expression>
-            6                             // POP
+            41, 1, 16,                    // LOOP true
+            23, 0, 18, 0, 2, 1, 22, 0, 3, //   * <expression>
+            14, 3, 1,                     //     IF_ERROR
+            6,                            //       * POP
+            8, 0,                         //         BREAK <0>
+            10,                           //       * APPEND
           ]));
         });
 
@@ -563,13 +564,14 @@ describe("compiler pass |generateBytecode|", function() {
           it("generates correct bytecode", function() {
             expect(pass).to.changeAST(grammar, bytecodeDetails([
               4,                            // PUSH_EMPTY_ARRAY
-              23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
-              16, 15,                       // WHILE_NOT_ERROR
-              10,                           //   * APPEND
-              31, 3, 1, 9,                  //     IF_GE <3>
-              3,                            //       * PUSH_FAILED
-              23, 0, 18, 0, 2, 1, 22, 0, 3, //       * <expression>
-              6                             // POP
+              41, 1, 22,                    // LOOP true
+              31, 3, 2, 0,                  //   * IF_GE <3>
+              8, 0,                         //       * BREAK <0>
+              23, 0, 18, 0, 2, 1, 22, 0, 3, //     <expression>
+              14, 3, 1,                     //     IF_ERROR
+              6,                            //       * POP
+              8, 0,                         //         BREAK <0>
+              10,                           //       * APPEND
             ]));
           });
 
@@ -589,13 +591,14 @@ describe("compiler pass |generateBytecode|", function() {
           it("generates correct bytecode", function() {
             expect(pass).to.changeAST(grammar, bytecodeDetails([
               4,                            // PUSH_EMPTY_ARRAY
-              23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
-              16, 15,                       // WHILE_NOT_ERROR
-              10,                           //   * APPEND
-              31, 1, 1, 9,                  //     IF_GE <1>
-              3,                            //       * PUSH_FAILED
-              23, 0, 18, 0, 2, 1, 22, 0, 3, //       * <expression>
-              6                             // POP
+              41, 1, 22,                    // LOOP true
+              31, 1, 2, 0,                  //   * IF_GE <1>
+              8, 0,                         //       * BREAK <0>
+              23, 0, 18, 0, 2, 1, 22, 0, 3, //     <expression>
+              14, 3, 1,                     //     IF_ERROR
+              6,                            //       * POP
+              8, 0,                         //         BREAK <0>
+              10,                           //       * APPEND
             ]));
           });
 
@@ -616,11 +619,12 @@ describe("compiler pass |generateBytecode|", function() {
             expect(pass).to.changeAST(grammar, bytecodeDetails([
               5,                            // PUSH_CURR_POS
               4,                            // PUSH_EMPTY_ARRAY
-              23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
-              16, 10,                       // WHILE_NOT_ERROR
-              10,                           //   * APPEND
-              23, 0, 18, 0, 2, 1, 22, 0, 3, //     <expression>
-              6,                            // POP
+              41, 1, 16,                    // LOOP true
+              23, 0, 18, 0, 2, 1, 22, 0, 3, //   * <expression>
+              14, 3, 1,                     //     IF_ERROR
+              6,                            //       * POP
+              8, 0,                         //         BREAK <0>
+              10,                           //       * APPEND
               30, 2, 3, 0,                  // IF_LT <2>
               7,                            //   * LOAD_CURR_POS
               6,                            //     POP
@@ -645,11 +649,12 @@ describe("compiler pass |generateBytecode|", function() {
           it("generates correct bytecode", function() {
             expect(pass).to.changeAST(grammar, bytecodeDetails([
               4,                            // PUSH_EMPTY_ARRAY
-              23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
-              16, 10,                       // WHILE_NOT_ERROR
-              10,                           //   * APPEND
-              23, 0, 18, 0, 2, 1, 22, 0, 3, //     <expression>
-              6                             // POP
+              41, 1, 16,                    // LOOP true
+              23, 0, 18, 0, 2, 1, 22, 0, 3, //   * <expression>
+              14, 3, 1,                     //     IF_ERROR
+              6,                            //       * POP
+              8, 0,                         //         BREAK <0>
+              10,                           //       * APPEND
             ]));
           });
 
@@ -670,11 +675,12 @@ describe("compiler pass |generateBytecode|", function() {
             expect(pass).to.changeAST(grammar, bytecodeDetails([
               5,                            // PUSH_CURR_POS
               4,                            // PUSH_EMPTY_ARRAY
-              23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
-              16, 10,                       // WHILE_NOT_ERROR
-              10,                           //   * APPEND
-              23, 0, 18, 0, 2, 1, 22, 0, 3, //     <expression>
-              6,                            // POP
+              41, 1, 16,                    // LOOP true
+              23, 0, 18, 0, 2, 1, 22, 0, 3, //   * <expression>
+              14, 3, 1,                     //     IF_ERROR
+              6,                            //       * POP
+              8, 0,                         //         BREAK <0>
+              10,                           //       * APPEND
               30, 1, 3, 0,                  // IF_LT <1>
               7,                            //   * LOAD_CURR_POS
               6,                            //     POP
@@ -700,13 +706,14 @@ describe("compiler pass |generateBytecode|", function() {
             expect(pass).to.changeAST(grammar, bytecodeDetails([
               5,                            // PUSH_CURR_POS
               4,                            // PUSH_EMPTY_ARRAY
-              23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
-              16, 15,                       // WHILE_NOT_ERROR
-              10,                           //   * APPEND
-              31, 3, 1, 9,                  //     IF_GE <3>
-              3,                            //       * PUSH_FAILED
-              23, 0, 18, 0, 2, 1, 22, 0, 3, //       * <expression>
-              6,                            // POP
+              41, 1, 22,                    // LOOP true
+              31, 3, 2, 0,                  //   * IF_GE <3>
+              8, 0,                         //       * BREAK <0>
+              23, 0, 18, 0, 2, 1, 22, 0, 3, //     <expression>
+              14, 3, 1,                     //     IF_ERROR
+              6,                            //       * POP
+              8, 0,                         //         BREAK <0>
+              10,                           //       * APPEND
               30, 2, 3, 0,                  // IF_LT <2>
               7,                            //   * LOAD_CURR_POS
               6,                            //     POP
@@ -732,13 +739,14 @@ describe("compiler pass |generateBytecode|", function() {
             expect(pass).to.changeAST(grammar, bytecodeDetails([
               5,                            // PUSH_CURR_POS
               4,                            // PUSH_EMPTY_ARRAY
-              23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
-              16, 15,                       // WHILE_NOT_ERROR
-              10,                           //   * APPEND
-              31, 42, 1, 9,                 //     IF_GE <42>
-              3,                            //       * PUSH_FAILED
-              23, 0, 18, 0, 2, 1, 22, 0, 3, //       * <expression>
-              6,                            // POP
+              41, 1, 22,                    // LOOP true
+              31, 42, 2, 0,                 //   * IF_GE <42>
+              8, 0,                         //       * BREAK <0>
+              23, 0, 18, 0, 2, 1, 22, 0, 3, //     <expression>
+              14, 3, 1,                     //     IF_ERROR
+              6,                            //       * POP
+              8, 0,                         //         BREAK <0>
+              10,                           //       * APPEND
               30, 42, 3, 0,                 // IF_LT <42>
               7,                            //   * LOAD_CURR_POS
               6,                            //     POP
@@ -765,7 +773,7 @@ describe("compiler pass |generateBytecode|", function() {
           it("generates correct bytecode", function() {
             expect(pass).to.changeAST(grammar, bytecodeDetails([
               5,                            // PUSH_CURR_POS
-              41, 0, 58,                    // LOOP false
+              41, 0, 51,                    // LOOP false
               // {return 42;}
               5,                            //   * PUSH_CURR_POS
               4,                            //     PUSH_EMPTY_ARRAY
@@ -779,15 +787,14 @@ describe("compiler pass |generateBytecode|", function() {
 
               // "a"| ..max|
               4,                            //   - PUSH_EMPTY_ARRAY
-              33, 1, 1, 9,                  //     IF_GE_DYNAMIC <1>
-              3,                            //       * PUSH_FAILED
-              23, 0, 18, 0, 2, 1, 22, 0, 3, //       * <expression>
-              16, 15,                       //     WHILE_NOT_ERROR
-              10,                           //       * APPEND
-              33, 1, 1, 9,                  //         IF_GE_DYNAMIC <1>
-              3,                            //           * PUSH_FAILED
-              23, 0, 18, 0, 2, 1, 22, 0, 3, //           * <expression>
-              6,                            //     POP
+              41, 1, 22,                    //     LOOP true
+              33, 1, 2, 0,                  //       * IF_GE_DYNAMIC <1>
+              8, 0,                         //           * BREAK <0>
+              23, 0, 18, 0, 2, 1, 22, 0, 3, //         <expression>
+              14, 3, 1,                     //         IF_ERROR
+              6,                            //           * POP
+              8, 0,                         //             BREAK <0>
+              10,                           //           * APPEND
               14, 3, 0,                     //     IF_ERROR
               7,                            //       * LOAD_CURR_POS
               8, 2,                         //         BREAK <2>
@@ -813,7 +820,7 @@ describe("compiler pass |generateBytecode|", function() {
           it("generates correct bytecode", function() {
             expect(pass).to.changeAST(grammar, bytecodeDetails([
               5,                            // PUSH_CURR_POS
-              41, 0, 57,                    // LOOP false
+              41, 0, 54,                    // LOOP false
               // {return 42;}
               5,                            //   * PUSH_CURR_POS
               4,                            //     PUSH_EMPTY_ARRAY
@@ -828,11 +835,12 @@ describe("compiler pass |generateBytecode|", function() {
               // "a"|min..|
               5,                            //   - PUSH_CURR_POS
               4,                            //     PUSH_EMPTY_ARRAY
-              23, 0, 18, 0, 2, 1, 22, 0, 3, //     <expression>
-              16, 10,                       //     WHILE_NOT_ERROR
-              10,                           //       * APPEND
-              23, 0, 18, 0, 2, 1, 22, 0, 3, //         <expression>
-              6,                            //     POP
+              41, 1, 16,                    //     LOOP true
+              23, 0, 18, 0, 2, 1, 22, 0, 3, //       * <expression>
+              14, 3, 1,                     //         IF_ERROR
+              6,                            //           * POP
+              8, 0,                         //             BREAK <0>
+              10,                           //           * APPEND
               32, 1, 3, 0,                  //     IF_LT_DYNAMIC <1>
               7,                            //       * LOAD_CURR_POS
               6,                            //         POP
@@ -863,7 +871,7 @@ describe("compiler pass |generateBytecode|", function() {
           it("generates correct bytecode", function() {
             expect(pass).to.changeAST(grammar, bytecodeDetails([
               5,                            // PUSH_CURR_POS
-              41, 0, 85,                    // LOOP false
+              41, 0, 78,                    // LOOP false
 
               // {return 42;} - min
               5,                            //   * PUSH_CURR_POS
@@ -890,15 +898,14 @@ describe("compiler pass |generateBytecode|", function() {
               // "a"|min..max|
               5,                            //   - PUSH_CURR_POS
               4,                            //     PUSH_EMPTY_ARRAY
-              33, 1, 1, 9,                  //     IF_GE_DYNAMIC <1>
-              3,                            //       * PUSH_FAILED
-              23, 0, 18, 0, 2, 1, 22, 0, 3, //       * <expression>
-              16, 15,                       //     WHILE_NOT_ERROR
-              10,                           //       * APPEND
-              33, 1, 1, 9,                  //         IF_GE_DYNAMIC <1>
-              3,                            //           * PUSH_FAILED
-              23, 0, 18, 0, 2, 1, 22, 0, 3, //           * <expression>
-              6,                            //     POP
+              41, 1, 22,                    //     LOOP true
+              33, 1, 2, 0,                  //       * IF_GE_DYNAMIC <1>
+              8, 0,                         //           * BREAK <0>
+              23, 0, 18, 0, 2, 1, 22, 0, 3, //         <expression>
+              14, 3, 1,                     //         IF_ERROR
+              6,                            //           * POP
+              8, 0,                         //             BREAK <0>
+              10,                           //           * APPEND
               32, 2, 3, 0,                  //     IF_LT_DYNAMIC <2>
               7,                            //       * LOAD_CURR_POS
               6,                            //         POP
@@ -932,7 +939,7 @@ describe("compiler pass |generateBytecode|", function() {
           it("generates correct bytecode", function() {
             expect(pass).to.changeAST(grammar, bytecodeDetails([
               5,                            // PUSH_CURR_POS
-              41, 0, 67,                    // LOOP false
+              41, 0, 60,                    // LOOP false
               // {return 42;}
               5,                            //   * PUSH_CURR_POS
               4,                            //     PUSH_EMPTY_ARRAY
@@ -947,15 +954,14 @@ describe("compiler pass |generateBytecode|", function() {
               // "a"|exact|
               5,                            //   - PUSH_CURR_POS
               4,                            //     PUSH_EMPTY_ARRAY
-              33, 1, 1, 9,                  //     IF_GE_DYNAMIC <1>
-              3,                            //       * PUSH_FAILED
-              23, 0, 18, 0, 2, 1, 22, 0, 3, //       * <expression>
-              16, 15,                       //     WHILE_NOT_ERROR
-              10,                           //       * APPEND
-              33, 1, 1, 9,                  //         IF_GE_DYNAMIC <1>
-              3,                            //           * PUSH_FAILED
-              23, 0, 18, 0, 2, 1, 22, 0, 3, //           * <expression>
-              6,                            //     POP
+              41, 1, 22,                    //     LOOP true
+              33, 1, 2, 0,                  //       * IF_GE_DYNAMIC <1>
+              8, 0,                         //           * BREAK <0>
+              23, 0, 18, 0, 2, 1, 22, 0, 3, //         <expression>
+              14, 3, 1,                     //         IF_ERROR
+              6,                            //           * POP
+              8, 0,                         //             BREAK <0>
+              10,                           //           * APPEND
               32, 1, 3, 0,                  //     IF_LT_DYNAMIC <1>
               7,                            //       * LOAD_CURR_POS
               6,                            //         POP
@@ -989,18 +995,22 @@ describe("compiler pass |generateBytecode|", function() {
         it("generates correct bytecode", function() {
           expect(pass).to.changeAST(grammar, bytecodeDetails([
             4,                            // PUSH_EMPTY_ARRAY
-            23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
-            16, 29,                       // WHILE_NOT_ERROR
-            10,                           //   * APPEND
-            5,                            //     PUSH_CURR_POS
-            23, 1, 18, 1, 2, 1, 22, 1, 3, //     <delimiter>
-            15, 14, 0,                    //     IF_NOT_ERROR
-            6,                            //       * POP
-            23, 0, 18, 0, 2, 1, 22, 0, 3, //         <expression>
-            14, 1, 0,                     //         IF_ERROR
+            41, 0, 39,                    // LOOP false
+            5,                            //   * PUSH_CURR_POS
+            41, 1, 34,                    //     LOOP true
+            23, 0, 18, 0, 2, 1, 22, 0, 3, //       * <expression>
+            14, 4, 1,                     //         IF_ERROR
             7,                            //           * LOAD_CURR_POS
+            6,                            //             POP
+            8, 0,                         //             BREAK <0>
+            10,                           //           * APPEND
+            9,                            //         POP_POS
+            5,                            //         PUSH_CURR_POS
+            23, 1, 18, 1, 2, 1, 22, 1, 3, //         <delimiter>
+            14, 3, 0,                     //         IF_ERROR
+            6,                            //           * POP
+            8, 0,                         //             BREAK <0>
             9,                            //     POP_POS
-            6,                            // POP
           ]));
         });
 
@@ -1024,20 +1034,24 @@ describe("compiler pass |generateBytecode|", function() {
           it("generates correct bytecode", function() {
             expect(pass).to.changeAST(grammar, bytecodeDetails([
               4,                            // PUSH_EMPTY_ARRAY
-              23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
-              16, 34,                       // WHILE_NOT_ERROR
-              10,                           //   * APPEND
-              31, 3, 1, 28,                 //     IF_GE <3>
-              3,                            //       * PUSH_FAILED
-              5,                            //       * PUSH_CURR_POS
-              23, 1, 18, 1, 2, 1, 22, 1, 3, //         <delimiter>
-              15, 14, 0,                    //         IF_NOT_ERROR
-              6,                            //           * POP
-              23, 0, 18, 0, 2, 1, 22, 0, 3, //             <expression>
-              14, 1, 0,                     //             IF_ERROR
-              7,                            //               * LOAD_CURR_POS
+              41, 0, 45,                    // LOOP false
+              5,                            //   * PUSH_CURR_POS
+              41, 1, 40,                    //     LOOP true
+              23, 0, 18, 0, 2, 1, 22, 0, 3, //       * <expression>
+              14, 4, 1,                     //         IF_ERROR
+              7,                            //           * LOAD_CURR_POS
+              6,                            //             POP
+              8, 0,                         //             BREAK <0>
+              10,                           //           * APPEND
+              31, 3, 2, 0,                  //         IF_GE <3>
+              8, 0,                         //           * BREAK <0>
               9,                            //         POP_POS
-              6,                            // POP
+              5,                            //         PUSH_CURR_POS
+              23, 1, 18, 1, 2, 1, 22, 1, 3, //         <delimiter>
+              14, 3, 0,                     //         IF_ERROR
+              6,                            //           * POP
+              8, 0,                         //             BREAK <0>
+              9,                            //     POP_POS
             ]));
           });
 
@@ -1060,20 +1074,24 @@ describe("compiler pass |generateBytecode|", function() {
           it("generates correct bytecode", function() {
             expect(pass).to.changeAST(grammar, bytecodeDetails([
               4,                            // PUSH_EMPTY_ARRAY
-              23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
-              16, 34,                       // WHILE_NOT_ERROR
-              10,                           //   * APPEND
-              31, 1, 1, 28,                 //     IF_GE <1>
-              3,                            //       * PUSH_FAILED
-              5,                            //       * PUSH_CURR_POS
-              23, 1, 18, 1, 2, 1, 22, 1, 3, //         <delimiter>
-              15, 14, 0,                    //         IF_NOT_ERROR
-              6,                            //           * POP
-              23, 0, 18, 0, 2, 1, 22, 0, 3, //             <expression>
-              14, 1, 0,                     //             IF_ERROR
-              7,                            //               * LOAD_CURR_POS
+              41, 0, 45,                    // LOOP false
+              5,                            //   * PUSH_CURR_POS
+              41, 1, 40,                    //     LOOP true
+              23, 0, 18, 0, 2, 1, 22, 0, 3, //       * <expression>
+              14, 4, 1,                     //         IF_ERROR
+              7,                            //           * LOAD_CURR_POS
+              6,                            //             POP
+              8, 0,                         //             BREAK <0>
+              10,                           //           * APPEND
+              31, 1, 2, 0,                  //         IF_GE <1>
+              8, 0,                         //           * BREAK <0>
               9,                            //         POP_POS
-              6,                            // POP
+              5,                            //         PUSH_CURR_POS
+              23, 1, 18, 1, 2, 1, 22, 1, 3, //         <delimiter>
+              14, 3, 0,                     //         IF_ERROR
+              6,                            //           * POP
+              8, 0,                         //             BREAK <0>
+              9,                            //     POP_POS
             ]));
           });
 
@@ -1097,18 +1115,22 @@ describe("compiler pass |generateBytecode|", function() {
             expect(pass).to.changeAST(grammar, bytecodeDetails([
               5,                            // PUSH_CURR_POS
               4,                            // PUSH_EMPTY_ARRAY
-              23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
-              16, 29,                       // WHILE_NOT_ERROR
-              10,                           //   * APPEND
-              5,                            //     PUSH_CURR_POS
-              23, 1, 18, 1, 2, 1, 22, 1, 3, //     <delimiter>
-              15, 14, 0,                    //     IF_NOT_ERROR
-              6,                            //       * POP
-              23, 0, 18, 0, 2, 1, 22, 0, 3, //         <expression>
-              14, 1, 0,                     //         IF_ERROR
+              41, 0, 39,                    // LOOP false
+              5,                            //   * PUSH_CURR_POS
+              41, 1, 34,                    //     LOOP true
+              23, 0, 18, 0, 2, 1, 22, 0, 3, //       * <expression>
+              14, 4, 1,                     //         IF_ERROR
               7,                            //           * LOAD_CURR_POS
+              6,                            //             POP
+              8, 0,                         //             BREAK <0>
+              10,                           //           * APPEND
+              9,                            //         POP_POS
+              5,                            //         PUSH_CURR_POS
+              23, 1, 18, 1, 2, 1, 22, 1, 3, //         <delimiter>
+              14, 3, 0,                     //         IF_ERROR
+              6,                            //           * POP
+              8, 0,                         //             BREAK <0>
               9,                            //     POP_POS
-              6,                            // POP
               30, 2, 3, 0,                  // IF_LT <2>
               7,                            //   * LOAD_CURR_POS
               6,                            //     POP
@@ -1136,18 +1158,22 @@ describe("compiler pass |generateBytecode|", function() {
           it("generates correct bytecode", function() {
             expect(pass).to.changeAST(grammar, bytecodeDetails([
               4,                            // PUSH_EMPTY_ARRAY
-              23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
-              16, 29,                       // WHILE_NOT_ERROR
-              10,                           //   * APPEND
-              5,                            //     PUSH_CURR_POS
-              23, 1, 18, 1, 2, 1, 22, 1, 3, //     <delimiter>
-              15, 14, 0,                    //     IF_NOT_ERROR
-              6,                            //       * POP
-              23, 0, 18, 0, 2, 1, 22, 0, 3, //         <expression>
-              14, 1, 0,                     //         IF_ERROR
+              41, 0, 39,                    // LOOP false
+              5,                            //   * PUSH_CURR_POS
+              41, 1, 34,                    //     LOOP true
+              23, 0, 18, 0, 2, 1, 22, 0, 3, //       * <expression>
+              14, 4, 1,                     //         IF_ERROR
               7,                            //           * LOAD_CURR_POS
+              6,                            //             POP
+              8, 0,                         //             BREAK <0>
+              10,                           //           * APPEND
+              9,                            //         POP_POS
+              5,                            //         PUSH_CURR_POS
+              23, 1, 18, 1, 2, 1, 22, 1, 3, //         <delimiter>
+              14, 3, 0,                     //         IF_ERROR
+              6,                            //           * POP
+              8, 0,                         //             BREAK <0>
               9,                            //     POP_POS
-              6,                            // POP
             ]));
           });
 
@@ -1171,18 +1197,22 @@ describe("compiler pass |generateBytecode|", function() {
             expect(pass).to.changeAST(grammar, bytecodeDetails([
               5,                            // PUSH_CURR_POS
               4,                            // PUSH_EMPTY_ARRAY
-              23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
-              16, 29,                       // WHILE_NOT_ERROR
-              10,                           //   * APPEND
-              5,                            //     PUSH_CURR_POS
-              23, 1, 18, 1, 2, 1, 22, 1, 3, //     <delimiter>
-              15, 14, 0,                    //     IF_NOT_ERROR
-              6,                            //       * POP
-              23, 0, 18, 0, 2, 1, 22, 0, 3, //         <expression>
-              14, 1, 0,                     //         IF_ERROR
+              41, 0, 39,                    // LOOP false
+              5,                            //   * PUSH_CURR_POS
+              41, 1, 34,                    //     LOOP true
+              23, 0, 18, 0, 2, 1, 22, 0, 3, //       * <expression>
+              14, 4, 1,                     //         IF_ERROR
               7,                            //           * LOAD_CURR_POS
+              6,                            //             POP
+              8, 0,                         //             BREAK <0>
+              10,                           //           * APPEND
+              9,                            //         POP_POS
+              5,                            //         PUSH_CURR_POS
+              23, 1, 18, 1, 2, 1, 22, 1, 3, //         <delimiter>
+              14, 3, 0,                     //         IF_ERROR
+              6,                            //           * POP
+              8, 0,                         //             BREAK <0>
               9,                            //     POP_POS
-              6,                            // POP
               30, 1, 3, 0,                  // IF_LT <1>
               7,                            //   * LOAD_CURR_POS
               6,                            //     POP
@@ -1211,20 +1241,24 @@ describe("compiler pass |generateBytecode|", function() {
             expect(pass).to.changeAST(grammar, bytecodeDetails([
               5,                            // PUSH_CURR_POS
               4,                            // PUSH_EMPTY_ARRAY
-              23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
-              16, 34,                       // WHILE_NOT_ERROR
-              10,                           //   * APPEND
-              31, 3, 1, 28,                 //     IF_GE <3>
-              3,                            //       * PUSH_FAILED
-              5,                            //       * PUSH_CURR_POS
-              23, 1, 18, 1, 2, 1, 22, 1, 3, //         <delimiter>
-              15, 14, 0,                    //         IF_NOT_ERROR
-              6,                            //           * POP
-              23, 0, 18, 0, 2, 1, 22, 0, 3, //             <expression>
-              14, 1, 0,                     //             IF_ERROR
-              7,                            //               * LOAD_CURR_POS
+              41, 0, 45,                    // LOOP false
+              5,                            //   * PUSH_CURR_POS
+              41, 1, 40,                    //     LOOP true
+              23, 0, 18, 0, 2, 1, 22, 0, 3, //       * <expression>
+              14, 4, 1,                     //         IF_ERROR
+              7,                            //           * LOAD_CURR_POS
+              6,                            //             POP
+              8, 0,                         //             BREAK <0>
+              10,                           //           * APPEND
+              31, 3, 2, 0,                  //         IF_GE <3>
+              8, 0,                         //           * BREAK <0>
               9,                            //         POP_POS
-              6,                            // POP
+              5,                            //         PUSH_CURR_POS
+              23, 1, 18, 1, 2, 1, 22, 1, 3, //         <delimiter>
+              14, 3, 0,                     //         IF_ERROR
+              6,                            //           * POP
+              8, 0,                         //             BREAK <0>
+              9,                            //     POP_POS
               30, 2, 3, 0,                  // IF_LT <2>
               7,                            //   * LOAD_CURR_POS
               6,                            //     POP
@@ -1253,20 +1287,24 @@ describe("compiler pass |generateBytecode|", function() {
             expect(pass).to.changeAST(grammar, bytecodeDetails([
               5,                            // PUSH_CURR_POS
               4,                            // PUSH_EMPTY_ARRAY
-              23, 0, 18, 0, 2, 1, 22, 0, 3, // <expression>
-              16, 34,                       // WHILE_NOT_ERROR
-              10,                           //   * APPEND
-              31, 42, 1, 28,                //     IF_GE <42>
-              3,                            //       * PUSH_FAILED
-              5,                            //       * PUSH_CURR_POS
-              23, 1, 18, 1, 2, 1, 22, 1, 3, //         <delimiter>
-              15, 14, 0,                    //         IF_NOT_ERROR
-              6,                            //           * POP
-              23, 0, 18, 0, 2, 1, 22, 0, 3, //             <expression>
-              14, 1, 0,                     //             IF_ERROR
-              7,                            //               * LOAD_CURR_POS
+              41, 0, 45,                    // LOOP false
+              5,                            //   * PUSH_CURR_POS
+              41, 1, 40,                    //     LOOP true
+              23, 0, 18, 0, 2, 1, 22, 0, 3, //       * <expression>
+              14, 4, 1,                     //         IF_ERROR
+              7,                            //           * LOAD_CURR_POS
+              6,                            //             POP
+              8, 0,                         //             BREAK <0>
+              10,                           //           * APPEND
+              31, 42, 2, 0,                 //         IF_GE <42>
+              8, 0,                         //           * BREAK <0>
               9,                            //         POP_POS
-              6,                            // POP
+              5,                            //         PUSH_CURR_POS
+              23, 1, 18, 1, 2, 1, 22, 1, 3, //         <delimiter>
+              14, 3, 0,                     //         IF_ERROR
+              6,                            //           * POP
+              8, 0,                         //             BREAK <0>
+              9,                            //     POP_POS
               30, 42, 3, 0,                 // IF_LT <42>
               7,                            //   * LOAD_CURR_POS
               6,                            //     POP
@@ -1296,7 +1334,7 @@ describe("compiler pass |generateBytecode|", function() {
           it("generates correct bytecode", function() {
             expect(pass).to.changeAST(grammar, bytecodeDetails([
               5,                            // PUSH_CURR_POS
-              41, 0, 77,                    // LOOP false
+              41, 0, 80,                    // LOOP false
               // {return 42;}
               5,                            //   * PUSH_CURR_POS
               4,                            //     PUSH_EMPTY_ARRAY
@@ -1310,22 +1348,26 @@ describe("compiler pass |generateBytecode|", function() {
 
               // "a"| ..max|
               4,                            //   - PUSH_EMPTY_ARRAY
-              33, 1, 1, 9,                  //     IF_GE_DYNAMIC <1>
-              3,                            //       * PUSH_FAILED
-              23, 0, 18, 0, 2, 1, 22, 0, 3, //       * <expression>
-              16, 34,                       //     WHILE_NOT_ERROR
-              10,                           //       * APPEND
-              33, 1, 1, 28,                 //         IF_GE_DYNAMIC <1>
-              3,                            //           * PUSH_FAILED
-              5,                            //           * PUSH_CURR_POS
-              23, 1, 18, 1, 2, 1, 22, 1, 3, //             <delimiter>
-              15, 14, 0,                    //             IF_NOT_ERROR
-              6,                            //               * POP
-              23, 0, 18, 0, 2, 1, 22, 0, 3, //                 <expression>
-              14, 1, 0,                     //                 IF_ERROR
-              7,                            //                   * LOAD_CURR_POS
+              41, 0, 51,                    //     LOOP false
+              33, 1, 2, 0,                  //       * IF_GE_DYNAMIC <1>
+              8, 0,                         //           * BREAK <0>
+              5,                            //         PUSH_CURR_POS
+              41, 1, 40,                    //         LOOP true
+              23, 0, 18, 0, 2, 1, 22, 0, 3, //           * <expression>
+              14, 4, 1,                     //             IF_ERROR
+              7,                            //               * LOAD_CURR_POS
+              6,                            //                 POP
+              8, 0,                         //                 BREAK <0>
+              10,                           //               * APPEND
+              33, 1, 2, 0,                  //             IF_GE_DYNAMIC <1>
+              8, 0,                         //               * BREAK <0>
               9,                            //             POP_POS
-              6,                            //     POP
+              5,                            //             PUSH_CURR_POS
+              23, 1, 18, 1, 2, 1, 22, 1, 3, //             <delimiter>
+              14, 3, 0,                     //             IF_ERROR
+              6,                            //               * POP
+              8, 0,                         //                 BREAK <0>
+              9,                            //         POP_POS
               14, 3, 0,                     //     IF_ERROR
               7,                            //       * LOAD_CURR_POS
               8, 2,                         //         BREAK <2>
@@ -1354,7 +1396,7 @@ describe("compiler pass |generateBytecode|", function() {
           it("generates correct bytecode", function() {
             expect(pass).to.changeAST(grammar, bytecodeDetails([
               5,                            // PUSH_CURR_POS
-              41, 0, 76,                    // LOOP false
+              41, 0, 77,                    // LOOP false
               // {return 42;}
               5,                            //   * PUSH_CURR_POS
               4,                            //     PUSH_EMPTY_ARRAY
@@ -1369,18 +1411,22 @@ describe("compiler pass |generateBytecode|", function() {
               // "a"|min..|
               5,                            //   - PUSH_CURR_POS
               4,                            //     PUSH_EMPTY_ARRAY
-              23, 0, 18, 0, 2, 1, 22, 0, 3, //     <expression>
-              16, 29,                       //     WHILE_NOT_ERROR
-              10,                           //       * APPEND
-              5,                            //         PUSH_CURR_POS
-              23, 1, 18, 1, 2, 1, 22, 1, 3, //         <delimiter>
-              15, 14, 0,                    //         IF_NOT_ERROR
-              6,                            //           * POP
-              23, 0, 18, 0, 2, 1, 22, 0, 3, //             <expression>
-              14, 1, 0,                     //             IF_ERROR
+              41, 0, 39,                    //     LOOP false
+              5,                            //       * PUSH_CURR_POS
+              41, 1, 34,                    //         LOOP true
+              23, 0, 18, 0, 2, 1, 22, 0, 3, //           * <expression>
+              14, 4, 1,                     //             IF_ERROR
               7,                            //               * LOAD_CURR_POS
+              6,                            //                 POP
+              8, 0,                         //                 BREAK <0>
+              10,                           //               * APPEND
+              9,                            //             POP_POS
+              5,                            //             PUSH_CURR_POS
+              23, 1, 18, 1, 2, 1, 22, 1, 3, //             <delimiter>
+              14, 3, 0,                     //             IF_ERROR
+              6,                            //               * POP
+              8, 0,                         //                 BREAK <0>
               9,                            //         POP_POS
-              6,                            //     POP
               32, 1, 3, 0,                  //     IF_LT_DYNAMIC <1>
               7,                            //       * LOAD_CURR_POS
               6,                            //         POP
@@ -1414,7 +1460,7 @@ describe("compiler pass |generateBytecode|", function() {
           it("generates correct bytecode", function() {
             expect(pass).to.changeAST(grammar, bytecodeDetails([
               5,                            // PUSH_CURR_POS
-              41, 0, 104,                   // LOOP false
+              41, 0, 107,                   // LOOP false
               // {return 42;} - min
               5,                            //   * PUSH_CURR_POS
               4,                            //     PUSH_EMPTY_ARRAY
@@ -1439,22 +1485,26 @@ describe("compiler pass |generateBytecode|", function() {
               // "a"|min..max|
               5,                            //   - PUSH_CURR_POS
               4,                            //     PUSH_EMPTY_ARRAY
-              33, 1, 1, 9,                  //     IF_GE_DYNAMIC <1>
-              3,                            //       * PUSH_FAILED
-              23, 0, 18, 0, 2, 1, 22, 0, 3, //       * <expression>
-              16, 34,                       //     WHILE_NOT_ERROR
-              10,                           //       * APPEND
-              33, 1, 1, 28,                 //         IF_GE_DYNAMIC <1>
-              3,                            //           * PUSH_FAILED
-              5,                            //           * PUSH_CURR_POS
-              23, 1, 18, 1, 2, 1, 22, 1, 3, //             <delimiter>
-              15, 14, 0,                    //             IF_NOT_ERROR
-              6,                            //               * POP
-              23, 0, 18, 0, 2, 1, 22, 0, 3, //                 <expression>
-              14, 1, 0,                     //                 IF_ERROR
-              7,                            //                   * LOAD_CURR_POS
+              41, 0, 51,                    //     LOOP false
+              33, 1, 2, 0,                  //       * IF_GE_DYNAMIC <1>
+              8, 0,                         //           * BREAK <0>
+              5,                            //         PUSH_CURR_POS
+              41, 1, 40,                    //         LOOP true
+              23, 0, 18, 0, 2, 1, 22, 0, 3, //           * <expression>
+              14, 4, 1,                     //             IF_ERROR
+              7,                            //               * LOAD_CURR_POS
+              6,                            //                 POP
+              8, 0,                         //                 BREAK <0>
+              10,                           //               * APPEND
+              33, 1, 2, 0,                  //             IF_GE_DYNAMIC <1>
+              8, 0,                         //               * BREAK <0>
               9,                            //             POP_POS
-              6,                            //     POP
+              5,                            //             PUSH_CURR_POS
+              23, 1, 18, 1, 2, 1, 22, 1, 3, //             <delimiter>
+              14, 3, 0,                     //             IF_ERROR
+              6,                            //               * POP
+              8, 0,                         //                 BREAK <0>
+              9,                            //         POP_POS
               32, 2, 3, 0,                  //     IF_LT_DYNAMIC <2>
               7,                            //       * LOAD_CURR_POS
               6,                            //         POP
@@ -1491,7 +1541,7 @@ describe("compiler pass |generateBytecode|", function() {
           it("generates correct bytecode", function() {
             expect(pass).to.changeAST(grammar, bytecodeDetails([
               5,                            // PUSH_CURR_POS
-              41, 0, 86,                    // LOOP false
+              41, 0, 89,                    // LOOP false
               // {return 42;}
               5,                            //   * PUSH_CURR_POS
               4,                            //     PUSH_EMPTY_ARRAY
@@ -1506,22 +1556,26 @@ describe("compiler pass |generateBytecode|", function() {
               // "a"|exact|
               5,                            //   - PUSH_CURR_POS
               4,                            //     PUSH_EMPTY_ARRAY
-              33, 1, 1, 9,                  //     IF_GE_DYNAMIC <1>
-              3,                            //       * PUSH_FAILED
-              23, 0, 18, 0, 2, 1, 22, 0, 3, //       * <expression>
-              16, 34,                       //     WHILE_NOT_ERROR
-              10,                           //       * APPEND
-              33, 1, 1, 28,                 //         IF_GE_DYNAMIC <1>
-              3,                            //           * PUSH_FAILED
-              5,                            //           * PUSH_CURR_POS
-              23, 1, 18, 1, 2, 1, 22, 1, 3, //             <delimiter>
-              15, 14, 0,                    //             IF_NOT_ERROR
-              6,                            //               * POP
-              23, 0, 18, 0, 2, 1, 22, 0, 3, //                 <expression>
-              14, 1, 0,                     //                 IF_ERROR
-              7,                            //                   * LOAD_CURR_POS
+              41, 0, 51,                    //     LOOP false
+              33, 1, 2, 0,                  //       * IF_GE_DYNAMIC <1>
+              8, 0,                         //           * BREAK <0>
+              5,                            //         PUSH_CURR_POS
+              41, 1, 40,                    //         LOOP true
+              23, 0, 18, 0, 2, 1, 22, 0, 3, //           * <expression>
+              14, 4, 1,                     //             IF_ERROR
+              7,                            //               * LOAD_CURR_POS
+              6,                            //                 POP
+              8, 0,                         //                 BREAK <0>
+              10,                           //               * APPEND
+              33, 1, 2, 0,                  //             IF_GE_DYNAMIC <1>
+              8, 0,                         //               * BREAK <0>
               9,                            //             POP_POS
-              6,                            //     POP
+              5,                            //             PUSH_CURR_POS
+              23, 1, 18, 1, 2, 1, 22, 1, 3, //             <delimiter>
+              14, 3, 0,                     //             IF_ERROR
+              6,                            //               * POP
+              8, 0,                         //                 BREAK <0>
+              9,                            //         POP_POS
               32, 1, 3, 0,                  //     IF_LT_DYNAMIC <1>
               7,                            //       * LOAD_CURR_POS
               6,                            //         POP
