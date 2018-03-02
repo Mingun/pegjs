@@ -165,11 +165,11 @@ describe("generated parser behavior", function() {
         });
 
         describe("with display name", function() {
-          it("reports match failure and records an expectation of type \"other\"", function() {
+          it("reports match failure and records an expectation of type \"rule\"", function() {
             let parser = peg.generate("start 'start' = 'a'");
 
             expect(parser).to.failToParse("b", {
-              expected: [{ type: "other", description: "start" }]
+              expected: [{ type: "rule", description: "start" }]
             });
           });
 
@@ -177,7 +177,7 @@ describe("generated parser behavior", function() {
             let parser = peg.generate("start 'start' = 'a'");
 
             expect(parser).to.failToParse("b", {
-              expected: [{ type: "other", description: "start" }]
+              expected: [{ type: "rule", description: "start" }]
             });
           });
         });
@@ -2204,7 +2204,7 @@ describe("generated parser behavior", function() {
 
               expect(parser).to.failToParse("a", {
                 message: "Expected a but \"a\" found.",
-                expected: [{ type: "other", description: "a" }],
+                expected: [{ type: "user", description: "a" }],
                 found: "a",
                 location: {
                   start: { offset: 0, line: 1, column: 1 },
@@ -2225,7 +2225,7 @@ describe("generated parser behavior", function() {
 
               expect(parser).to.failToParse("a", {
                 message: "Expected a but \"a\" found.",
-                expected: [{ type: "other", description: "a" }],
+                expected: [{ type: "user", description: "a" }],
                 found: "a",
                 location: {
                   start: { offset: 1, line: 1, column: 2 },
