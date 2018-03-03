@@ -82,7 +82,7 @@
   let reservedWords = new Set(RESERVED_WORDS_JS);
   let comments = {};
   function addComment(comment, multiline) {
-    let loc = location();
+    let loc = state.location();
     comment = {
       text: comment,
       multiline: multiline,
@@ -102,7 +102,7 @@ Grammar
         initializer: initializer,
         rules: rules,
         comments: comments,
-        location: location()
+        location: state.location()
       };
     }
 
@@ -112,7 +112,7 @@ Initializer
         type: "initializer",
         attributes: code[0],
         code: code[1],
-        location: location()
+        location: state.location()
       };
     }
 
@@ -132,10 +132,10 @@ Rule
               type: "named",
               name: displayName,
               expression: expression,
-              location: location()
+              location: state.location()
             }
           : expression,
-        location: location()
+        location: state.location()
       };
     }
 
@@ -148,7 +148,7 @@ Attribute 'attribute'
       type: "attribute",
       name: name,
       value: value,
-      location: location()
+      location: state.location()
     };
   }
 
@@ -164,7 +164,7 @@ ChoiceExpression
         ? {
             type: "choice",
             alternatives: [head, ...tail],
-            location: location()
+            location: state.location()
           }
         : head;
     }
@@ -177,7 +177,7 @@ ActionExpression
             attributes: code[0],
             expression: expression,
             code: code[1],
-            location: location()
+            location: state.location()
           }
         : expression;
     }
@@ -185,12 +185,12 @@ ActionExpression
 SequenceExpression
   = head:LabeledExpression? tail:(__ @LabeledExpression)* {
       return head === null
-        ? { type: "sequence", elements: [], location: location() }
+        ? { type: "sequence", elements: [], location: state.location() }
         : tail.length > 0
           ? {
               type: "sequence",
               elements: [head, ...tail],
-              location: location()
+              location: state.location()
             }
           : head;
     }
@@ -198,7 +198,7 @@ SequenceExpression
 LabeledExpression
   = "@" label:(@Identifier __ ":")? __ expression:PrefixedExpression {
       if (label && reservedWords.has(label[0])) {
-        error(`Label can't be a reserved word "${label[0]}".`, label[1]);
+        state.error(`Label can't be a reserved word "${label[0]}".`, label[1]);
       }
 
       return {
@@ -206,12 +206,12 @@ LabeledExpression
         label: label ? label[0] :null,
         auto: true,
         expression: expression,
-        location: location()
+        location: state.location()
       };
     }
   / label:Identifier __ ":" __ expression:PrefixedExpression {
       if (reservedWords.has(label[0])) {
-        error(`Label can't be a reserved word "${label[0]}".`, label[1]);
+        state.error(`Label can't be a reserved word "${label[0]}".`, label[1]);
       }
 
       return {
@@ -219,7 +219,7 @@ LabeledExpression
         label: label[0],
         auto: false,
         expression: expression,
-        location: location()
+        location: state.location()
       };
     }
   / PrefixedExpression
@@ -229,7 +229,7 @@ PrefixedExpression
       return {
         type: OPS_TO_PREFIXED_TYPES[operator],
         expression: expression,
-        location: location()
+        location: state.location()
       };
     }
   / SuffixedExpression
@@ -244,7 +244,7 @@ SuffixedExpression
       return {
         type: OPS_TO_SUFFIXED_TYPES[operator],
         expression: expression,
-        location: location()
+        location: state.location()
       };
     }
   / RangeExpression
@@ -260,7 +260,7 @@ RangeExpression
       let min = operator[0];
       let max = operator[1];
       if (max.constant && max.value === 0) {
-        error("The maximum count of repetitions of the rule must be > 0.", max.location);
+        state.error("The maximum count of repetitions of the rule must be > 0.", max.location);
       }
       return {
         type:       "range",
@@ -268,7 +268,7 @@ RangeExpression
         max:        max,
         expression: expression,
         delimiter:  operator[2],
-        location:   location()
+        location:   state.location()
       };
     }
 
@@ -285,8 +285,8 @@ RangeOperator
   }
 
 RangeBoundary
-  = value:Int { return { constant: true, value: value, location: location() }; }
-  / value:Identifier { return { constant: false, value: value[0], location: location() }; }
+  = value:Int { return { constant: true, value: value, location: state.location() }; }
+  / value:Identifier { return { constant: false, value: value[0], location: state.location() }; }
 
 PrimaryExpression
   = LiteralMatcher
@@ -300,13 +300,13 @@ PrimaryExpression
       // nodes that already isolate label scope themselves. This leaves us with
       // "labeled" and "sequence".
       return expression.type === "labeled" || expression.type === "sequence"
-          ? { type: "group", expression: expression, location: location() }
+          ? { type: "group", expression: expression, location: state.location() }
           : expression;
     }
 
 RuleReferenceExpression
   = name:IdentifierName !(__ (StringLiteral __)? "=") {
-      return { type: "rule_ref", name: name, location: location() };
+      return { type: "rule_ref", name: name, location: state.location() };
     }
 
 SemanticPredicateExpression
@@ -315,7 +315,7 @@ SemanticPredicateExpression
         type: OPS_TO_SEMANTIC_PREDICATE_TYPES[operator],
         attributes: code[0],
         code: code[1],
-        location: location()
+        location: state.location()
       };
     }
 
@@ -367,7 +367,7 @@ SingleLineComment
   }
 
 Identifier
-  = name:IdentifierName { return [name, location()]; }
+  = name:IdentifierName { return [name, state.location()]; }
 
 IdentifierName "identifier"
   = head:IdentifierStart tail:IdentifierPart* { return head + tail.join(""); }
@@ -410,7 +410,7 @@ LiteralMatcher "literal"
         type: "literal",
         value: value,
         ignoreCase: ignoreCase !== null,
-        location: location()
+        location: state.location()
       };
     }
 
@@ -440,15 +440,15 @@ CharacterClassMatcher "character class"
         parts: parts.filter(part => part !== ""),
         inverted: inverted !== null,
         ignoreCase: ignoreCase !== null,
-        location: location()
+        location: state.location()
       };
     }
 
 ClassCharacterRange
   = begin:ClassCharacter "-" end:ClassCharacter {
       if (begin.charCodeAt(0) > end.charCodeAt(0)) {
-        error(
-          "Invalid character range: " + text() + "."
+        state.error(
+          "Invalid character range: " + state.text() + "."
         );
       }
 
@@ -510,11 +510,11 @@ HexDigit
   = [0-9a-f]i
 
 AnyMatcher
-  = "." { return { type: "any", location: location() }; }
+  = "." { return { type: "any", location: state.location() }; }
 
 CodeBlock "code block"
   = (@Attribute __)*
-    ("{" @Code "}" / "{" { error("Unbalanced brace."); })
+    ("{" @Code "}" / "{" { state.error("Unbalanced brace."); })
 
 Code
   = $((![{}] SourceCharacter)+ / "{" Code "}")*

@@ -582,7 +582,7 @@ describe("generated parser behavior", function() {
             "line = thing (' '+ thing)*",
             "thing = digit / mark",
             "digit = [0-9]",
-            "mark = &{ result = location(); return true; } 'x'",
+            "mark = &{ result = state.location(); return true; } 'x'",
             "nl = '\\r'? '\\n'"
           ].join("\n"), options);
 
@@ -605,7 +605,7 @@ describe("generated parser behavior", function() {
         it("|offset| returns current start offset", function() {
           let parser = peg.generate([
             "start = [0-9]+ val:mark { return val; }",
-            "mark = 'xx' { return offset(); }"
+            "mark = 'xx' { return state.offset(); }"
           ].join("\n"), options);
 
           expect(parser).to.parse("0123456xx", 7);
@@ -614,7 +614,7 @@ describe("generated parser behavior", function() {
         it("|range| returns current range", function() {
           let parser = peg.generate([
             "start = [0-9]+ val:mark { return val; }",
-            "mark = 'xx' { return range(); }"
+            "mark = 'xx' { return state.range(); }"
           ].join("\n"), options);
 
           expect(parser).to.parse("0123456xx", [7, 9]);
@@ -825,7 +825,7 @@ describe("generated parser behavior", function() {
             "line = thing (' '+ thing)*",
             "thing = digit / mark",
             "digit = [0-9]",
-            "mark = !{ result = location(); return false; } 'x'",
+            "mark = !{ result = state.location(); return false; } 'x'",
             "nl = '\\r'? '\\n'"
           ].join("\n"), options);
 
@@ -2161,7 +2161,7 @@ describe("generated parser behavior", function() {
 
           it("|text| returns text matched by the expression", function() {
             let parser = peg.generate(
-              "start = 'a' { return text(); }",
+              "start = 'a' { return state.text(); }",
               options
             );
 
@@ -2175,7 +2175,7 @@ describe("generated parser behavior", function() {
               "line = thing (' '+ thing)*",
               "thing = digit / mark",
               "digit = [0-9]",
-              "mark = 'x' { result = location(); }",
+              "mark = 'x' { result = state.location(); }",
               "nl = '\\r'? '\\n'"
             ].join("\n"), options);
 
@@ -2198,7 +2198,7 @@ describe("generated parser behavior", function() {
           describe("|expected|", function() {
             it("terminates parsing and throws an exception", function() {
               let parser = peg.generate(
-                "start = 'a' { expected('a'); }",
+                "start = 'a' { state.expected('a'); }",
                 options
               );
 
@@ -2216,7 +2216,7 @@ describe("generated parser behavior", function() {
             it("allows to set custom location info", function() {
               let parser = peg.generate([
                 "start = 'a' {",
-                "  expected('a', {",
+                "  state.expected('a', {",
                 "    start: { offset: 1, line: 1, column: 2 },",
                 "    end: { offset: 2, line: 1, column: 3 }",
                 "  });",
@@ -2238,7 +2238,7 @@ describe("generated parser behavior", function() {
           describe("|error|", function() {
             it("terminates parsing and throws an exception", function() {
               let parser = peg.generate(
-                "start = 'a' { error('a'); }",
+                "start = 'a' { state.error('a'); }",
                 options
               );
 
@@ -2256,7 +2256,7 @@ describe("generated parser behavior", function() {
             it("allows to set custom location info", function() {
               let parser = peg.generate([
                 "start = 'a' {",
-                "  error('a', {",
+                "  state.error('a', {",
                 "    start: { offset: 1, line: 1, column: 2 },",
                 "    end: { offset: 2, line: 1, column: 3 }",
                 "  });",
