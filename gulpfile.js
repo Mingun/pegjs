@@ -11,7 +11,6 @@ let mocha = require("gulp-mocha");
 let package_ = require("./package");
 let peg = require("./lib/peg");
 let rename = require("gulp-rename");
-let runSequence = require("run-sequence");
 let source = require("vinyl-source-stream");
 let spawn = require("child_process").spawn;
 let transform = require("gulp-transform");
@@ -73,7 +72,7 @@ gulp.task("benchmark", () =>
 // Create the browser build.
 gulp.task("browser:build", () =>
   browserify("lib/peg.js", { standalone: "peg" })
-    .transform(babelify, { presets: "env", compact: false })
+    .transform(babelify, { presets: ["@babel/preset-env"], compact: false })
     .bundle()
     .pipe(source("peg.js"))
     .pipe(header(HEADER))
@@ -99,6 +98,4 @@ gulp.task("parser", () =>
 );
 
 // Default task.
-gulp.task("default", cb =>
-  runSequence("lint", "test", cb)
-);
+gulp.task("default", gulp.series("lint", "test"));
