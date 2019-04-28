@@ -91,7 +91,7 @@
     "yargs": "^13.2.2"
   },
   "engines": {
-    "node": ">=4"
+    "node": ">=6"
   },
   "nyc": {
     "exclude": [
