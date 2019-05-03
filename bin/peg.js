@@ -52,7 +52,7 @@ readStream(inputStream, input => {
       location = e.location.start;
       abort(location.line + ":" + location.column + ": " + e.message);
     } else {
-      abort(e.message);
+      abort(e);
     }
   }
 
