@@ -99,9 +99,9 @@ Grammar
   = __ initializer:(@Initializer __)? rules:(@Rule __)+ {
       return {
         type: "grammar",
-        initializer: initializer,
-        rules: rules,
-        comments: comments,
+        initializer,
+        rules,
+        comments,
         location: state.location()
       };
     }
@@ -125,8 +125,8 @@ Rule
     {
       return {
         type: "rule",
-        name: name,
-        attributes: attributes,
+        name,
+        attributes,
         expression: displayName !== null
           ? {
               type: "named",
@@ -146,8 +146,8 @@ Attribute 'attribute'
   = "#[" name:IdentifierName __ value:AttributeValue? "]" {
     return {
       type: "attribute",
-      name: name,
-      value: value,
+      name,
+      value,
       location: state.location()
     };
   }
@@ -175,7 +175,7 @@ ActionExpression
         ? {
             type: "action",
             attributes: code[0],
-            expression: expression,
+            expression,
             code: code[1],
             location: state.location()
           }
@@ -205,7 +205,7 @@ LabeledExpression
         type: "labeled",
         label: label ? label[0] :null,
         auto: true,
-        expression: expression,
+        expression,
         location: state.location()
       };
     }
@@ -228,7 +228,7 @@ PrefixedExpression
   = operator:PrefixedOperator __ expression:SuffixedExpression {
       return {
         type: OPS_TO_PREFIXED_TYPES[operator],
-        expression: expression,
+        expression,
         location: state.location()
       };
     }
@@ -243,7 +243,7 @@ SuffixedExpression
   = expression:PrimaryExpression __ operator:SuffixedOperator {
       return {
         type: OPS_TO_SUFFIXED_TYPES[operator],
-        expression: expression,
+        expression,
         location: state.location()
       };
     }
@@ -263,12 +263,12 @@ RangeExpression
         state.error("The maximum count of repetitions of the rule must be > 0.", max.location);
       }
       return {
-        type:       "range",
-        min:        min,
-        max:        max,
-        expression: expression,
-        delimiter:  operator[2],
-        location:   state.location()
+        type: "range",
+        min,
+        max,
+        expression,
+        delimiter: operator[2],
+        location: state.location()
       };
     }
 
@@ -285,7 +285,7 @@ RangeOperator
   }
 
 RangeBoundary
-  = value:Int { return { constant: true, value: value, location: state.location() }; }
+  = value:Int { return { constant: true, value, location: state.location() }; }
   / value:Identifier { return { constant: false, value: value[0], location: state.location() }; }
 
 PrimaryExpression
@@ -300,13 +300,13 @@ PrimaryExpression
       // nodes that already isolate label scope themselves. This leaves us with
       // "labeled" and "sequence".
       return expression.type === "labeled" || expression.type === "sequence"
-          ? { type: "group", expression: expression, location: state.location() }
+          ? { type: "group", expression, location: state.location() }
           : expression;
     }
 
 RuleReferenceExpression
   = name:IdentifierName !(__ (StringLiteral __)? "=") {
-      return { type: "rule_ref", name: name, location: state.location() };
+      return { type: "rule_ref", name, location: state.location() };
     }
 
 SemanticPredicateExpression
@@ -376,7 +376,7 @@ IdentifierStart
   = UnicodeLetter
   / "$"
   / "_"
-  / "\\" sequence:UnicodeEscapeSequence { return sequence; }
+  / "\\" @UnicodeEscapeSequence
 
 IdentifierPart
   = IdentifierStart
@@ -408,7 +408,7 @@ LiteralMatcher "literal"
   = value:StringLiteral ignoreCase:"i"? {
       return {
         type: "literal",
-        value: value,
+        value,
         ignoreCase: ignoreCase !== null,
         location: state.location()
       };
@@ -420,12 +420,12 @@ StringLiteral "string"
 
 DoubleStringCharacter
   = $(!('"' / "\\" / LineTerminator) SourceCharacter)
-  / "\\" sequence:EscapeSequence { return sequence; }
+  / "\\" @EscapeSequence
   / LineContinuation
 
 SingleStringCharacter
   = $(!("'" / "\\" / LineTerminator) SourceCharacter)
-  / "\\" sequence:EscapeSequence { return sequence; }
+  / "\\" @EscapeSequence
   / LineContinuation
 
 CharacterClassMatcher "character class"
@@ -457,7 +457,7 @@ ClassCharacterRange
 
 ClassCharacter
   = $(!("]" / "\\" / LineTerminator) SourceCharacter)
-  / "\\" sequence:EscapeSequence { return sequence; }
+  / "\\" @EscapeSequence
   / LineContinuation
 
 LineContinuation
