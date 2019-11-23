@@ -246,7 +246,7 @@ if (outputFile === "-") {
 
 // Export
 
-options.inputFile = inputFile;
+options.source = inputFile;
 options.outputFile = outputFile;
 
 module.exports = options;

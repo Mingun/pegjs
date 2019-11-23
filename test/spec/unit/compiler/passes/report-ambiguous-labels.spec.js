@@ -14,6 +14,7 @@ describe("compiler pass |reportAmbiguousLabels|", function() {
       expect(pass).to.reportError("start = @'a' 'b' {}", {
         message: "Automatic label can not be used together with an action.",
         location: {
+          source: undefined,
           start: { offset: 8, line: 1, column: 9 },
           end: { offset: 12, line: 1, column: 13 }
         }
@@ -21,6 +22,7 @@ describe("compiler pass |reportAmbiguousLabels|", function() {
       expect(pass).to.reportError("start = @a:'a' 'b' {}", {
         message: 'Automatic label "a" can not be used together with an action.',
         location: {
+          source: undefined,
           start: { offset: 8, line: 1, column: 9 },
           end: { offset: 14, line: 1, column: 15 }
         }

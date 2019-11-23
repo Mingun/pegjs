@@ -44,8 +44,9 @@ const TEST_FILES = [
   "test/spec/**/*.js"
 ];
 
-function generate(contents) {
+function generate(contents, file) {
   return peg.generate(contents, {
+    source: file.path,
     output: "source",
     format: "commonjs"
   });

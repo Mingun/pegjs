@@ -13,6 +13,7 @@ function check(test, message) {
   expect(pass).to.reportError(test.grammar, {
     message: message,
     location: {
+      source: undefined,
       start: { offset: offset,     line: 1, column: offset + 1     },
       end:   { offset: offset + 5, line: 1, column: offset + 1 + 5 }
     }

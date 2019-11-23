@@ -163,6 +163,9 @@ object to `peg.generate`. The following options are supported:
                the specified output
   * `plugins` — plugins to use
   * `trace` — makes the parser trace its progress (default: `false`)
+  * `source` — this object will be passed to any [`location()`](#action-execution-environment) objects in
+               `source` property (default: `undefined`). This object will be used even if `options.source`
+               will be redefined in the grammar
 
 Using the Parser
 ----------------
@@ -539,6 +542,7 @@ available to them.
 
   ```javascript
   {
+    source: options.source,
     start: { offset: 23, line: 5, column: 6 },
     end: { offset: 25, line: 5, column: 8 }
   }

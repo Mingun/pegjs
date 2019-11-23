@@ -97,6 +97,7 @@ describe("generated parser API", function() {
                 type: "rule.enter",
                 rule: "start",
                 location: {
+                  source: undefined,
                   start: { offset: 0, line: 1, column: 1 },
                   end: { offset: 0, line: 1, column: 1 }
                 }
@@ -105,6 +106,7 @@ describe("generated parser API", function() {
                 type: "rule.enter",
                 rule: "a",
                 location: {
+                  source: undefined,
                   start: { offset: 0, line: 1, column: 1 },
                   end: { offset: 0, line: 1, column: 1 }
                 }
@@ -113,6 +115,7 @@ describe("generated parser API", function() {
                 type: "rule.fail",
                 rule: "a",
                 location: {
+                  source: undefined,
                   start: { offset: 0, line: 1, column: 1 },
                   end: { offset: 0, line: 1, column: 1 }
                 }
@@ -121,6 +124,7 @@ describe("generated parser API", function() {
                 type: "rule.enter",
                 rule: "b",
                 location: {
+                  source: undefined,
                   start: { offset: 0, line: 1, column: 1 },
                   end: { offset: 0, line: 1, column: 1 }
                 }
@@ -130,6 +134,7 @@ describe("generated parser API", function() {
                 rule: "b",
                 result: "b",
                 location: {
+                  source: undefined,
                   start: { offset: 0, line: 1, column: 1 },
                   end: { offset: 1, line: 1, column: 2 }
                 }
@@ -139,6 +144,7 @@ describe("generated parser API", function() {
                 rule: "start",
                 result: "b",
                 location: {
+                  source: undefined,
                   start: { offset: 0, line: 1, column: 1 },
                   end: { offset: 1, line: 1, column: 2 }
                 }
