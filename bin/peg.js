@@ -23,13 +23,13 @@ function abort(message) {
 
 let inputStream, outputStream;
 
-if (options.inputFile === null) {
+if (options.source === null) {
   process.stdin.resume();
   inputStream = process.stdin;
 } else {
-  inputStream = fs.createReadStream(options.inputFile);
+  inputStream = fs.createReadStream(options.source);
   inputStream.on("error", () => {
-    abort(`Can't read from file "${options.inputFile}".`);
+    abort(`Can't read from file "${options.source}".`);
   });
 }
 

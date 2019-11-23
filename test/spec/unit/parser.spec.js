@@ -1019,6 +1019,7 @@ describe("PEG.js grammar parser", function() {
   it("reports unmatched brace", function() {
     const text = "rule = \n 'x' { y \n z";
     const errorLocation = {
+      source: undefined,
       start: { offset: 13, line: 2, column: 6 },
       end: { offset: 14, line: 2, column: 7 }
     };

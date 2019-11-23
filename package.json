@@ -63,7 +63,7 @@
     "parser": "gulp parser"
   },
   "dependencies": {
-    "@pegjs2/runtime": ">=1.1.0"
+    "@pegjs2/runtime": "^2.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.4.4",
