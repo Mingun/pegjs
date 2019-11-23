@@ -23,7 +23,7 @@ function abort(message) {
 
 let inputStream, outputStream;
 
-if (options.inputFile === "-") {
+if (options.inputFile === null) {
   process.stdin.resume();
   inputStream = process.stdin;
 } else {
@@ -33,7 +33,7 @@ if (options.inputFile === "-") {
   });
 }
 
-if (options.outputFile === "-") {
+if (options.outputFile === null) {
   outputStream = process.stdout;
 } else {
   outputStream = fs.createWriteStream(options.outputFile);
