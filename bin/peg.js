@@ -26,11 +26,11 @@ let inputStream, outputStream;
 if (options.inputFile === "-") {
   process.stdin.resume();
   inputStream = process.stdin;
+} else {
+  inputStream = fs.createReadStream(options.inputFile);
   inputStream.on("error", () => {
     abort(`Can't read from file "${options.inputFile}".`);
   });
-} else {
-  inputStream = fs.createReadStream(options.inputFile);
 }
 
 if (options.outputFile === "-") {
