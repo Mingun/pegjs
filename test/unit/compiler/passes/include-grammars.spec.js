@@ -158,9 +158,9 @@ describe("compiler pass |includeGrammars|", function() {
 
   describe("recursive include rules from included grammars", function() {
     let options = {
-      resolver: new Resolver(function(path) {
+      resolver: new Resolver(function(ast, importNode) {
         return {
-          path: path,
+          path: importNode.path,
           data: [
             path.length === 0 ? "#inc = 'second'" : "",
             "rule1 = 'a'",
