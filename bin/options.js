@@ -228,16 +228,20 @@ if (options.exportVar !== null) {
   }
 }
 
-if (inputFile === null) {
-  inputFile = "-";
+// Use null for standard input
+if (inputFile === "-") {
+  inputFile = null;
 }
 
 if (outputFile === null) {
-  if (inputFile === "-") {
-    outputFile = "-";
-  } else if (inputFile) {
+  if (inputFile) {
     outputFile = inputFile.substr(0, inputFile.length - path.extname(inputFile).length) + ".js";
   }
+}
+
+// Use null for standard output
+if (outputFile === "-") {
+  outputFile = null;
 }
 
 // Export
