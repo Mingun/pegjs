@@ -66,19 +66,19 @@
     "@pegjs2/runtime": "^2.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.4.4",
-    "@babel/preset-env": "^7.4.4",
+    "@babel/core": "^7.7.4",
+    "@babel/preset-env": "^7.7.4",
     "babelify": "^10.0.0",
     "browserify": "^16.2.3",
     "chai": "^4.1.2",
     "chai-like": "^1.1.1",
-    "coveralls": "^3.0.0",
+    "coveralls": "^3.0.8",
     "del": "^4.1.1",
-    "express": "^4.16.2",
-    "glob": "^7.1.2",
+    "express": "^4.17.1",
+    "glob": "^7.1.6",
     "gulp": "^4.0.1",
     "gulp-eslint": "^5.0.0",
-    "gulp-header": "1 - 2",
+    "gulp-header": "^2.0.9",
     "gulp-mocha": "^6.0.0",
     "gulp-rename": "^1.2.2",
     "gulp-transform": "^3.0.5",
@@ -88,7 +88,7 @@
     "sinon": "^7.3.2",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0",
-    "yargs": "^13.2.2"
+    "yargs": "^14.0.2"
   },
   "engines": {
     "node": ">=6"
